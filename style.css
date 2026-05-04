@@ -11,7 +11,12 @@ body {
 
 .container {
     text-align: center;
-    perspective: 1000px; /* Tạo chiều sâu cho không gian 3D */
+    perspective: 1000px;
+    position: absolute; /* Đặt container ở vị trí tuyệt đối */
+    top: 50%;           /* Căn giữa theo chiều dọc */
+    left: 50%;
+    transform: translate(-50%, -50%); /* Căn chỉnh chính xác tâm */
+    z-index: 10;        /* Đảm bảo container nằm trên các thành phần khác */
 }
 
 /* Tạo hình trái tim từ các khối vuông xoay góc */
