@@ -70,7 +70,7 @@ body {
     width: 10px;
     height: 10px;
     background-color: #ff6b81;
-    transform: rotate(-45deg);
+    transform: translate(-50%, -50%) rotate(-45deg);
     pointer-events: none; /* Không làm vướng víu khi click */
 }
 
