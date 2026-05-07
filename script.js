@@ -190,8 +190,41 @@ player.addEventListener('mouseleave', () => {
     }, 2000);
 });
 
+function createLeaf() {
+    const container = document.getElementById('leaf-container');
+    const leaf = document.createElement('div');
+    leaf.classList.add('leaf');
+    
+    const size = Math.random() * 10 + 5 + 'px';
+    leaf.style.width = size;
+    leaf.style.height = size;
+    leaf.style.left = Math.random() * 100 + 'vw';
+    leaf.style.animationDuration = Math.random() * 5 + 5 + 's'; // Tốc độ rơi
+    leaf.style.opacity = Math.random();
+
+    container.appendChild(leaf);
+
+    setTimeout(() => { leaf.remove(); }, 10000);
+}
+
+window.addEventListener('click', function(e) {
+    const ripple = document.createElement('div');
+    ripple.classList.add('ripple');
+    
+    ripple.style.left = e.clientX + 'px';
+    ripple.style.top = e.clientY + 'px';
+    
+    document.body.appendChild(ripple);
+    
+    setTimeout(() => {
+        ripple.remove();
+    }, 800);
+});
+
 updateCounter();
 changeNote();
+showPlayer();
+setInterval(createLeaf, 500);
 setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
 loadTrack(currentTrackIndex);
