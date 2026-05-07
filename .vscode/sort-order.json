@@ -1,0 +1,19 @@
+{
+  ".": [
+    ".git",
+    ".vscode",
+    "gif",
+    "music",
+    ".gitignore",
+    "README.md",
+    "index.html",
+    "script.js",
+    "style.css"
+  ],
+  "music": [
+    "Đôi mắt kẻ tình si.mp3",
+    "Sống cho hết đời thanh xuân 3.mp3",
+    "Thắc Mắc (MĐX).mp3",
+    "Tiny love.mp3"
+  ]
+}

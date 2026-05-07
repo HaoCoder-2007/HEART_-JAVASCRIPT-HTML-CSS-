@@ -1,0 +1,16 @@
+{
+    "customFileOrder.rules": {
+        "c:\\haocoder\\other\\Heart": {
+            "order": [
+                "gif",
+                "music",
+                ".gitignore",
+                "README.md",
+                "index.html",
+                "script.js",
+                "style.css"
+            ],
+            "type": "manual"
+        }
+    }
+}
