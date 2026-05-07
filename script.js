@@ -18,6 +18,9 @@ const notes = [
 function updateCounter() {
     const now = new Date();
     const startDate = new Date(F_YEAR, F_MONTH - 1, F_DAY);
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
     
     const diffTime = Math.abs(now - startDate);
     const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -37,14 +40,16 @@ function updateCounter() {
     }
 
     document.getElementById('today-date').innerText = 
-        `Hôm nay: ${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+        `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
     
     document.getElementById('in-love-time').innerText = 
         `Bên nhau: ${y} năm ${m} tháng ${d} ngày`;
     
     document.getElementById('total-days').innerText = 
         `{${totalDays} ngày}`;
-
+    document.getElementById('live-clock').innerText = 
+        `${hh} : ${mm} : ${ss}`;
+    
     let wish = "";
     if (now.getDate() === B_DAY && (now.getMonth() + 1) === B_MONTH) {
         wish = `🎂 Chúc mừng sinh nhật em yêu (${now.getFullYear() - B_YEAR} tuổi) 🎂`;
@@ -58,12 +63,10 @@ function updateCounter() {
     document.getElementById('special-wish').innerText = wish;
 }
 
-// Hàm đổi note ngẫu nhiên
 function changeNote() {
     const noteElement = document.getElementById('random-note');
     const randomIndex = Math.floor(Math.random() * notes.length);
     
-    // Hiệu ứng mờ dần khi đổi chữ
     noteElement.style.opacity = 0;
     setTimeout(() => {
         noteElement.innerText = notes[randomIndex];
@@ -72,7 +75,7 @@ function changeNote() {
     }, 500);
 }
 
-// Khởi chạy
 updateCounter();
 changeNote();
-setInterval(changeNote, 8000); // Đổi câu nói mỗi 8 giây
+setInterval(changeNote, 8000);
+setInterval(updateCounter, 1000);

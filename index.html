@@ -4,21 +4,36 @@
     <meta charset="UTF-8">
     <title>Gửi người anh yêu</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-    <div class="heart"></div>
+        <div class="wedding-style-wrap">
+            <div class="date-background">18/01/2025</div>
+            <div class="names-overlay">
+                <span class="name-text">Huyền</span>
+                <div class="heart-mini"></div>
+                <span class="name-text">Hạo</span>
+            </div>
+        </div>
+
     <div class="message">
-        <h1>Lê Đặng Thanh Huyền</h1>
-        <p id="random-note" style="font-style: italic; min-height: 1.5em;"></p>
-        
+        <p id="random-note"></p>
         <div id="counter" class="counter-box">
             <p id="today-date"></p>
-            <p id="in-love-time"></p>
-            <p id="total-days"></p>
+            <p id="live-clock"></p>
+            <p>--------------------------------</p>
+            <p id="in-love-time" style="font-weight: bold; color: #ff85a2;"></p>
+            <p id="total-days" style="font-weight: bold; color: #ff85a2;"></p>
             <p id="special-wish" class="wish"></p>
         </div>
+        <div class="gif-container">
+            <!-- <img src="cat-pixel.gif" alt="cat-pixel" class="my-gif"> -->
+            <img src="dog-pixel.gif" alt="dog-pixel" class="my-gif">
+        </div>
     </div>
+
+    
     <script src="script.js"></script>
 </body>
 </html>
