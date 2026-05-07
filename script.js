@@ -75,7 +75,85 @@ function changeNote() {
     }, 500);
 }
 
+const playlist = [
+    { name: "Đôi mắt kẻ tình si - GREY D", src: "music/Doimatketinhsi.mp3" },
+    { name: "Sống cho hết đời thanh xuân 3 - BCTM x TNS", src: "music/Songchohetdoithanhxuan3.mp3" },
+    { name: "Thắc mắc (MĐX) - Thịnh Suy", src: "music/Thacmac(MĐX).mp3" },
+    { name: "Tiny love - Thịnh Suy", src: "music/Tinylove.mp3" }
+];
+
+let currentTrackIndex = 0;
+const audio = document.getElementById("myAudio");
+const playPauseBtn = document.getElementById("playPauseBtn");
+const trackName = document.getElementById("track-name");
+const seekBar = document.getElementById("seek-bar");
+const currentTimeEl = document.getElementById("current-time");
+const durationTimeEl = document.getElementById("duration-time");
+const volumeBar = document.getElementById("volume-bar");
+
+function loadTrack(index) {
+    const track = playlist[index];
+    audio.src = track.src;
+    trackName.innerText = track.name;
+    seekBar.value = 0;
+    currentTimeEl.innerText = "00:00";
+}
+
+playPauseBtn.addEventListener("click", () => {
+    if (audio.paused) {
+        audio.play();
+        playPauseBtn.innerText = "❚❚";
+    } else {
+        audio.pause();
+        playPauseBtn.innerText = "▶︎";
+    }
+});
+
+document.getElementById("nextBtn").addEventListener("click", () => {
+    currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+    loadTrack(currentTrackIndex);
+    audio.play();
+    playPauseBtn.innerText = "❚❚";
+});
+
+document.getElementById("prevBtn").addEventListener("click", () => {
+    currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+    loadTrack(currentTrackIndex);
+    audio.play();
+    playPauseBtn.innerText = "❚❚";
+});
+
+audio.onended = () => {
+    document.getElementById("nextBtn").click();
+};
+
+function formatTime(seconds) {
+    let min = Math.floor(seconds / 60);
+    let sec = Math.floor(seconds % 60);
+    return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+}
+
+audio.addEventListener("timeupdate", () => {
+    if (!isNaN(audio.duration)) {
+        seekBar.max = audio.duration;
+        seekBar.value = audio.currentTime;
+        currentTimeEl.innerText = formatTime(audio.currentTime);
+        durationTimeEl.innerText = formatTime(audio.duration);
+    }
+});
+
+seekBar.addEventListener("input", () => {
+    audio.currentTime = seekBar.value;
+});
+
+volumeBar.addEventListener("input", () => {
+    audio.volume = volumeBar.value / 100;
+    const volIcon = document.getElementById("vol-icon");
+    volIcon.innerText = audio.volume === 0 ? "🕪×" : (audio.volume < 0.5 ? "🔉" : "🕪×");
+});
+
 updateCounter();
 changeNote();
 setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
+loadTrack(currentTrackIndex);

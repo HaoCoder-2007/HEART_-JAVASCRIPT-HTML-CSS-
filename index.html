@@ -28,11 +28,34 @@
             <p id="special-wish" class="wish"></p>
         </div>
         <div class="gif-container">
-            <!-- <img src="cat-pixel.gif" alt="cat-pixel" class="my-gif"> -->
-            <img src="dog-pixel.gif" alt="dog-pixel" class="my-gif">
+            <!-- <img src="gif/cat-pixel.gif" alt="cat-pixel" class="my-gif"> -->
+            <img src="gif/dog-pixel.gif" alt="dog-pixel" class="my-gif">
         </div>
     </div>
 
+    <div class="spotify-player">
+    <div class="track-info">
+        <div class="scroll-container">
+            <span id="track-name" class="track-name">Đang tải nhạc...</span>
+        </div>
+        
+        <div class="seek-container">
+            <span id="current-time">00:00</span>
+            <input type="range" id="seek-bar" value="0" min="0" step="1">
+            <span id="duration-time">00:00</span>
+        </div>
+
+        <div class="controls">
+            <div class="volume-container">
+                <input type="range" id="volume-bar" value="100" min="0" max="100">
+            </div>
+            
+            <button class="nav-btn" id="prevBtn">⬩➤</button>
+            <button class="play-btn" id="playPauseBtn">▶︎</button>
+            <button class="nav-btn" id="nextBtn">⬩➤</button>
+        </div>
+    </div>
+    <audio id="myAudio"></audio>
     
     <script src="script.js"></script>
 </body>
