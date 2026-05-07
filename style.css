@@ -163,17 +163,21 @@ h1 {
 
 .scroll-container {
     overflow: hidden;
-    white-space: nowrap;
     width: 100%;
     margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
 }
 
 .track-name {
-    display: block;
-    text-align: center;
+    display: inline-block;
     color: #fff;
     font-size: 14px;
     font-weight: bold;
+    white-space: nowrap;
+    min-width: 100%;
+    text-align: center;
+    animation: marquee 12s linear infinite;
 }
 
 .spotify-player {
@@ -312,8 +316,14 @@ input[type="range"] {
         opacity: 1;
     }
     100% {
-        width: 100px; /* Độ lan rộng của giọt nước */
+        width: 100px;
         height: 100px;
         opacity: 0;
     }
+}
+
+@keyframes marquee {
+    0% { transform: translateX(20%); } 
+    50% { transform: translateX(-20%); }
+    100% { transform: translateX(20%); }
 }
