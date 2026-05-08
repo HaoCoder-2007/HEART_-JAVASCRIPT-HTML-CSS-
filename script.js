@@ -76,26 +76,26 @@ function changeNote() {
 }
 
 const playlist = [
+    { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/Aingoaianh.mp3" },
+    { name: "Chạy theo em - Nhã, Mihuman", src: "music/Chaytheoem.mp3" },
+    { name: "Đóa hoa - TeuYungBoy, BIG WIND, DONAL", src: "music/Doahoa.mp3" },
     { name: "Đôi mắt kẻ tình si - GREY D", src: "music/Doimatketinhsi.mp3" },
+    { name: "Đưa em về nhà - GREY D, Chillies", src: "music/Duaemvenha.mp3" },
+    { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/Ghetemdilamon.mp3" },
+    { name: "Hông về tình yêu - Khoi Vu", src: "music/Hongvetinhyeu.mp3" },
+    { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/Honvaodaydi.mp3" },
+    { name: "Love my friend - Shayda", src: "music/Lovemyfriend.mp3" },
+    { name: "Ngã tư không đèn - TRANG, KHOA VŨ", src: "music/Ngatukhongden.mp3" },
     { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/Songchohetdoithanhxuan3.mp3" },
+    { name: "Tâm trí lang thang - Ánh Sáng AZA, Negav", src: "music/Tamtrilangthang.mp3" },
     { name: "Thắc mắc (MĐX) - Thịnh Suy", src: "music/Thacmac(MĐX).mp3" },
+    { name: "Thích quá rùi nà - Tlinh, Trung Trần", src: "music/Thichquaruina.mp3" },
+    { name: "Tìm thấy nhau - SIVAN", src: "music/Timthaynhau.mp3" },
     { name: "Tiny love - Thịnh Suy", src: "music/Tinylove.mp3" },
     { name: "Trafalgar D.Law -  Don Raemo, Bewata", src: "music/Trafalgardlaw.mp3" },
-    { name: "Hông về tình yêu - Khoi Vu", src: "music/Hongvetinhyeu.mp3" },
-    { name: "Love my friend - Shayda", src: "music/Lovemyfriend.mp3" },
-    { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/Ghetemdilamon.mp3" },
-    { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/Aingoaianh.mp3" },
-    { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/Honvaodaydi.mp3" },
+    { name: "Vaicaunoicokhiennguoithaydoi - GREY D, Tlinh", src: "music/Vaicaunoicokhiennguoithaydoi.mp3" },
     { name: "Vạn vật như muốn ta bên nhau - RIO", src: "music/Vanvatnhumuontabennhau.mp3" },
     { name: "Và thế giới đã mất đi một người cô đơn - Marzuz, Changg", src: "music/Vathegioidamatdimotnguoicodon.mp3" },
-    { name: "Ngã tư không đèn - TRANG, KHOA VŨ", src: "music/Ngatukhongden.mp3" },
-    { name: "Thích quá rùi nà - Tlinh, Trung Trần", src: "music/Thichquaruina.mp3" },
-    { name: "Tâm trí lang thang - Ánh Sáng AZA, Negav", src: "music/Tamtrilangthang.mp3" },
-    { name: "Tìm thấy nhau - SIVAN", src: "music/Timthaynhau.mp3" },
-    { name: "Chạy theo em - Nhã, Mihuman", src: "music/Chaytheoem.mp3" },
-    { name: "Vaicaunoicokhiennguoithaydoi - GREY D, Tlinh", src: "music/Vaicaunoicokhiennguoithaydoi.mp3" },
-    { name: "Đưa em về nhà - GREY D, Chillies", src: "music/Duaemvenha.mp3" },
-    { name: "Đóa hoa - TeuYungBoy, BIG WIND, DONAL", src: "music/Doahoa.mp3" },
 ];
 
 let currentTrackIndex = 0;
@@ -113,6 +113,7 @@ function loadTrack(index) {
     trackName.innerText = track.name;
     seekBar.value = 0;
     currentTimeEl.innerText = "00:00";
+    if (typeof renderPlaylist === 'function') renderPlaylist();
 }
 
 playPauseBtn.addEventListener("click", () => {
@@ -209,7 +210,7 @@ function createLeaf() {
     leaf.style.width = size;
     leaf.style.height = size;
     leaf.style.left = Math.random() * 100 + 'vw';
-    leaf.style.animationDuration = Math.random() * 5 + 5 + 's'; // Tốc độ rơi
+    leaf.style.animationDuration = Math.random() * 5 + 5 + 's';
     leaf.style.opacity = Math.random();
 
     container.appendChild(leaf);
@@ -230,6 +231,71 @@ window.addEventListener('click', function(e) {
         ripple.remove();
     }, 800);
 });
+
+const nextBtn = document.getElementById("nextBtn");
+const playlistBtn = document.createElement("button");
+playlistBtn.className = "nav-btn";
+playlistBtn.id = "playlist-btn";
+playlistBtn.innerHTML = "☰";
+nextBtn.parentNode.insertBefore(playlistBtn, nextBtn.nextSibling);
+
+const playlistUI = document.createElement('div');
+playlistUI.className = 'playlist-ui';
+document.body.appendChild(playlistUI);
+
+let playlistHideTimeout;
+
+function renderPlaylist() {
+    playlistUI.innerHTML = '';
+    playlist.forEach((track, index) => {
+        const item = document.createElement('div');
+        item.className = `playlist-item ${index === currentTrackIndex ? 'playing' : ''}`;
+        item.innerText = `${index + 1}. ${track.name}`;
+        item.onclick = (e) => {
+            e.stopPropagation();
+            currentTrackIndex = index;
+            loadTrack(currentTrackIndex);
+            audio.play();
+            playPauseBtn.innerText = "❚❚";
+            showPlaylistUI();
+        };
+        playlistUI.appendChild(item);
+    });
+    
+    const activeItem = playlistUI.querySelector('.playing');
+    if (activeItem) {
+        activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
+
+function showPlaylistUI() {
+    playlistUI.classList.add('active');
+    clearTimeout(playlistHideTimeout);
+    playlistHideTimeout = setTimeout(() => {
+        playlistUI.classList.remove('active');
+    }, 5000);
+}
+
+playlistBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (playlistUI.classList.contains('active')) {
+        playlistUI.classList.remove('active');
+    } else {
+        renderPlaylist();
+        showPlaylistUI();
+    }
+});
+
+playlistUI.addEventListener('mouseenter', showPlaylistUI);
+playlistUI.addEventListener('mouseleave', () => {
+    playlistHideTimeout = setTimeout(() => {
+        playlistUI.classList.remove('active');
+    }, 2000);
+});
+
+playlistUI.addEventListener('wheel', showPlaylistUI, { passive: true });
+playlistUI.addEventListener('touchstart', showPlaylistUI, { passive: true });
+playlistUI.addEventListener('touchmove', showPlaylistUI, { passive: true });
 
 updateCounter();
 changeNote();
