@@ -86,6 +86,7 @@ const playlist = [
     { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/Honvaodaydi.mp3" },
     { name: "Love my friend - Shayda", src: "music/Lovemyfriend.mp3" },
     { name: "Ngã tư không đèn - TRANG, KHOA VŨ", src: "music/Ngatukhongden.mp3" },
+    { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/Nuocmatemlaubangtinhyeumoi.mp3" },
     { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/Songchohetdoithanhxuan3.mp3" },
     { name: "Tâm trí lang thang - Ánh Sáng AZA, Negav", src: "music/Tamtrilangthang.mp3" },
     { name: "Thắc mắc (MĐX) - Thịnh Suy", src: "music/Thacmac(MĐX).mp3" },
