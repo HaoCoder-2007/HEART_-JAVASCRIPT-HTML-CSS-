@@ -341,6 +341,7 @@ input[type="range"] {
     color: #d45b79;
     font-size: 20px;
 }
+
 #playlist-btn:hover { color: #c54c6a; }
 
 @keyframes fadeIn {

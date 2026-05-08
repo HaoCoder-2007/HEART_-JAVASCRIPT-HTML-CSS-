@@ -108,6 +108,69 @@ const currentTimeEl = document.getElementById("current-time");
 const durationTimeEl = document.getElementById("duration-time");
 const volumeBar = document.getElementById("volume-bar");
 
+let audioCtx;
+let analyser;
+let source;
+let dataArray;
+let canvasCtx;
+let visualizerCanvas;
+
+function initVisualizer() {
+    if (audioCtx) return;
+
+    visualizerCanvas = document.getElementById('audio-visualizer');
+    if (!visualizerCanvas) return;
+    
+    canvasCtx = visualizerCanvas.getContext('2d');
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    
+    source = audioCtx.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    
+    analyser.fftSize = 256;
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    
+    function resize() {
+        visualizerCanvas.width = window.innerWidth;
+        visualizerCanvas.height = 150;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+    
+    drawVisualizer();
+}
+
+function drawVisualizer() {
+    requestAnimationFrame(drawVisualizer);
+    
+    canvasCtx.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
+    
+    if (!audioCtx || audio.paused) return;
+    
+    analyser.getByteFrequencyData(dataArray);
+    
+    const bufferLength = analyser.frequencyBinCount;
+    const barWidth = visualizerCanvas.width / bufferLength;
+    let barHeight;
+    let x = 0;
+    
+    for (let i = 0; i < bufferLength; i++) {
+        barHeight = (dataArray[i] / 255) * visualizerCanvas.height;
+        
+        // Tạo dải màu đồng bộ với tone màu chữ (#ff85a2)
+        const r = 255;
+        const g = 133 + (dataArray[i] / 2);
+        const b = 162 + (dataArray[i] / 3);
+        
+        canvasCtx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.8)`;
+        canvasCtx.fillRect(x, visualizerCanvas.height - barHeight, barWidth - 1, barHeight);
+        
+        x += barWidth;
+    }
+}
+
 function loadTrack(index) {
     const track = playlist[index];
     audio.src = track.src;
@@ -118,6 +181,10 @@ function loadTrack(index) {
 }
 
 playPauseBtn.addEventListener("click", () => {
+    initVisualizer();
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
     if (audio.paused) {
         audio.play();
         playPauseBtn.innerText = "❚❚";
@@ -130,6 +197,10 @@ playPauseBtn.addEventListener("click", () => {
 document.getElementById("nextBtn").addEventListener("click", () => {
     currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
     loadTrack(currentTrackIndex);
+    initVisualizer();
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
     audio.play();
     playPauseBtn.innerText = "❚❚";
 });
@@ -137,6 +208,10 @@ document.getElementById("nextBtn").addEventListener("click", () => {
 document.getElementById("prevBtn").addEventListener("click", () => {
     currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
     loadTrack(currentTrackIndex);
+    initVisualizer();
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
     audio.play();
     playPauseBtn.innerText = "❚❚";
 });
@@ -256,6 +331,10 @@ function renderPlaylist() {
             e.stopPropagation();
             currentTrackIndex = index;
             loadTrack(currentTrackIndex);
+            initVisualizer();
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
             audio.play();
             playPauseBtn.innerText = "❚❚";
             showPlaylistUI();
