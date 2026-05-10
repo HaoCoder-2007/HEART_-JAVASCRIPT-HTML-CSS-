@@ -16,8 +16,8 @@ const notes = [
 ];
 
 const memories = [
-    { src: "picture/dalat2025.jpg", text: "Đà Lạt (19/01/2025)" },
-    { src: "picture/firstdate.jpg", text: "First date (25/02/2025)" },
+    { src: "picture/memory/dalat2025.jpg", text: "Đà Lạt (19/01/2025)" },
+    { src: "picture/memory/firstdate.jpg", text: "First date (25/02/2025)" },
 ];
 
 const playlist = [
