@@ -15,6 +15,42 @@ const notes = [
     "\"<3\""
 ];
 
+const memories = [
+    { src: "picture/dalat2025.jpg", text: "Đà Lạt (19/01/2025)" },
+    { src: "picture/firstdate.jpg", text: "First date (25/02/2025)" },
+];
+
+const playlist = [
+    { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/Aingoaianh.mp3" },
+    { name: "Chạy khỏi thế giới này - Da LAB, Phương Ly", src: "music/Chaykhoithegioinay.mp3" },
+    { name: "Chạy theo em - Nhã, Mihuman", src: "music/Chaytheoem.mp3" },
+    { name: "Chuyện đôi ta - Da LAB, Muộii", src: "music/Chuyendoita.mp3" },
+    { name: "Cứ chill thôi - Chillies, SUNI, Rhymastic", src: "music/Cuchillthoi.mp3" },
+    { name: "Đóa hoa - TeuYungBoy, BIG WIND, DONAL", src: "music/Doahoa.mp3" },
+    { name: "Đôi mắt kẻ tình si - GREY D", src: "music/Doimatketinhsi.mp3" },
+    { name: "Đưa em về nhà - GREY D, Chillies", src: "music/Duaemvenha.mp3" },
+    { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/Ghetemdilamon.mp3" },
+    { name: "Haydeanhduoccungemdau - SIVAN, Kai Đinh", src: "music/Haydeanhduoccungemdau.mp3" },
+    { name: "Hông về tình yêu - Khoi Vu", src: "music/Hongvetinhyeu.mp3" },
+    { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/Honvaodaydi.mp3" },
+    { name: "I love you 3000 - Stephanie Poetri", src: "music/Iloveyou3000.mp3" },
+    { name: "Love my friend - Shayda", src: "music/Lovemyfriend.mp3" },
+    { name: "Ngã tư không đèn - TRANG, KHOA VŨ", src: "music/Ngatukhongden.mp3" },
+    { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/Nuocmatemlaubangtinhyeumoi.mp3" },
+    { name: "Sinh ra đã là thứ đối lập nhau - Da LAB, Badbies", src: "music/Sinhradalathudoilapnhau.mp3" },
+    { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/Songchohetdoithanhxuan3.mp3" },
+    { name: "Tâm trí lang thang - Ánh Sáng AZA, Negav", src: "music/Tamtrilangthang.mp3" },
+    { name: "Thắc mắc (MĐX) - Thịnh Suy", src: "music/Thacmac(MĐX).mp3" },
+    { name: "Thanh xuân - Da LAB", src: "music/Thanhxuan.mp3" },
+    { name: "Thích quá rùi nà - Tlinh, Trung Trần", src: "music/Thichquaruina.mp3" },
+    { name: "Tìm thấy nhau - SIVAN", src: "music/Timthaynhau.mp3" },
+    { name: "Tiny love - Thịnh Suy", src: "music/Tinylove.mp3" },
+    { name: "Trafalgar D.Law -  Don Raemo, Bewata", src: "music/Trafalgardlaw.mp3" },
+    { name: "Vaicaunoicokhiennguoithaydoi - GREY D, Tlinh", src: "music/Vaicaunoicokhiennguoithaydoi.mp3" },
+    { name: "Vạn vật như muốn ta bên nhau - RIO", src: "music/Vanvatnhumuontabennhau.mp3" },
+    { name: "Và thế giới đã mất đi một người cô đơn - Marzuz, Changg", src: "music/Vathegioidamatdimotnguoicodon.mp3" },
+];
+
 function updateCounter() {
     const now = new Date();
     const startDate = new Date(F_YEAR, F_MONTH - 1, F_DAY);
@@ -75,30 +111,6 @@ function changeNote() {
     }, 500);
 }
 
-const playlist = [
-    { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/Aingoaianh.mp3" },
-    { name: "Chạy theo em - Nhã, Mihuman", src: "music/Chaytheoem.mp3" },
-    { name: "Đóa hoa - TeuYungBoy, BIG WIND, DONAL", src: "music/Doahoa.mp3" },
-    { name: "Đôi mắt kẻ tình si - GREY D", src: "music/Doimatketinhsi.mp3" },
-    { name: "Đưa em về nhà - GREY D, Chillies", src: "music/Duaemvenha.mp3" },
-    { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/Ghetemdilamon.mp3" },
-    { name: "Hông về tình yêu - Khoi Vu", src: "music/Hongvetinhyeu.mp3" },
-    { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/Honvaodaydi.mp3" },
-    { name: "Love my friend - Shayda", src: "music/Lovemyfriend.mp3" },
-    { name: "Ngã tư không đèn - TRANG, KHOA VŨ", src: "music/Ngatukhongden.mp3" },
-    { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/Nuocmatemlaubangtinhyeumoi.mp3" },
-    { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/Songchohetdoithanhxuan3.mp3" },
-    { name: "Tâm trí lang thang - Ánh Sáng AZA, Negav", src: "music/Tamtrilangthang.mp3" },
-    { name: "Thắc mắc (MĐX) - Thịnh Suy", src: "music/Thacmac(MĐX).mp3" },
-    { name: "Thích quá rùi nà - Tlinh, Trung Trần", src: "music/Thichquaruina.mp3" },
-    { name: "Tìm thấy nhau - SIVAN", src: "music/Timthaynhau.mp3" },
-    { name: "Tiny love - Thịnh Suy", src: "music/Tinylove.mp3" },
-    { name: "Trafalgar D.Law -  Don Raemo, Bewata", src: "music/Trafalgardlaw.mp3" },
-    { name: "Vaicaunoicokhiennguoithaydoi - GREY D, Tlinh", src: "music/Vaicaunoicokhiennguoithaydoi.mp3" },
-    { name: "Vạn vật như muốn ta bên nhau - RIO", src: "music/Vanvatnhumuontabennhau.mp3" },
-    { name: "Và thế giới đã mất đi một người cô đơn - Marzuz, Changg", src: "music/Vathegioidamatdimotnguoicodon.mp3" },
-];
-
 let currentTrackIndex = 0;
 const audio = document.getElementById("myAudio");
 const playPauseBtn = document.getElementById("playPauseBtn");
@@ -121,6 +133,10 @@ function initVisualizer() {
     visualizerCanvas = document.getElementById('audio-visualizer');
     if (!visualizerCanvas) return;
     
+    visualizerCanvas.style.opacity = '0';
+    visualizerCanvas.style.transition = 'opacity 0.5s ease';
+    void visualizerCanvas.offsetWidth;
+
     canvasCtx = visualizerCanvas.getContext('2d');
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     analyser = audioCtx.createAnalyser();
@@ -179,16 +195,75 @@ function loadTrack(index) {
     if (typeof renderPlaylist === 'function') renderPlaylist();
 }
 
+let fadeInterval;
+
+function playMusic() {
+    if (visualizerCanvas) visualizerCanvas.style.opacity = '1';
+    clearInterval(fadeInterval);
+    const targetVolume = volumeBar.value / 100;
+    
+    if (targetVolume === 0) {
+        audio.volume = 0;
+        audio.play();
+        return;
+    }
+
+    let currentVol = audio.volume;
+    if (audio.paused) {
+        currentVol = 0;
+        audio.volume = 0;
+    }
+    
+    audio.play();
+    const fadeStep = targetVolume / 20;
+    
+    fadeInterval = setInterval(() => {
+        currentVol += fadeStep;
+        if (currentVol >= targetVolume) {
+            audio.volume = targetVolume;
+            clearInterval(fadeInterval);
+        } else {
+            audio.volume = currentVol;
+        }
+    }, 25);
+}
+
+function pauseMusic() {
+    if (visualizerCanvas) visualizerCanvas.style.opacity = '0';
+    clearInterval(fadeInterval);
+    const targetVolume = volumeBar.value / 100;
+    let currentVol = audio.volume;
+    
+    if (currentVol <= 0) {
+        audio.pause();
+        return;
+    }
+
+    const fadeStep = currentVol / 20;
+    
+    fadeInterval = setInterval(() => {
+        currentVol -= fadeStep;
+        if (currentVol <= 0) {
+            audio.volume = 0;
+            audio.pause();
+            audio.volume = targetVolume;
+            clearInterval(fadeInterval);
+        } else {
+            audio.volume = currentVol;
+        }
+    }, 25); 
+}
+
 playPauseBtn.addEventListener("click", () => {
     initVisualizer();
     if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
     if (audio.paused) {
-        audio.play();
+        playMusic();
         playPauseBtn.innerText = "❚❚";
     } else {
-        audio.pause();
+        pauseMusic();
         playPauseBtn.innerText = "▶︎";
     }
 });
@@ -223,7 +298,7 @@ document.getElementById("nextBtn").addEventListener("click", () => {
     if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
-    audio.play();
+    playMusic();
     playPauseBtn.innerText = "❚❚";
 });
 
@@ -234,7 +309,7 @@ document.getElementById("prevBtn").addEventListener("click", () => {
     if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
-    audio.play();
+    playMusic();
     playPauseBtn.innerText = "❚❚";
 });
 
@@ -262,6 +337,7 @@ seekBar.addEventListener("input", () => {
 });
 
 volumeBar.addEventListener("input", () => {
+    clearInterval(fadeInterval);
     audio.volume = volumeBar.value / 100;
     const volIcon = document.getElementById("vol-icon");
     volIcon.innerText = audio.volume === 0 ? "🕪×" : (audio.volume < 0.5 ? "🔉" : "🕪×");
@@ -316,6 +392,67 @@ function createLeaf() {
     setTimeout(() => { leaf.remove(); }, 10000);
 }
 
+let polaroidInterval;
+let currentMemoryIndex = -1;
+
+function showNextPolaroid() {
+    if (typeof memories === 'undefined' || memories.length === 0) return;
+
+    document.querySelectorAll('.polaroid-card').forEach(p => {
+        p.style.opacity = '0';
+        p.style.transform = 'scale(0.8) rotate(5deg)';
+        p.style.pointerEvents = 'none'; 
+        setTimeout(() => p.remove(), 500);
+    });
+
+    currentMemoryIndex = (currentMemoryIndex + 1) % memories.length;
+    const memory = memories[currentMemoryIndex];
+
+    const polaroid = document.createElement('div');
+    polaroid.className = 'polaroid-card';
+    
+    polaroid.style.opacity = '0';
+    polaroid.style.transform = `scale(0.8) rotate(-10deg)`;
+
+    const inner = document.createElement('div');
+    inner.className = 'polaroid-inner';
+    
+    const front = document.createElement('div');
+    front.className = 'polaroid-front';
+    
+    const img = document.createElement('img');
+    img.src = memory.src;
+    img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
+    
+    const pin = document.createElement('div');
+    pin.className = 'polaroid-pin';
+    pin.innerHTML = '📌';
+    
+    const textFront = document.createElement('div');
+    textFront.className = 'polaroid-text-front';
+    textFront.innerText = memory.text;
+    
+    front.appendChild(pin);
+    front.appendChild(img);
+    front.appendChild(textFront);
+
+    inner.appendChild(front);
+    polaroid.appendChild(inner);
+    document.body.appendChild(polaroid);
+
+    setTimeout(() => {
+        polaroid.style.opacity = '1';
+        polaroid.style.transform = `scale(1) rotate(-3deg)`;
+    }, 50);
+
+    polaroid.addEventListener('click', (e) => {
+        showNextPolaroid();
+    });
+
+    clearInterval(polaroidInterval);
+    polaroidInterval = setInterval(showNextPolaroid, 30000);
+}
+
 window.addEventListener('click', function(e) {
     const ripple = document.createElement('div');
     ripple.classList.add('ripple');
@@ -357,7 +494,7 @@ function renderPlaylist() {
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-            audio.play();
+            playMusic();
             playPauseBtn.innerText = "❚❚";
             showPlaylistUI();
         };
@@ -402,6 +539,7 @@ playlistUI.addEventListener('touchmove', showPlaylistUI, { passive: true });
 updateCounter();
 changeNote();
 showPlayer();
+showNextPolaroid();
 setInterval(createLeaf, 500);
 setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
