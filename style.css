@@ -282,9 +282,9 @@ input[type="range"] {
     width: 280px;
     max-width: 80vw;
     max-height: 350px;
-    background: rgba(20, 20, 20, 0.95);
+    background: rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 51, 102, 0.4);
+    border: 1px solid rgba(255, 51, 102, 0.2);
     border-radius: 15px;
     padding: 10px;
     overflow-y: auto;
