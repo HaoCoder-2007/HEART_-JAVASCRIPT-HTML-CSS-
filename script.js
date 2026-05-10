@@ -159,7 +159,6 @@ function drawVisualizer() {
     for (let i = 0; i < bufferLength; i++) {
         barHeight = (dataArray[i] / 255) * visualizerCanvas.height;
         
-        // Tạo dải màu đồng bộ với tone màu chữ (#ff85a2)
         const r = 255;
         const g = 133 + (dataArray[i] / 2);
         const b = 162 + (dataArray[i] / 3);
@@ -191,6 +190,29 @@ playPauseBtn.addEventListener("click", () => {
     } else {
         audio.pause();
         playPauseBtn.innerText = "▶︎";
+    }
+});
+
+window.addEventListener("keydown", (e) => {
+    if (e.code === "Space") {
+        e.preventDefault();
+        playPauseBtn.click();
+    } else if (e.code === "ArrowRight") {
+        e.preventDefault();
+        if (!isNaN(audio.duration)) {
+            audio.currentTime = Math.min(audio.currentTime + 5, audio.duration);
+        }
+    } else if (e.code === "ArrowLeft") {
+        e.preventDefault();
+        audio.currentTime = Math.max(audio.currentTime - 5, 0);
+    } else if (e.code === "ArrowUp") {
+        e.preventDefault();
+        volumeBar.value = Math.min(parseInt(volumeBar.value, 10) + 10, 100);
+        volumeBar.dispatchEvent(new Event("input"));
+    } else if (e.code === "ArrowDown") {
+        e.preventDefault();
+        volumeBar.value = Math.max(parseInt(volumeBar.value, 10) - 10, 0);
+        volumeBar.dispatchEvent(new Event("input"));
     }
 });
 
