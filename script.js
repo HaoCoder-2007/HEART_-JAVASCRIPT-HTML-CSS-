@@ -373,8 +373,6 @@ seekBar.addEventListener("input", () => {
 volumeBar.addEventListener("input", () => {
     clearInterval(fadeInterval);
     audio.volume = volumeBar.value / 100;
-    const volIcon = document.getElementById("vol-icon");
-    volIcon.innerText = audio.volume === 0 ? "🕪×" : (audio.volume < 0.5 ? "🔉" : "🕪×");
 });
 
 window.addEventListener('load', () => {
@@ -507,17 +505,20 @@ const playlistBtn = document.createElement("button");
 playlistBtn.className = "nav-btn";
 playlistBtn.id = "playlist-btn";
 playlistBtn.innerHTML = "☰";
+playlistBtn.title = "Playlist";
 nextBtn.parentNode.insertBefore(playlistBtn, nextBtn.nextSibling);
 
 const shuffleBtn = document.createElement("button");
 shuffleBtn.className = "nav-btn";
 shuffleBtn.id = "shuffle-btn";
 shuffleBtn.innerHTML = "↔";
+shuffleBtn.title = "Linear";
 nextBtn.parentNode.insertBefore(shuffleBtn, playlistBtn);
 
 shuffleBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     isShuffle = !isShuffle;
+    shuffleBtn.title = isShuffle ? "Shuffle" : "Linear";
     shuffleBtn.innerHTML = isShuffle ? "⇆" : "↔";
     if (isShuffle) {
         unplayedTracks = Array.from({length: playlist.length}, (_, i) => i).filter(i => i !== currentTrackIndex);
