@@ -2,22 +2,25 @@ const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025;
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007;
 
 const notes = [
-    "\"Có em rồi, những ngày bình thường cũng thành đặc biệt\"",
+    "\"Có em rồi, ngày bình thường cũng thành đặc biệt\"",
     "\"Em là lý do anh mỉm cười nhiều hơn mỗi ngày\"",
     "\"Cảm ơn em đã xuất hiện trong cuộc đời anh\"",
-    "\"Hôm nay em trông rất tuyệt vời, anh chắc chắn thế!\"",
-    "\"Dù có chuyện gì, anh vẫn luôn ở đây bên cạnh em\"",
-    "\"Cười lên nhé, vì nụ cười của em là đẹp nhất!\"",
+    "\"Hôm nay em trông rất tuyệt vời\"",
+    "\"Dù có chuyện gì, anh vẫn luôn ở đây bên em\"",
+    "\"Cười nhiều lên nhé, vì nụ cười của em là đẹp nhất!\"",
     "\"Nếu là mèo, anh sẽ dành 9 mạng ở bên em\"",
     "\"Nhìn Đông nhìn Tây không bằng nhìn em một giây\"",
-    "\"Anh yêu em\"",
     "\"Tay anh ấm lắm, em muốn nắm không?\"",
-    "\"<3\""
+    "\"Anh yêu em\"",
+    "\"Anh nhớ em\"",
+    "\"<3\"",
+    // "\"...\"",
 ];
 
 const memories = [
     { src: "picture/memory/dalat2025.jpg", text: "Đà Lạt (19/01/2025)" },
     { src: "picture/memory/firstdate.jpg", text: "First date (25/02/2026)" },
+    // { src: "picture/memory/.jpg", text: "" },
 ];
 
 const playlist = [
@@ -511,15 +514,16 @@ nextBtn.parentNode.insertBefore(playlistBtn, nextBtn.nextSibling);
 const shuffleBtn = document.createElement("button");
 shuffleBtn.className = "nav-btn";
 shuffleBtn.id = "shuffle-btn";
-shuffleBtn.innerHTML = "↔";
+shuffleBtn.innerHTML = "⇆";
 shuffleBtn.title = "Linear";
+shuffleBtn.style.color = "white";
 nextBtn.parentNode.insertBefore(shuffleBtn, playlistBtn);
 
 shuffleBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     isShuffle = !isShuffle;
     shuffleBtn.title = isShuffle ? "Shuffle" : "Linear";
-    shuffleBtn.innerHTML = isShuffle ? "⇆" : "↔";
+    shuffleBtn.style.color = isShuffle ? "#d45b79" : "white";
     if (isShuffle) {
         unplayedTracks = Array.from({length: playlist.length}, (_, i) => i).filter(i => i !== currentTrackIndex);
         trackHistory = [currentTrackIndex];
