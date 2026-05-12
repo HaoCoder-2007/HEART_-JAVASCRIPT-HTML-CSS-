@@ -342,7 +342,15 @@ input[type="range"] {
     font-size: 20px;
 }
 
-#playlist-btn:hover { color: #c54c6a; }
+#shuffle-btn {
+    position: absolute;
+    right: 35px;
+    color: #d45b79;
+    font-size: 20px;
+}
+
+#playlist-btn:hover,
+#shuffle-btn:hover { color: #c54c6a; }
 
 .polaroid-card {
     position: fixed;
