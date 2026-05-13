@@ -25,6 +25,7 @@ const memories = [
 
 const playlist = [
     { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/Aingoaianh.mp3" },
+    { name: "Ấm - sweet liquor", src: "music/Am.mp3" },
     { name: "Beautiful in white - Westlife", src: "music/Beautifulinwhite.mp3" },
     { name: "Chạy khỏi thế giới này - Da LAB, Phương Ly", src: "music/Chaykhoithegioinay.mp3" },
     { name: "Chạy theo em - Nhã, Mihuman", src: "music/Chaytheoem.mp3" },
@@ -38,7 +39,9 @@ const playlist = [
     { name: "Hông về tình yêu - Khoi Vu", src: "music/Hongvetinhyeu.mp3" },
     { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/Honvaodaydi.mp3" },
     { name: "I love you 3000 - Stephanie Poetri", src: "music/Iloveyou3000.mp3" },
+    { name: "Không buông - Hngle, Ari", src: "music/Khongbuong.mp3" },
     { name: "Love my friend - Shayda", src: "music/Lovemyfriend.mp3" },
+    { name: "Nằm bên anh - Minh Đinh, Hà An Huy", src: "music/Nambenanh.mp3" },
     { name: "Ngã tư không đèn - TRANG, KHOA VŨ", src: "music/Ngatukhongden.mp3" },
     { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/Nuocmatemlaubangtinhyeumoi.mp3" },
     { name: "Perfect - Ed Sheeran", src: "music/Perfect.mp3" },
@@ -56,6 +59,7 @@ const playlist = [
     { name: "Vaicaunoicokhiennguoithaydoi - GREY D, Tlinh", src: "music/Vaicaunoicokhiennguoithaydoi.mp3" },
     { name: "Vạn vật như muốn ta bên nhau - RIO", src: "music/Vanvatnhumuontabennhau.mp3" },
     { name: "Và thế giới đã mất đi một người cô đơn - Marzuz, Changg", src: "music/Vathegioidamatdimotnguoicodon.mp3" },
+    { name: "Wrong times - Dangrangto, Puppy", src: "music/Wrongtimes.mp3" },
     // { name: "", src: "music/.mp3" },
 ];
 
