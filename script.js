@@ -23,45 +23,67 @@ const memories = [
     // { src: "picture/memory/.jpg", text: "" },
 ];
 
-const playlist = [
-    { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/Aingoaianh.mp3" },
-    { name: "Ấm - sweet liquor", src: "music/Am.mp3" },
-    { name: "Beautiful in white - Westlife", src: "music/Beautifulinwhite.mp3" },
-    { name: "Chạy khỏi thế giới này - Da LAB, Phương Ly", src: "music/Chaykhoithegioinay.mp3" },
-    { name: "Chạy theo em - Nhã, Mihuman", src: "music/Chaytheoem.mp3" },
-    { name: "Chuyện đôi ta - Da LAB, Muộii", src: "music/Chuyendoita.mp3" },
-    { name: "Cứ chill thôi - Chillies, SUNI, Rhymastic", src: "music/Cuchillthoi.mp3" },
-    { name: "Đóa hoa - TeuYungBoy, BIG WIND, DONAL", src: "music/Doahoa.mp3" },
-    { name: "Đôi mắt kẻ tình si - GREY D", src: "music/Doimatketinhsi.mp3" },
-    { name: "Đưa em về nhà - GREY D, Chillies", src: "music/Duaemvenha.mp3" },
-    { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/Ghetemdilamon.mp3" },
-    { name: "Haydeanhduoccungemdau - SIVAN, Kai Đinh", src: "music/Haydeanhduoccungemdau.mp3" },
-    { name: "Hông về tình yêu - Khoi Vu", src: "music/Hongvetinhyeu.mp3" },
-    { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/Honvaodaydi.mp3" },
-    { name: "I love you 3000 - Stephanie Poetri", src: "music/Iloveyou3000.mp3" },
-    { name: "Không buông - Hngle, Ari", src: "music/Khongbuong.mp3" },
-    { name: "Love my friend - Shayda", src: "music/Lovemyfriend.mp3" },
-    { name: "Nằm bên anh - Minh Đinh, Hà An Huy", src: "music/Nambenanh.mp3" },
-    { name: "Ngã tư không đèn - TRANG, KHOA VŨ", src: "music/Ngatukhongden.mp3" },
-    { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/Nuocmatemlaubangtinhyeumoi.mp3" },
-    { name: "Perfect - Ed Sheeran", src: "music/Perfect.mp3" },
-    { name: "Sinh ra đã là thứ đối lập nhau - Da LAB, Badbies", src: "music/Sinhradalathudoilapnhau.mp3" },
-    { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/Songchohetdoithanhxuan3.mp3" },
-    { name: "Tâm trí lang thang - Ánh Sáng AZA, Negav", src: "music/Tamtrilangthang.mp3" },
-    { name: "Thắc mắc (MĐX) - Thịnh Suy", src: "music/Thacmac(MĐX).mp3" },
-    { name: "Thằng điên - JustaTee, Phương Ly", src: "music/Thangdien.mp3" },
-    { name: "Thanh xuân - Da LAB", src: "music/Thanhxuan.mp3" },
-    { name: "Thích quá rùi nà - Tlinh, Trung Trần", src: "music/Thichquaruina.mp3" },
-    { name: "Tìm thấy nhau - SIVAN", src: "music/Timthaynhau.mp3" },
-    { name: "Tiny love - Thịnh Suy", src: "music/Tinylove.mp3" },
-    { name: "To the moon - Hooligan", src: "music/Tothemoon.mp3" },
-    { name: "Trafalgar D.Law -  Don Raemo, Bewata", src: "music/Trafalgardlaw.mp3" },
-    { name: "Vaicaunoicokhiennguoithaydoi - GREY D, Tlinh", src: "music/Vaicaunoicokhiennguoithaydoi.mp3" },
-    { name: "Vạn vật như muốn ta bên nhau - RIO", src: "music/Vanvatnhumuontabennhau.mp3" },
-    { name: "Và thế giới đã mất đi một người cô đơn - Marzuz, Changg", src: "music/Vathegioidamatdimotnguoicodon.mp3" },
-    { name: "Wrong times - Dangrangto, Puppy", src: "music/Wrongtimes.mp3" },
-    // { name: "", src: "music/.mp3" },
+const vnTracks = [
+    { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/VN/Aingoaianh.mp3" },
+    { name: "Ấm - sweet liquor", src: "music/VN/Am.mp3" },
+    { name: "Chạy khỏi thế giới này - Da LAB, Phương Ly", src: "music/VN/Chaykhoithegioinay.mp3" },
+    { name: "Chạy theo em - Nhã, Mihuman", src: "music/VN/Chaytheoem.mp3" },
+    { name: "Chuyện đôi ta - Da LAB, Muộii", src: "music/VN/Chuyendoita.mp3" },
+    { name: "Cứ chill thôi - Chillies, SUNI, Rhymastic", src: "music/VN/Cuchillthoi.mp3" },
+    { name: "Đóa hoa - TeuYungBoy, BIG WIND, DONAL", src: "music/VN/Doahoa.mp3" },
+    { name: "Đôi mắt kẻ tình si - GREY D", src: "music/VN/Doimatketinhsi.mp3" },
+    { name: "Đưa em về nhà - GREY D, Chillies", src: "music/VN/Duaemvenha.mp3" },
+    { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/VN/Ghetemdilamon.mp3" },
+    { name: "Haydeanhduoccungemdau - SIVAN, Kai Đinh", src: "music/VN/Haydeanhduoccungemdau.mp3" },
+    { name: "Hông về tình yêu - Khoi Vu", src: "music/VN/Hongvetinhyeu.mp3" },
+    { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/VN/Honvaodaydi.mp3" },
+    { name: "Không buông - Hngle, Ari", src: "music/VN/Khongbuong.mp3" },
+    { name: "Love my friend - Shayda", src: "music/VN/Lovemyfriend.mp3" },
+    { name: "Nằm bên anh - Minh Đinh, Hà An Huy", src: "music/VN/Nambenanh.mp3" },
+    { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/VN/Nuocmatemlaubangtinhyeumoi.mp3" },
+    { name: "Sinh ra đã là thứ đối lập nhau - Da LAB, Badbies", src: "music/VN/Sinhradalathudoilapnhau.mp3" },
+    { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/VN/Songchohetdoithanhxuan3.mp3" },
+    { name: "Tâm trí lang thang - Ánh Sáng AZA, Negav", src: "music/VN/Tamtrilangthang.mp3" },
+    { name: "Thắc mắc (MĐX) - Thịnh Suy", src: "music/VN/Thacmac(MĐX).mp3" },
+    { name: "Thằng điên - JustaTee, Phương Ly", src: "music/VN/Thangdien.mp3" },
+    { name: "Thanh xuân - Da LAB", src: "music/VN/Thanhxuan.mp3" },
+    { name: "Thích quá rùi nà - Tlinh, Trung Trần", src: "music/VN/Thichquaruina.mp3" },
+    { name: "Tìm thấy nhau - SIVAN", src: "music/VN/Timthaynhau.mp3" },
+    { name: "Tiny love - Thịnh Suy", src: "music/VN/Tinylove.mp3" },
+    { name: "To the moon - Hooligan", src: "music/VN/Tothemoon.mp3" },
+    { name: "Trafalgar D.Law -  Don Raemo, Bewata", src: "music/VN/Trafalgardlaw.mp3" },
+    { name: "Vaicaunoicokhiennguoithaydoi - GREY D, Tlinh", src: "music/VN/Vaicaunoicokhiennguoithaydoi.mp3" },
+    { name: "Vạn vật như muốn ta bên nhau - RIO", src: "music/VN/Vanvatnhumuontabennhau.mp3" },
+    { name: "Và thế giới đã mất đi một người cô đơn - Marzuz, Changg", src: "music/VN/Vathegioidamatdimotnguoicodon.mp3" },
+    { name: "Wrong times - Dangrangto, Puppy", src: "music/VN/Wrongtimes.mp3" },
+    //{ name: "", src: "music/VN/.mp3" },
 ];
+
+const usukTracks = [
+    { name: "Beautiful in white - Westlife", src: "music/US_UK/Beautifulinwhite.mp3" },
+    { name: "Hate you - Poylow, BAUWZ", src: "music/US_UK/Hateyou.mp3" },
+    { name: "I love you 3000 - Stephanie Poetri", src: "music/US_UK/Iloveyou3000.mp3" },
+    { name: "Perfect - Ed Sheeran", src: "music/US_UK/Perfect.mp3" },
+    { name: "Save me - Đeamn", src: "music/US_UK/Saveme.mp3" },
+    //{ name: "", src: "music/US_UK/.mp3" },
+];
+
+const edmTracks = [
+    { name: "Masked Heroes - Vexento", src: "music/EDM/Maskedheroes.mp3" },
+    { name: "Frisbee - Ahxello", src: "music/EDM/Frisbee.mp3" },
+    //{ name: "", src: "music/EDM/.mp3" },
+];
+
+const playlistsData = [
+    { name: "Tất cả", tracks: [...vnTracks, ...usukTracks] },
+    { name: "Nhạc Việt", tracks: vnTracks },
+    { name: "Nhạc US-UK", tracks: usukTracks },
+    { name: "Nhạc EDM", tracks: edmTracks },
+    //{ name: "", tracks:  },
+];
+
+let currentPlaylistDataIndex = 0;
+let playlist = playlistsData[currentPlaylistDataIndex].tracks;
 
 function updateCounter() {
     const now = new Date();
@@ -307,6 +329,7 @@ window.addEventListener("keydown", (e) => {
 });
 
 document.getElementById("nextBtn").addEventListener("click", () => {
+    if (playlist.length === 0) return;
     if (!isShuffle) {
         currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
     } else {
@@ -331,6 +354,7 @@ document.getElementById("nextBtn").addEventListener("click", () => {
 });
 
 document.getElementById("prevBtn").addEventListener("click", () => {
+    if (playlist.length === 0) return;
     if (!isShuffle) {
         currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
     } else {
@@ -355,7 +379,7 @@ document.getElementById("prevBtn").addEventListener("click", () => {
 });
 
 audio.onended = () => {
-    document.getElementById("nextBtn").click();
+    if (playlist.length > 0) document.getElementById("nextBtn").click();
 };
 
 function formatTime(seconds) {
@@ -525,6 +549,7 @@ nextBtn.parentNode.insertBefore(shuffleBtn, playlistBtn);
 
 shuffleBtn.addEventListener("click", (e) => {
     e.stopPropagation();
+    if (playlist.length === 0) return;
     isShuffle = !isShuffle;
     shuffleBtn.title = isShuffle ? "Shuffle" : "Linear";
     shuffleBtn.style.color = isShuffle ? "#d45b79" : "white";
@@ -540,37 +565,161 @@ document.body.appendChild(playlistUI);
 
 let playlistHideTimeout;
 
+const playlistStyle = document.createElement('style');
+playlistStyle.innerHTML = `
+    .playlist-tabs {
+        display: block;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        padding: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        width: 100%;
+        box-sizing: border-box;
+        flex-shrink: 0;
+    }
+    .playlist-tabs::-webkit-scrollbar {
+        display: none;
+    }
+    .playlist-tab {
+        display: inline-block;
+        background: rgba(0, 0, 0, 0.3);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        padding: 8px 18px;
+        margin-right: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s;
+        box-sizing: border-box;
+        vertical-align: middle;
+    }
+    .playlist-tab.active, .playlist-tab:hover {
+        background: #d45b79;
+        color: #fff;
+        border-color: #d45b79;
+    }
+    .playlist-tracks {
+        max-height: calc(100% - 60px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        width: 100%;
+        box-sizing: border-box;
+    }
+`;
+document.head.appendChild(playlistStyle);
+
+function changePlaylist(index) {
+    if (currentPlaylistDataIndex === index) return;
+    currentPlaylistDataIndex = index;
+    playlist = playlistsData[currentPlaylistDataIndex].tracks;
+    currentTrackIndex = 0;
+
+    if (playlist.length === 0) {
+        audio.pause();
+        audio.src = "";
+        trackName.innerText = "...";
+        currentTimeEl.innerText = "00:00";
+        if (durationTimeEl) durationTimeEl.innerText = "00:00";
+        playPauseBtn.innerText = "▶︎";
+        unplayedTracks = [];
+        trackHistory = [];
+        renderPlaylist();
+        return;
+    }
+
+    if (isShuffle) {
+        unplayedTracks = Array.from({length: playlist.length}, (_, i) => i);
+        const randomIndex = Math.floor(Math.random() * unplayedTracks.length);
+        currentTrackIndex = unplayedTracks[randomIndex];
+        unplayedTracks.splice(randomIndex, 1);
+        trackHistory = [currentTrackIndex];
+    } else {
+        trackHistory = [];
+    }
+
+    loadTrack(currentTrackIndex);
+    initVisualizer();
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    playMusic();
+    playPauseBtn.innerText = "❚❚";
+    renderPlaylist();
+}
+
 function renderPlaylist() {
     playlistUI.innerHTML = '';
-    playlist.forEach((track, index) => {
-        const item = document.createElement('div');
-        item.className = `playlist-item ${index === currentTrackIndex ? 'playing' : ''}`;
-        item.innerText = `${index + 1}. ${track.name}`;
-        item.onclick = (e) => {
+    
+    const header = document.createElement('div');
+    header.className = 'playlist-tabs';
+    
+    header.addEventListener('wheel', (e) => {
+        if (e.deltaY !== 0) {
+            e.preventDefault();
+            header.scrollLeft += e.deltaY * 0.5;
+        }
+    }, { passive: false });
+    
+    playlistsData.forEach((pl, idx) => {
+        const tab = document.createElement('button');
+        tab.className = `playlist-tab ${idx === currentPlaylistDataIndex ? 'active' : ''}`;
+        tab.innerText = pl.name;
+        tab.onclick = (e) => {
             e.stopPropagation();
-            currentTrackIndex = index;
-            if (isShuffle) {
-                const unplayedIndex = unplayedTracks.indexOf(currentTrackIndex);
-                if (unplayedIndex > -1) {
-                    unplayedTracks.splice(unplayedIndex, 1);
-                }
-                if (trackHistory[trackHistory.length - 1] !== currentTrackIndex) {
-                    trackHistory.push(currentTrackIndex);
-                }
-            }
-            loadTrack(currentTrackIndex);
-            initVisualizer();
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            playMusic();
-            playPauseBtn.innerText = "❚❚";
+            changePlaylist(idx);
             showPlaylistUI();
         };
-        playlistUI.appendChild(item);
+        header.appendChild(tab);
     });
+    playlistUI.appendChild(header);
+
+    const trackList = document.createElement('div');
+    trackList.className = 'playlist-tracks';
+
+    if (playlist.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.style.padding = '20px';
+        emptyMsg.style.textAlign = 'center';
+        emptyMsg.style.color = '#ccc';
+        emptyMsg.innerText = 'Chưa có bài hát nào.';
+        trackList.appendChild(emptyMsg);
+    } else {
+        playlist.forEach((track, index) => {
+            const item = document.createElement('div');
+            item.className = `playlist-item ${index === currentTrackIndex ? 'playing' : ''}`;
+            item.innerText = `${index + 1}. ${track.name}`;
+            item.onclick = (e) => {
+                e.stopPropagation();
+                currentTrackIndex = index;
+                if (isShuffle) {
+                    const unplayedIndex = unplayedTracks.indexOf(currentTrackIndex);
+                    if (unplayedIndex > -1) {
+                        unplayedTracks.splice(unplayedIndex, 1);
+                    }
+                    if (trackHistory[trackHistory.length - 1] !== currentTrackIndex) {
+                        trackHistory.push(currentTrackIndex);
+                    }
+                }
+                loadTrack(currentTrackIndex);
+                initVisualizer();
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                playMusic();
+                playPauseBtn.innerText = "❚❚";
+                showPlaylistUI();
+            };
+            trackList.appendChild(item);
+        });
+    }
     
-    const activeItem = playlistUI.querySelector('.playing');
+    playlistUI.appendChild(trackList);
+
+    const activeItem = trackList.querySelector('.playing');
     if (activeItem) {
         activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
@@ -612,4 +761,6 @@ showNextPolaroid();
 setInterval(createLeaf, 500);
 setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
-loadTrack(currentTrackIndex);
+if (playlist.length > 0) {
+    loadTrack(currentTrackIndex);
+}
