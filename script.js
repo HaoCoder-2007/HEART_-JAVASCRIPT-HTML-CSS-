@@ -23,7 +23,7 @@ const memories = [
     // { src: "picture/memory/.jpg", text: "" },
 ];
 
-const vnTracks = [
+const vTracks = [
     { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/VN/Aingoaianh.mp3" },
     { name: "Ấm - sweet liquor", src: "music/VN/Am.mp3" },
     { name: "Chạy khỏi thế giới này - Da LAB, Phương Ly", src: "music/VN/Chaykhoithegioinay.mp3" },
@@ -60,25 +60,37 @@ const vnTracks = [
 ];
 
 const usukTracks = [
+    { name: "At my worst - Pink Sweet$", src: "music/US_UK/Atmyworst.mp3" },
     { name: "Beautiful in white - Westlife", src: "music/US_UK/Beautifulinwhite.mp3" },
-    { name: "Hate you - Poylow, BAUWZ", src: "music/US_UK/Hateyou.mp3" },
+    { name: "Careless whisper - George Michael", src: "music/US_UK/Carelesswhisper.mp3" },
+    { name: "Fall in love alone - Stacey Ryan", src: "music/US_UK/Fallinlovealone.mp3" },
+    { name: "From the start - laufey", src: "music/US_UK/Fromthestart.mp3" },
+    { name: "Girls like you - Maroon 5", src: "music/US_UK/Girlslikeyou.mp3" },
+    { name: "Golden hour - JVKE", src: "music/US_UK/Goldenhour.mp3" },
     { name: "I love you 3000 - Stephanie Poetri", src: "music/US_UK/Iloveyou3000.mp3" },
+    { name: "Just the two of us - Grover Washington Jr, Bill Withers", src: "music/US_UK/Justthetwoofus.mp3" },
+    { name: "Kiss me more - Doja Cat", src: "music/US_UK/Kissmemore.mp3" },
+    { name: "Love is gone - Slander, Dylan Matthew", src: "music/US_UK/Loveisgone.mp3" },
+    { name: "Memories - Maroon 5", src: "music/US_UK/Memories.mp3" },
     { name: "Perfect - Ed Sheeran", src: "music/US_UK/Perfect.mp3" },
-    { name: "Save me - Đeamn", src: "music/US_UK/Saveme.mp3" },
+    { name: "Tip toe - HYBS", src: "music/US_UK/Tiptoe.mp3" },
+    { name: "Until I found you - Stephen Sanchez", src: "music/US_UK/Untilifoundyou.mp3" },
+    { name: "Until you - Shayne Ward", src: "music/US_UK/Untilyou.mp3" },
+    { name: "We don't talk anymore - Charlie Puth", src: "music/US_UK/Wedon'ttalkanymore.mp3" },
     //{ name: "", src: "music/US_UK/.mp3" },
 ];
 
-const edmTracks = [
-    { name: "Masked Heroes - Vexento", src: "music/EDM/Maskedheroes.mp3" },
-    { name: "Frisbee - Ahxello", src: "music/EDM/Frisbee.mp3" },
-    //{ name: "", src: "music/EDM/.mp3" },
+const kTracks = [
+    { name: "If you - BigBang", src: "music/K/Ifyou.mp3" },
+    { name: "Still with you - Jung Kook", src: "music/K/Stillwithyou.mp3" },
+    //{ name: "", src: "music/K/.mp3" },
 ];
 
 const playlistsData = [
-    { name: "Tất cả", tracks: [...vnTracks, ...usukTracks] },
-    { name: "Nhạc Việt", tracks: vnTracks },
+    { name: "Tất cả", tracks: [...vTracks, ...usukTracks, ...kTracks] },
+    { name: "Nhạc Việt", tracks: vTracks },
     { name: "Nhạc US-UK", tracks: usukTracks },
-    { name: "Nhạc EDM", tracks: edmTracks },
+    { name: "Nhạc Hàn", tracks:  kTracks},
     //{ name: "", tracks:  },
 ];
 
