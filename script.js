@@ -26,6 +26,7 @@ const memories = [
 const vTracks = [
     { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/VN/Aingoaianh.mp3" },
     { name: "Ấm - sweet liquor", src: "music/VN/Am.mp3" },
+    { name: "Chẳng giống giáng sinh - Lu, Willistic, datfitzx", src: "music/VN/Changgionggiangsinh.mp3" },
     { name: "Chạy khỏi thế giới này - Da LAB, Phương Ly", src: "music/VN/Chaykhoithegioinay.mp3" },
     { name: "Chạy theo em - Nhã, Mihuman", src: "music/VN/Chaytheoem.mp3" },
     { name: "Chuyện đôi ta - Da LAB, Muộii", src: "music/VN/Chuyendoita.mp3" },
@@ -74,6 +75,7 @@ const usukTracks = [
     { name: "Love is gone - Slander, Dylan Matthew", src: "music/US_UK/Loveisgone.mp3" },
     { name: "Memories - Maroon 5", src: "music/US_UK/Memories.mp3" },
     { name: "Perfect - Ed Sheeran", src: "music/US_UK/Perfect.mp3" },
+    { name: "Snowman - Sia", src: "music/US_UK/Snowman.mp3" },
     { name: "Tip toe - HYBS", src: "music/US_UK/Tiptoe.mp3" },
     { name: "Until I found you - Stephen Sanchez", src: "music/US_UK/Untilifoundyou.mp3" },
     { name: "Until you - Shayne Ward", src: "music/US_UK/Untilyou.mp3" },
@@ -87,6 +89,17 @@ const kTracks = [
     //{ name: "", src: "music/K/.mp3" },
 ];
 
+const xmasTracks = [
+    { name: "Chẳng giống giáng sinh - Lu, Willistic, datfitzx", src: "music/SPECIAL/XMAS/Changgionggiangsinh.mp3" },
+    { name: "Last Christmas - Wham!", src: "music/SPECIAL/XMAS/Lastchristmas.mp3" },
+    { name: "Snowman - Sia", src: "music/SPECIAL/XMAS/Snowman.mp3" },
+    //{ name: "", src: "music/SPECIAL/XMAS/.mp3" },
+];
+
+const tetTracks = [
+    //{ name: "", src: "music/SPECIAL/TET/.mp3" },
+];
+
 const playlistsData = [
     { name: "Tất cả", tracks: [...vTracks, ...usukTracks, ...kTracks] },
     { name: "Nhạc Việt", tracks: vTracks },
@@ -94,6 +107,39 @@ const playlistsData = [
     { name: "Nhạc Hàn", tracks:  kTracks},
     //{ name: "", tracks:  },
 ];
+
+const todayForSeason = new Date();
+const currentSeasonMonth = todayForSeason.getMonth() + 1;
+const currentSeasonDay = todayForSeason.getDate();
+
+if (currentSeasonMonth === 12) {
+    playlistsData.unshift({
+        name: "─────🎄─────\n❄️Merry Christmas❄️\n─────🎄─────",
+        tracks: xmasTracks,
+        activeBg: "#ffffff",
+        activeColor: "#000000e0",
+        theme: "xmas"
+    });
+}
+
+if (currentSeasonMonth === 1 || (currentSeasonMonth === 2 && currentSeasonDay <= 15)) {
+    playlistsData.unshift({
+        name: "─────🏵️─────\n🧧\tHappy New Year\t🧧\n─────🏵️─────",
+        tracks: tetTracks,
+        activeBg: "#d41515c2",
+        activeColor: "#ffbb00",
+        theme: "tet"
+    });
+}
+
+// if ()) {
+//     playlistsData.unshift({
+//         name: "",
+//         tracks: ,
+//         activeBg: "#ffffff",
+//         activeColor: "#ffffff"
+//     });
+// }
 
 let currentPlaylistDataIndex = 0;
 let playlist = playlistsData[currentPlaylistDataIndex].tracks;
@@ -133,17 +179,26 @@ function updateCounter() {
     document.getElementById('live-clock').innerText = 
         `${hh} : ${mm} : ${ss}`;
     
-    let wish = "";
+    let wishes = [];
     if (now.getDate() === B_DAY && (now.getMonth() + 1) === B_MONTH) {
-        wish = `🎂 Chúc mừng sinh nhật em yêu (${now.getFullYear() - B_YEAR} tuổi) 🎂`;
-    } else if (now.getDate() === 8 && (now.getMonth() + 1) === 3) {
-        wish = "🌹 Chúc mừng ngày Quốc Tế Phụ Nữ 8/3 🌹";
-    } else if (now.getDate() === 20 && (now.getMonth() + 1) === 10) {
-        wish = "💐 Chúc mừng ngày Phụ Nữ Việt Nam 20/10 💐";
-    } else if (d === 0 && m === 0 && y > 0) {
-        wish = `❤️ Chúc mừng kỷ niệm ${y} năm bên nhau ❤️`;
+        wishes.push(`🎂 Chúc mừng sinh nhật em yêu (${now.getFullYear() - B_YEAR} tuổi) 🎂`);
     }
-    document.getElementById('special-wish').innerText = wish;
+    if (now.getDate() === 8 && (now.getMonth() + 1) === 3) {
+        wishes.push("🌹 Chúc mừng ngày Quốc Tế Phụ Nữ 8/3 🌹");
+    }
+    if (now.getDate() === 20 && (now.getMonth() + 1) === 10) {
+        wishes.push("💐 Chúc mừng ngày Phụ Nữ Việt Nam 20/10 💐");
+    }
+    if (d === 0 && m === 0 && y > 0) {
+        wishes.push(`❤️ Chúc mừng kỷ niệm ${y} năm bên nhau ❤️`);
+    }
+    if ((now.getMonth() + 1) === 12) {
+        wishes.push(`🎄 Merry Christmas 🎄`);
+    }
+    if ((now.getMonth() + 1) === 1 || ((now.getMonth() + 1) === 2 && now.getDate() <= 15)) {
+        wishes.push(`🧧 Happy New Year 🧧`);
+    }
+    document.getElementById('special-wish').innerText = wishes.join('\n');
 }
 
 function changeNote() {
@@ -455,10 +510,34 @@ function createLeaf() {
     const container = document.getElementById('leaf-container');
     const leaf = document.createElement('div');
     leaf.classList.add('leaf');
+    
+    const currentTheme = playlistsData[currentPlaylistDataIndex].theme;
 
-    const size = Math.random() * 10 + 5 + 'px';
-    leaf.style.width = size;
-    leaf.style.height = size;
+    if (currentTheme === 'xmas') {
+        leaf.innerHTML = '❄';
+        leaf.style.color = '#ffffff';
+        leaf.style.background = 'none';
+        leaf.style.fontSize = Math.random() * 10 + 15 + 'px';
+        leaf.style.display = 'flex';
+        leaf.style.alignItems = 'center';
+        leaf.style.justifyContent = 'center';
+        leaf.style.textShadow = '0 0 5px rgba(255, 255, 255, 0.8)';
+    } else if (currentTheme === 'tet') {
+        leaf.innerHTML = '❀';
+        const size = Math.random() * 10 + 10 + 'px';
+        leaf.style.color = '#fbff00';
+        leaf.style.background = 'none';
+        leaf.style.fontSize = Math.random() * 10 + 15 + 'px';
+        leaf.style.display = 'flex';
+        leaf.style.alignItems = 'center';
+        leaf.style.justifyContent = 'center';
+        leaf.style.textShadow = '0 0 5px rgba(255, 255, 255, 0.8)';
+    } else {
+        const size = Math.random() * 10 + 5 + 'px';
+        leaf.style.width = size;
+        leaf.style.height = size;
+    }
+
     leaf.style.left = Math.random() * 100 + 'vw';
     leaf.style.animationDuration = Math.random() * 5 + 5 + 's';
     leaf.style.opacity = Math.random();
@@ -681,6 +760,15 @@ function renderPlaylist() {
         const tab = document.createElement('button');
         tab.className = `playlist-tab ${idx === currentPlaylistDataIndex ? 'active' : ''}`;
         tab.innerText = pl.name;
+        
+        if (idx === currentPlaylistDataIndex) {
+            if (pl.activeBg) {
+                tab.style.backgroundColor = pl.activeBg;
+                tab.style.borderColor = pl.activeBg;
+            }
+            if (pl.activeColor) tab.style.color = pl.activeColor;
+        }
+
         tab.onclick = (e) => {
             e.stopPropagation();
             changePlaylist(idx);
