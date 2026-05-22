@@ -41,6 +41,8 @@ const vTracks = [
     { name: "Không buông - Hngle, Ari", src: "music/VN/Khongbuong.mp3" },
     { name: "Love my friend - Shayda", src: "music/VN/Lovemyfriend.mp3" },
     { name: "Nằm bên anh - Minh Đinh, Hà An Huy", src: "music/VN/Nambenanh.mp3" },
+    { name: "Ngã tư không đèn - Trang, Khoa Vũ", src: "music/VN/Ngatukhongden.mp3" },
+    { name: "Như hoa mùa xuân - Phùng Khánh Linh, Wren Evans", src: "music/VN/Nhuhoamuaxuan.mp3" },
     { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/VN/Nuocmatemlaubangtinhyeumoi.mp3" },
     { name: "Sinh ra đã là thứ đối lập nhau - Da LAB, Badbies", src: "music/VN/Sinhradalathudoilapnhau.mp3" },
     { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/VN/Songchohetdoithanhxuan3.mp3" },
@@ -53,6 +55,7 @@ const vTracks = [
     { name: "Tiny love - Thịnh Suy", src: "music/VN/Tinylove.mp3" },
     { name: "To the moon - Hooligan", src: "music/VN/Tothemoon.mp3" },
     { name: "Trafalgar D.Law -  Don Raemo, Bewata", src: "music/VN/Trafalgardlaw.mp3" },
+    { name: "Từng là - Vũ Cát Tường", src: "music/VN/Tungla.mp3" },
     { name: "Vaicaunoicokhiennguoithaydoi - GREY D, Tlinh", src: "music/VN/Vaicaunoicokhiennguoithaydoi.mp3" },
     { name: "Vạn vật như muốn ta bên nhau - RIO", src: "music/VN/Vanvatnhumuontabennhau.mp3" },
     { name: "Và thế giới đã mất đi một người cô đơn - Marzuz, Changg", src: "music/VN/Vathegioidamatdimotnguoicodon.mp3" },
@@ -97,6 +100,10 @@ const xmasTracks = [
 ];
 
 const tetTracks = [
+    { name: "", src: "music/SPECIAL/TET/.mp3" },
+    { name: "", src: "music/SPECIAL/TET/.mp3" },
+    { name: "", src: "music/SPECIAL/TET/.mp3" },
+    { name: "", src: "music/SPECIAL/TET/.mp3" },
     //{ name: "", src: "music/SPECIAL/TET/.mp3" },
 ];
 
