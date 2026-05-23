@@ -100,10 +100,11 @@ const xmasTracks = [
 ];
 
 const tetTracks = [
-    { name: "", src: "music/SPECIAL/TET/.mp3" },
-    { name: "", src: "music/SPECIAL/TET/.mp3" },
-    { name: "", src: "music/SPECIAL/TET/.mp3" },
-    { name: "", src: "music/SPECIAL/TET/.mp3" },
+    { name: "Chuyện cũ bỏ qua - Bích Phương", src: "music/SPECIAL/TET/Chuyencuboqua.mp3" },
+    { name: "Một năm mới bình an - Sơn Tùng MTP", src: "music/SPECIAL/TET/Motnammoibinhan.mp3" },
+    { name: "Năm qua đã làm gì - Bùi Công Nam", src: "music/SPECIAL/TET/Namquadalamgi.mp3" },
+    { name: "Như hoa mùa xuân - Phùng Khánh Linh, Wren Evans", src: "music/SPECIAL/TET/Nhuhoamuaxuan.mp3" },
+    { name: "Tết đong đầy - KHOA, Kay Tran, Duck V", src: "music/SPECIAL/TET/Tetdongday.mp3" },
     //{ name: "", src: "music/SPECIAL/TET/.mp3" },
 ];
 
