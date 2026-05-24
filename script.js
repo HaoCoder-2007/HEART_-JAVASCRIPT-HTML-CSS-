@@ -67,6 +67,7 @@ const usukTracks = [
     { name: "A thousand years - Christina Perri", src: "music/US_UK/Athousandyears.mp3" },
     { name: "At my worst - Pink Sweet$", src: "music/US_UK/Atmyworst.mp3" },
     { name: "Beautiful in white - Westlife", src: "music/US_UK/Beautifulinwhite.mp3" },
+    { name: "Can't take my eyes off you - Frankie Valli", src: "music/US_UK/Canttakemyeyesoffyou.mp3" },
     { name: "Careless whisper - George Michael", src: "music/US_UK/Carelesswhisper.mp3" },
     { name: "Fall in love alone - Stacey Ryan", src: "music/US_UK/Fallinlovealone.mp3" },
     { name: "From the start - laufey", src: "music/US_UK/Fromthestart.mp3" },
