@@ -1,5 +1,5 @@
-const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025;
-const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007;
+const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
+const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
 
 const notes = [
     "\"Có em rồi, ngày bình thường cũng thành đặc biệt\"",
@@ -109,6 +109,10 @@ const tetTracks = [
     //{ name: "", src: "music/SPECIAL/TET/.mp3" },
 ];
 
+// const tracksName = [
+//     { name: "Song name - Authors", src: "music/.mp3" },
+// ];
+
 const playlistsData = [
     { name: "Tất cả", tracks: [...vTracks, ...usukTracks, ...kTracks] },
     { name: "Nhạc Việt", tracks: vTracks },
@@ -207,6 +211,9 @@ function updateCounter() {
     if ((now.getMonth() + 1) === 1 || ((now.getMonth() + 1) === 2 && now.getDate() <= 15)) {
         wishes.push(`🧧 Happy New Year 🧧`);
     }
+    // if () {
+    //     wishes.push();
+    // }
     document.getElementById('special-wish').innerText = wishes.join('\n');
 }
 
