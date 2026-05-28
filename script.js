@@ -881,3 +881,271 @@ setInterval(updateCounter, 1000);
 if (playlist.length > 0) {
     loadTrack(currentTrackIndex);
 }
+
+function initBirthdayRecorder() {
+    const now = new Date();
+    if (now.getDate() === B_DAY && (now.getMonth() + 1) === B_MONTH) {
+        
+        const style = document.createElement('style');
+        style.innerHTML = `
+            #bday-recorder {
+                position: fixed;
+                top: 30px;
+                right: 30px;
+                width: 80px;
+                height: 120px;
+                background: rgba(255, 51, 102, 0.05);
+                border: 1px solid rgba(255, 51, 102, 0.3);
+                border-radius: 12px;
+                box-shadow: inset 0 0 10px rgba(255, 51, 102, 0.1);
+                cursor: grab;
+                z-index: 10000;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: space-between;
+                padding: 15px 0;
+                box-sizing: border-box;
+                user-select: none;
+                touch-action: none;
+                transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+                animation: dropIn 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            }
+            @keyframes dropIn {
+                0% { transform: translateY(-200px) rotate(-15deg); opacity: 0; }
+                100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            }
+            #bday-recorder:active {
+                cursor: grabbing;
+            }
+            #bday-recorder.dragging {
+                transform: scale(1.15) rotate(8deg);
+                box-shadow: 0 20px 30px rgba(255, 51, 102, 0.3);, inset 0 2px 4px rgba(255,255,255,0.4);
+                transition: transform 0.1s, box-shadow 0.1s;
+            }
+            .recorder-tape {
+                width: 60px;
+                height: 25px;
+                background: rgba(255, 51, 102, 0.05);
+                border-radius: 5px;
+                border: 1px solid rgba(255, 51, 102, 0.3);
+                display: flex;
+                align-items: center;
+                justify-content: space-around;
+                padding: 0 5px;
+                box-sizing: border-box;
+            }
+            .tape-wheel {
+                width: 15px;
+                height: 15px;
+                background: #ffffff;
+                border-radius: 50%;
+                position: relative;
+            }
+            .tape-wheel::after {
+                content: '';
+                position: absolute;
+                top: 50%; left: 50%;
+                transform: translate(-50%, -50%);
+                width: 5px;
+                height: 5px;
+                background: #000000;
+                border-radius: 50%;
+            }
+            .recorder-label {
+                font-size: 10px;
+                color: #ffffff;
+                font-weight: bold;
+                text-align: center;
+                margin-top: -5px;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            }
+            .recorder-btn {
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+                background: rgba(255, 51, 102, 0.05);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #ffffff;
+                font-size: 16px;
+                box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+                transition: all 0.2s;
+            }
+            .recorder-btn.playing {
+                animation: pulse-gold 1.5s infinite;
+                color: #ffffff;
+                border-color: #ff3b3b;
+            }
+            .playing .tape-wheel {
+                animation: spin 2s linear infinite;
+            }
+            @keyframes pulse-gold {
+                0% { box-shadow: 0 0 0 0 rgb(255, 255, 255); }
+                70% { box-shadow: 0 0 0 15px rgba(218, 165, 32, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(218, 165, 32, 0); }
+            }
+            @keyframes spin {
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        const recorder = document.createElement('div');
+        recorder.id = 'bday-recorder';
+        recorder.title = 'Nhấn để nghe lời chúc nhé!';
+
+        const tape = document.createElement('div');
+        tape.className = 'recorder-tape';
+        tape.innerHTML = '<div class="tape-wheel"></div><div class="tape-wheel"></div>';
+
+        const label = document.createElement('div');
+        label.className = 'recorder-label';
+        label.innerText = '00:00';
+
+        const btn = document.createElement('div');
+        btn.className = 'recorder-btn';
+        btn.innerHTML = '▶';
+
+        recorder.appendChild(tape);
+        recorder.appendChild(label);
+        recorder.appendChild(btn);
+        document.body.appendChild(recorder);
+
+        const voiceAudio = new Audio('music/SPECIAL/birthday_voice_message.mp3'); 
+        
+        voiceAudio.addEventListener('loadedmetadata', () => {
+            if (!isNaN(voiceAudio.duration)) {
+                label.innerText = formatTime(voiceAudio.duration);
+            }
+        });
+
+        voiceAudio.addEventListener('timeupdate', () => {
+            if (!isNaN(voiceAudio.duration)) {
+                const remaining = Math.max(0, voiceAudio.duration - voiceAudio.currentTime);
+                label.innerText = formatTime(remaining);
+            }
+        });
+
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+        let originalVolume = null;
+        const DUCK_VOLUME = 0.30;
+        
+        function onPointerDown(e) {
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            startX = clientX;
+            startY = clientY;
+
+            const rect = recorder.getBoundingClientRect();
+            initialLeft = rect.left;
+            initialTop = rect.top;
+
+            recorder.style.left = initialLeft + 'px';
+            recorder.style.top = initialTop + 'px';
+            recorder.style.right = 'auto';
+            
+            isDragging = false;
+
+            document.addEventListener('mousemove', onPointerMove);
+            document.addEventListener('mouseup', onPointerUp);
+            document.addEventListener('touchmove', onPointerMove, { passive: false });
+            document.addEventListener('touchend', onPointerUp);
+        }
+
+        function onPointerMove(e) {
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+
+            if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+                if (!isDragging) {
+                    isDragging = true;
+                    recorder.classList.add('dragging');
+                }
+                e.preventDefault();
+                
+                let newLeft = initialLeft + dx;
+                let newTop = initialTop + dy;
+                
+                const maxX = window.innerWidth - recorder.offsetWidth;
+                const maxY = window.innerHeight - recorder.offsetHeight;
+                
+                newLeft = Math.max(0, Math.min(newLeft, maxX));
+                newTop = Math.max(0, Math.min(newTop, maxY));
+
+                recorder.style.left = newLeft + 'px';
+                recorder.style.top = newTop + 'px';
+            }
+        }
+
+        function onPointerUp(e) {
+            document.removeEventListener('mousemove', onPointerMove);
+            document.removeEventListener('mouseup', onPointerUp);
+            document.removeEventListener('touchmove', onPointerMove);
+            document.removeEventListener('touchend', onPointerUp);
+
+            if (isDragging) {
+                recorder.classList.remove('dragging');
+            } else {
+                togglePlay();
+            }
+            isDragging = false;
+        }
+
+        function togglePlay() {
+            if (voiceAudio.paused) {
+                voiceAudio.currentTime = 0;
+                
+                if (audio && !audio.paused) {
+                    originalVolume = audio.volume;
+                    if (originalVolume > DUCK_VOLUME) {
+                        audio.volume = DUCK_VOLUME;
+                    }
+                } else {
+                    originalVolume = null;
+                }
+                voiceAudio.play().catch(err => console.log("Lỗi phát audio:", err));
+                btn.innerHTML = '❚❚';
+                recorder.classList.add('playing');
+                btn.classList.add('playing');
+            } else {
+                voiceAudio.pause();
+                voiceAudio.currentTime = 0; 
+                if (!isNaN(voiceAudio.duration)) {
+                    label.innerText = formatTime(voiceAudio.duration);
+                }
+                btn.innerHTML = '▶';
+                recorder.classList.remove('playing');
+                btn.classList.remove('playing');
+                if (originalVolume !== null && audio && !audio.paused) {
+                    audio.volume = originalVolume;
+                    originalVolume = null;
+                }
+            }
+        }
+
+        voiceAudio.addEventListener('ended', () => {
+            if (!isNaN(voiceAudio.duration)) {
+                label.innerText = formatTime(voiceAudio.duration);
+            }
+            btn.innerHTML = '▶';
+            recorder.classList.remove('playing');
+            btn.classList.remove('playing');
+            if (originalVolume !== null && audio && !audio.paused) {
+                audio.volume = originalVolume;
+                originalVolume = null;
+            }
+        });
+
+        recorder.addEventListener('mousedown', onPointerDown);
+        recorder.addEventListener('touchstart', onPointerDown, { passive: false });
+    }
+}
+
+initBirthdayRecorder();
