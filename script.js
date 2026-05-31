@@ -157,6 +157,22 @@ if (currentSeasonMonth === 1 || (currentSeasonMonth === 2 && currentSeasonDay <=
 let currentPlaylistDataIndex = 0;
 let playlist = playlistsData[currentPlaylistDataIndex].tracks;
 
+function getLunarDate(date) {
+    try {
+        const formatter = new Intl.DateTimeFormat('en-US', {
+            calendar: 'chinese',
+            day: 'numeric',
+            month: 'numeric'
+        });
+        const parts = formatter.formatToParts(date);
+        const day = parseInt(parts.find(p => p.type === 'day').value, 10);
+        const month = parseInt(parts.find(p => p.type === 'month').value, 10);
+        return { day, month };
+    } catch (e) {
+        return { day: -1, month: -1 };
+    }
+}
+
 function updateCounter() {
     const now = new Date();
     const startDate = new Date(F_YEAR, F_MONTH - 1, F_DAY);
@@ -192,6 +208,8 @@ function updateCounter() {
     document.getElementById('live-clock').innerText = 
         `${hh} : ${mm} : ${ss}`;
     
+    const lunarDate = getLunarDate(now);
+
     let wishes = [];
     if (now.getDate() === B_DAY && (now.getMonth() + 1) === B_MONTH) {
         wishes.push(`🎂 Chúc mừng sinh nhật em yêu (${now.getFullYear() - B_YEAR} tuổi) 🎂`);
@@ -202,14 +220,20 @@ function updateCounter() {
     if (now.getDate() === 20 && (now.getMonth() + 1) === 10) {
         wishes.push("💐 Chúc mừng ngày Phụ Nữ Việt Nam 20/10 💐");
     }
-    if (d === 0 && m === 0 && y > 0) {
-        wishes.push(`❤️ Chúc mừng kỷ niệm ${y} năm bên nhau ❤️`);
+    if (now.getDate() === 1 && (now.getMonth() + 1) === 6) {
+        wishes.push("🫧 Chúc mừng ngày Quốc Tế Thiếu Nhi 1/6 🫧");
+    }
+    if (lunarDate.day === 15 && lunarDate.month === 8) {
+        wishes.push("🏮 Chúc mừng ngày Tết Trung Thu 15/8 ÂL🏮");
     }
     if ((now.getMonth() + 1) === 12) {
-        wishes.push(`🎄 Merry Christmas 🎄`);
+        wishes.push("🎄 Merry Christmas 🎄");
     }
     if ((now.getMonth() + 1) === 1 || ((now.getMonth() + 1) === 2 && now.getDate() <= 15)) {
-        wishes.push(`🧧 Happy New Year 🧧`);
+        wishes.push("🧧 Happy New Year 🧧");
+    }
+    if (d === 0 && m === 0 && y > 0) {
+        wishes.push(`❤️ Chúc mừng kỷ niệm ${y} năm bên nhau ❤️`);
     }
     // if () {
     //     wishes.push();
@@ -871,13 +895,6 @@ playlistUI.addEventListener('wheel', showPlaylistUI, { passive: true });
 playlistUI.addEventListener('touchstart', showPlaylistUI, { passive: true });
 playlistUI.addEventListener('touchmove', showPlaylistUI, { passive: true });
 
-updateCounter();
-changeNote();
-showPlayer();
-showNextPolaroid();
-setInterval(createLeaf, 500);
-setInterval(changeNote, 8000);
-setInterval(updateCounter, 1000);
 if (playlist.length > 0) {
     loadTrack(currentTrackIndex);
 }
@@ -1148,4 +1165,11 @@ function initBirthdayRecorder() {
     }
 }
 
+updateCounter();
+changeNote();
+showPlayer();
+showNextPolaroid();
+setInterval(createLeaf, 500);
+setInterval(changeNote, 8000);
+setInterval(updateCounter, 1000);
 initBirthdayRecorder();
