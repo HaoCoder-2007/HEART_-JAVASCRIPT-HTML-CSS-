@@ -34,6 +34,7 @@ const vTracks = [
     { name: "Đóa hoa - TeuYungBoy, BIG WIND, DONAL", src: "music/VN/Doahoa.mp3" },
     { name: "Đôi mắt kẻ tình si - GREY D", src: "music/VN/Doimatketinhsi.mp3" },
     { name: "Đưa em về nhà - GREY D, Chillies", src: "music/VN/Duaemvenha.mp3" },
+    { name: "Dự báo thời tiết hôm nay mưa - GREY D", src: "music/VN/Dubaothoitiethomnaymua.mp3" },
     { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/VN/Ghetemdilamon.mp3" },
     { name: "Haydeanhduoccungemdau - SIVAN, Kai Đinh", src: "music/VN/Haydeanhduoccungemdau.mp3" },
     { name: "Hông về tình yêu - Khoi Vu", src: "music/VN/Hongvetinhyeu.mp3" },
@@ -41,9 +42,11 @@ const vTracks = [
     { name: "Không buông - Hngle, Ari", src: "music/VN/Khongbuong.mp3" },
     { name: "Love my friend - Shayda", src: "music/VN/Lovemyfriend.mp3" },
     { name: "Nằm bên anh - Minh Đinh, Hà An Huy", src: "music/VN/Nambenanh.mp3" },
+    { name: "Nếu lúc đó - Tlinh, 2pillz", src: "music/VN/Neulucdo.mp3" },
     { name: "Ngã tư không đèn - Trang, Khoa Vũ", src: "music/VN/Ngatukhongden.mp3" },
     { name: "Như hoa mùa xuân - Phùng Khánh Linh, Wren Evans", src: "music/VN/Nhuhoamuaxuan.mp3" },
     { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/VN/Nuocmatemlaubangtinhyeumoi.mp3" },
+    { name: "Phong - VSTRA", src: "music/VN/Phong.mp3" },
     { name: "Sinh ra đã là thứ đối lập nhau - Da LAB, Badbies", src: "music/VN/Sinhradalathudoilapnhau.mp3" },
     { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/VN/Songchohetdoithanhxuan3.mp3" },
     { name: "Tâm trí lang thang - Ánh Sáng AZA, Negav", src: "music/VN/Tamtrilangthang.mp3" },
@@ -1165,6 +1168,16 @@ function initBirthdayRecorder() {
     }
 }
 
+function scheduleMidnightReload() {
+    const now = new Date();
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+    const msUntilMidnight = tomorrow - now;
+    
+    setTimeout(() => {
+        window.location.reload();
+    }, msUntilMidnight + 1000);
+}
+
 updateCounter();
 changeNote();
 showPlayer();
@@ -1173,3 +1186,4 @@ setInterval(createLeaf, 500);
 setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
 initBirthdayRecorder();
+scheduleMidnightReload();
