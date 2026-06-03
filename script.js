@@ -1,5 +1,7 @@
 const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
+const MUSIC_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
+const IMAGE_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -117,10 +119,6 @@ const tetTracks = [
     //{ name: "", src: "music/SPECIAL/TET/.mp3" },
 ];
 
-// const tracksName = [
-//     { name: "Song name - Authors", src: "music/.mp3" },
-// ];
-
 const playlistsData = [
     { name: "Tất cả", tracks: [...vTracks, ...usukTracks, ...kTracks] },
     { name: "Nhạc Việt", tracks: vTracks },
@@ -153,15 +151,6 @@ if (currentSeasonMonth === 1 || (currentSeasonMonth === 2 && currentSeasonDay <=
         theme: "tet"
     });
 }
-
-// if ()) {
-//     playlistsData.unshift({
-//         name: "",
-//         tracks: ,
-//         activeBg: "#ffffff",
-//         activeColor: "#ffffff"
-//     });
-// }
 
 let currentPlaylistDataIndex = 0;
 let playlist = playlistsData[currentPlaylistDataIndex].tracks;
@@ -244,9 +233,6 @@ function updateCounter() {
     if (d === 0 && m === 0 && y > 0) {
         wishes.push(`❤️ Chúc mừng kỷ niệm ${y} năm bên nhau ❤️`);
     }
-    // if () {
-    //     wishes.push();
-    // }
     document.getElementById('special-wish').innerText = wishes.join('\n');
 }
 
@@ -267,6 +253,7 @@ let isShuffle = false;
 let unplayedTracks = [];
 let trackHistory = [];
 const audio = document.getElementById("myAudio");
+audio.crossOrigin = "anonymous";
 const playPauseBtn = document.getElementById("playPauseBtn");
 const trackName = document.getElementById("track-name");
 const seekBar = document.getElementById("seek-bar");
@@ -342,7 +329,12 @@ function drawVisualizer() {
 
 function loadTrack(index) {
     const track = playlist[index];
-    audio.src = track.src;
+    
+    if (track.src.startsWith("http")) {
+        audio.src = track.src;
+    } else {
+        audio.src = MUSIC_BASE_URL + track.src;
+    }
     trackName.innerText = track.name;
     seekBar.value = 0;
     currentTimeEl.innerText = "00:00";
@@ -625,7 +617,11 @@ function showNextPolaroid() {
     front.className = 'polaroid-front';
     
     const img = document.createElement('img');
-    img.src = memory.src;
+    if (memory.src.startsWith("http")) {
+        img.src = memory.src;
+    } else {
+        img.src = IMAGE_BASE_URL + memory.src;
+    }
     img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
     
     const pin = document.createElement('div');
@@ -1039,7 +1035,9 @@ function initBirthdayRecorder() {
         recorder.appendChild(btn);
         document.body.appendChild(recorder);
 
-        const voiceAudio = new Audio('music/SPECIAL/birthday_voice_message.mp3'); 
+        const voiceAudioSrc = 'music/SPECIAL/birthday_voice_message.mp3';
+        const voiceAudioUrl = voiceAudioSrc.startsWith('http') ? voiceAudioSrc : MUSIC_BASE_URL + voiceAudioSrc;
+        const voiceAudio = new Audio(voiceAudioUrl); 
         
         voiceAudio.addEventListener('loadedmetadata', () => {
             if (!isNaN(voiceAudio.duration)) {
