@@ -57,6 +57,7 @@ const vTracks = [
     { name: "Sinh ra đã là thứ đối lập nhau - Da LAB, Badbies", src: "music/VN/Sinhradalathudoilapnhau.mp3" },
     { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/VN/Songchohetdoithanhxuan3.mp3" },
     { name: "Tâm trí lang thang - Ánh Sáng AZA, Negav", src: "music/VN/Tamtrilangthang.mp3" },
+    { name: "Tên trộm - Lope Dope", src: "music/VN/Tentrom.mp3" },
     { name: "Thắc mắc (MĐX) - Thịnh Suy", src: "music/VN/Thacmac(MĐX).mp3" },
     { name: "Thằng điên - JustaTee, Phương Ly", src: "music/VN/Thangdien.mp3" },
     { name: "Thanh xuân - Da LAB", src: "music/VN/Thanhxuan.mp3" },
@@ -119,12 +120,18 @@ const tetTracks = [
     //{ name: "", src: "music/SPECIAL/TET/.mp3" },
 ];
 
+const HguitarTracks = [
+    { name: "Cho em - H_guitar", src: "music/SPECIAL/H_guitar/Choem.mp3" },
+    { name: "Tulip-Two lips - H_guitar", src: "music/SPECIAL/H_guitar/Tuliptwolips.mp3" },
+    // { name: "", src: "music/SPECIAL/H.mp3" }
+];
+
 const playlistsData = [
     { name: "Tất cả", tracks: [...vTracks, ...usukTracks, ...kTracks] },
     { name: "Nhạc Việt", tracks: vTracks },
     { name: "Nhạc US-UK", tracks: usukTracks },
     { name: "Nhạc Hàn", tracks:  kTracks},
-    //{ name: "", tracks:  },
+    { name: "H_guitar🔒︎", tracks: HguitarTracks, isLocked: true, isUnlocked: false },
 ];
 //======================================================================================================================================================
 
@@ -738,6 +745,15 @@ playlistStyle.innerHTML = `
         background: #d45b79;
         color: #fff;
         border-color: #d45b79;
+        opacity: 1;
+    }
+    .playlist-tab.locked {
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0.7;
+    }
+    .playlist-tab.locked:hover:not(.active) {
+        opacity: 0.9;
+        background: rgba(0, 0, 0, 0.6);
     }
     .playlist-tracks {
         max-height: calc(100% - 60px);
@@ -748,6 +764,113 @@ playlistStyle.innerHTML = `
     }
 `;
 document.head.appendChild(playlistStyle);
+
+function showCustomModal(message, isPrompt, callback) {
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0'; overlay.style.left = '0';
+    overlay.style.width = '100vw'; overlay.style.height = '100vh';
+    overlay.style.backgroundColor = 'rgba(0,0,0,0.6)';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '999999';
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 0.3s ease';
+
+    const box = document.createElement('div');
+    box.style.background = 'white';
+    box.style.padding = '20px';
+    box.style.borderRadius = '12px';
+    box.style.textAlign = 'center';
+    box.style.minWidth = '260px';
+    box.style.maxWidth = '80%';
+    box.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+    box.style.transform = 'scale(0.8)';
+    box.style.transition = 'transform 0.3s ease';
+    box.style.fontFamily = 'inherit';
+
+    const title = document.createElement('p');
+    title.innerText = message;
+    title.style.color = '#333';
+    title.style.margin = '0 0 15px 0';
+    title.style.fontWeight = 'bold';
+    title.style.fontSize = '16px';
+
+    let input;
+    if (isPrompt) {
+        input = document.createElement('input');
+        input.type = 'text';
+        input.style.width = '100%';
+        input.style.padding = '10px';
+        input.style.border = '1px solid #ccc';
+        input.style.borderRadius = '6px';
+        input.style.marginBottom = '15px';
+        input.style.boxSizing = 'border-box';
+        input.style.outline = 'none';
+        input.style.fontSize = '16px';
+        box.appendChild(title);
+        box.appendChild(input);
+    } else {
+        box.appendChild(title);
+    }
+
+    const btnRow = document.createElement('div');
+    btnRow.style.display = 'flex';
+    btnRow.style.gap = '10px';
+
+    if (isPrompt) {
+        const btnCancel = document.createElement('button');
+        btnCancel.innerText = 'Hủy';
+        btnCancel.style.flex = '1';
+        btnCancel.style.padding = '10px';
+        btnCancel.style.border = 'none';
+        btnCancel.style.borderRadius = '6px';
+        btnCancel.style.background = '#ccc';
+        btnCancel.style.cursor = 'pointer';
+        btnCancel.style.fontWeight = 'bold';
+        btnCancel.onclick = () => close(null);
+        btnRow.appendChild(btnCancel);
+    }
+
+    const btnOk = document.createElement('button');
+    btnOk.innerText = 'OK';
+    btnOk.style.flex = '1';
+    btnOk.style.padding = '10px';
+    btnOk.style.border = 'none';
+    btnOk.style.borderRadius = '6px';
+    btnOk.style.background = '#d45b79';
+    btnOk.style.color = '#fff';
+    btnOk.style.cursor = 'pointer';
+    btnOk.style.fontWeight = 'bold';
+    btnOk.onclick = () => close(isPrompt ? input.value : true);
+    
+    btnRow.appendChild(btnOk);
+    box.appendChild(btnRow);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+        overlay.style.opacity = '1';
+        box.style.transform = 'scale(1)';
+        if (isPrompt) input.focus();
+    }, 10);
+
+    function close(val) {
+        overlay.style.opacity = '0';
+        box.style.transform = 'scale(0.8)';
+        setTimeout(() => {
+            document.body.removeChild(overlay);
+            if (callback) callback(val);
+        }, 300);
+    }
+
+    if (isPrompt) {
+        input.onkeydown = (e) => {
+            if (e.key === 'Enter') close(input.value);
+        };
+    }
+}
 
 function changePlaylist(index) {
     if (currentPlaylistDataIndex === index) return;
@@ -803,8 +926,13 @@ function renderPlaylist() {
     
     playlistsData.forEach((pl, idx) => {
         const tab = document.createElement('button');
-        tab.className = `playlist-tab ${idx === currentPlaylistDataIndex ? 'active' : ''}`;
-        tab.innerText = pl.name;
+        
+        let classNames = ['playlist-tab'];
+        if (idx === currentPlaylistDataIndex) classNames.push('active');
+        if (pl.isLocked && !pl.isUnlocked) classNames.push('locked');
+        tab.className = classNames.join(' ');
+
+        tab.innerText = (pl.isLocked && pl.isUnlocked) ? pl.name.replace('H_guitar🔒︎', 'H_guitar') : pl.name;
         
         if (idx === currentPlaylistDataIndex) {
             if (pl.activeBg) {
@@ -816,8 +944,34 @@ function renderPlaylist() {
 
         tab.onclick = (e) => {
             e.stopPropagation();
-            changePlaylist(idx);
-            showPlaylistUI();
+            if (pl.isLocked && !pl.isUnlocked) {
+                showCustomModal("Anh thích gì nhất?", true, async (pass) => {
+                    if (pass === null || pass === "") return;
+                    try {
+                        const response = await fetch(MUSIC_BASE_URL + "password.txt", { cache: "no-store" });
+                        if (!response.ok) throw new Error("Không thể tải mật khẩu");
+                        const correctPassText = await response.text();
+                        const validPasswords = correctPassText.split(/\r?\n|,/).map(p => p.trim().toLowerCase()).filter(p => p.length > 0);
+                        const userPass = pass.trim().toLowerCase();
+                        
+                        if (validPasswords.includes(userPass)) {
+                            showCustomModal("Mở khóa thành công!", false, () => {
+                                pl.isUnlocked = true;
+                                changePlaylist(idx);
+                                showPlaylistUI();
+                            });
+                        } else {
+                            showCustomModal("Chưa chính xác!", false);
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        showCustomModal("Lỗi kiểm tra mật khẩu. Hãy đảm bảo bạn đã upload file password.txt.", false);
+                    }
+                });
+            } else {
+                changePlaylist(idx);
+                showPlaylistUI();
+            }
         };
         header.appendChild(tab);
     });
