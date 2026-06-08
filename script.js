@@ -21,11 +21,25 @@ const notes = [
 ];
 //======================================================================================================================================================
 
-//-------------------------------------------------------MEMORIES---------------------------------------------------------------------------------------
+//-------------------------------------------------------IMAGES-----------------------------------------------------------------------------------------
 const memories = [
     { src: "picture/memory/dalat2025.jpg", text: "Đà Lạt (19/01/2025)" },
     { src: "picture/memory/firstdate.jpg", text: "First date (25/02/2026)" },
     // { src: "picture/memory/.jpg", text: "" },
+];
+
+const albumPhotos = [
+    { src: "picture/album/1.jpg", text: "Đà Lạt" },
+    { src: "picture/album/2.jpg", text: "Ngầu" },
+    { src: "picture/album/3.jpg", text: "Màu đỏ chứng tỏ yêu anh" },
+    { src: "picture/album/4.jpg", text: "Cô điều dưỡng" },
+    { src: "picture/album/5.jpg", text: "Gái đẹp" },
+    { src: "picture/album/6.jpg", text: "Tỷ tỷ Douyin" },
+    { src: "picture/album/7.jpg", text: "Dễ thương" },
+    { src: "picture/album/8.jpg", text: "Học quốc phòng" },
+    { src: "picture/album/9.jpg", text: "Học bài mà ngủ gục" },
+    { src: "picture/album/10.jpg", text: "Xinh" },
+    // { src: "picture/album/.jpg", text: "" },
 ];
 //======================================================================================================================================================
 
@@ -219,14 +233,17 @@ function updateCounter() {
     if (now.getDate() === B_DAY && (now.getMonth() + 1) === B_MONTH) {
         wishes.push(`🎂 Chúc mừng sinh nhật em yêu (${now.getFullYear() - B_YEAR} tuổi) 🎂`);
     }
+    if (now.getDate() === 14 && (now.getMonth() + 1) === 2) {
+        wishes.push("❤️ Chúc mừng ngày Valentine ❤️");
+    }
     if (now.getDate() === 8 && (now.getMonth() + 1) === 3) {
         wishes.push("🌹 Chúc mừng ngày Quốc Tế Phụ Nữ 8/3 🌹");
     }
-    if (now.getDate() === 20 && (now.getMonth() + 1) === 10) {
-        wishes.push("💐 Chúc mừng ngày Phụ Nữ Việt Nam 20/10 💐");
-    }
     if (now.getDate() === 1 && (now.getMonth() + 1) === 6) {
         wishes.push("🫧 Chúc mừng ngày Quốc Tế Thiếu Nhi 1/6 🫧");
+    }
+    if (now.getDate() === 20 && (now.getMonth() + 1) === 10) {
+        wishes.push("💐 Chúc mừng ngày Phụ Nữ Việt Nam 20/10 💐");
     }
     if (lunarDate.day === 15 && lunarDate.month === 8) {
         wishes.push("🏮 Chúc mừng ngày Tết Trung Thu 15/8 ÂL🏮");
@@ -1067,7 +1084,8 @@ function initBirthdayRecorder() {
             #bday-recorder {
                 position: fixed;
                 top: 30px;
-                right: 30px;
+                left: 50%;
+                margin-left: -40px;
                 width: 80px;
                 height: 120px;
                 background: rgba(255, 51, 102, 0.05);
@@ -1326,6 +1344,313 @@ function initBirthdayRecorder() {
     }
 }
 
+function initAlbum() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #album-btn {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 26px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        #album-btn:hover {
+            background: #d45b79;
+            border-color: #d45b79;
+            transform: scale(1.1);
+        }
+        #album-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 85vw;
+            height: 85vh;
+            max-width: 1200px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            z-index: 999999;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            backdrop-filter: blur(15px);
+        }
+        #album-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        #album-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 24px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 10;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        #album-close:hover {
+            background: #d45b79;
+            transform: scale(1.3);
+        }
+        .album-header {
+            text-align: center;
+            padding: 25px;
+            font-size: 26px;
+            color: #fff;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 1px;
+        }
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+            scrollbar-width: thin;
+            scrollbar-color: #d45b79 rgba(0,0,0,0.2);
+        }
+        .album-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+        .album-grid::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+        .album-grid::-webkit-scrollbar-thumb {
+            background: #d45b79;
+            border-radius: 10px;
+        }
+        @media (max-width: 1024px) {
+            .album-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .album-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px;}
+            #album-modal { width: 95vw; height: 90vh; }
+        }
+        @media (max-width: 480px) {
+            .album-grid { grid-template-columns: repeat(1, 1fr); }
+        }
+        .album-item {
+            background: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            cursor: pointer;
+        }
+        .album-item::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            border-radius: 2px;
+            z-index: 1;
+        }
+        .album-item:hover {
+            transform: translateY(-8px) scale(1.03) rotate(1deg);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
+            z-index: 2;
+        }
+        .album-img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 2px;
+            background-color: #f0f0f0;
+            z-index: 0;
+        }
+        #album-lightbox {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        #album-lightbox.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #album-lightbox-img {
+            max-width: 85%;
+            max-height: 70%;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            object-fit: contain;
+        }
+        #album-lightbox.active #album-lightbox-img {
+            transform: scale(1);
+        }
+        #album-lightbox-caption {
+            color: #fff;
+            font-size: 20px;
+            margin-top: 25px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
+            text-align: center;
+            padding: 0 20px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+        }
+        #album-lightbox.active #album-lightbox-caption {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #album-lightbox-close {
+            position: absolute;
+            top: 20px; right: 25px;
+            color: #fff; font-size: 24px; cursor: pointer;
+            transition: 0.3s;
+            z-index: 110;
+            width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        #album-lightbox-close:hover {
+            background: #d45b79;
+            transform: rotate(90deg);
+        }
+    `;
+    document.head.appendChild(style);
+
+    const btn = document.createElement('div');
+    btn.id = 'album-btn';
+    btn.innerHTML = '📓';
+    document.body.appendChild(btn);
+
+    const modal = document.createElement('div');
+    modal.id = 'album-modal';
+
+    const closeBtn = document.createElement('div');
+    closeBtn.id = 'album-close';
+    closeBtn.innerHTML = '✖';
+    
+    const header = document.createElement('div');
+    header.className = 'album-header';
+    header.innerText = 'ALBUM CỦA HUYỀN ❤️';
+
+    const grid = document.createElement('div');
+    grid.className = 'album-grid';
+
+    const lightbox = document.createElement('div');
+    lightbox.id = 'album-lightbox';
+
+    const lbClose = document.createElement('div');
+    lbClose.id = 'album-lightbox-close';
+    lbClose.innerHTML = '✖';
+
+    const lbImg = document.createElement('img');
+    lbImg.id = 'album-lightbox-img';
+
+    const lbCaption = document.createElement('div');
+    lbCaption.id = 'album-lightbox-caption';
+
+    lightbox.appendChild(lbClose);
+    lightbox.appendChild(lbImg);
+    lightbox.appendChild(lbCaption);
+
+    albumPhotos.forEach(photo => {
+        const item = document.createElement('div');
+        item.className = 'album-item';
+        
+        const img = document.createElement('img');
+        img.className = 'album-img';
+        img.src = photo.src.startsWith("http") ? photo.src : IMAGE_BASE_URL + photo.src;
+        img.loading = "lazy";
+        img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
+
+        item.appendChild(img);
+        grid.appendChild(item);
+
+        item.addEventListener('click', () => {
+            lbImg.src = img.src;
+            lbCaption.innerText = photo.text;
+            lightbox.classList.add('active');
+        });
+    });
+
+    modal.appendChild(closeBtn);
+    modal.appendChild(header);
+    modal.appendChild(grid);
+    modal.appendChild(lightbox);
+    document.body.appendChild(modal);
+
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        modal.classList.add('active');
+    });
+
+    closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        modal.classList.remove('active');
+    });
+    
+    lbClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        lightbox.classList.remove('active');
+    });
+
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+            lightbox.classList.remove('active');
+        }
+    });
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+}
+
 function scheduleMidnightReload() {
     const now = new Date();
     const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
@@ -1344,4 +1669,5 @@ setInterval(createLeaf, 500);
 setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
 initBirthdayRecorder();
+initAlbum();
 scheduleMidnightReload();
