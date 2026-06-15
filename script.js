@@ -2140,39 +2140,48 @@ function initDistanceMap() {
             const origin = getOrigin();
             const dest = getDestination();
 
-            if (!origin || !dest) {
-                showCustomModal("Vui lòng nhập đầy đủ thông tin cần thiết!", false);
+            if (!origin && !dest) {
+                showCustomModal("Nhập điểm xuất phát hoặc điểm đến để xem trước", false);
                 return;
             }
             
             if(statusSpan) statusSpan.style.display = 'none';
             iframe.style.opacity = 0;
 
-            let dirflg = 'd';
-            if (modeSelect.value === 'walking') dirflg = 'w';
-            if (modeSelect.value === 'transit') dirflg = 'r';
-            if (modeSelect.value === 'bicycling') dirflg = 'b';
+            let mapUrl = '';
 
-            const mapUrl = `https://maps.google.com/maps?saddr=${encodeURIComponent(origin)}&daddr=${encodeURIComponent(dest)}&dirflg=${dirflg}&ie=UTF8&t=m&z=14&output=embed`;
+            if (origin && dest) {
+                let dirflg = 'd';
+                if (modeSelect.value === 'walking') dirflg = 'w';
+                if (modeSelect.value === 'transit') dirflg = 'r';
+                if (modeSelect.value === 'bicycling') dirflg = 'b';
+                mapUrl = `https://maps.google.com/maps?f=d&saddr=${encodeURIComponent(origin)}&daddr=${encodeURIComponent(dest)}&dirflg=${dirflg}&hl=vi&ie=UTF8&t=m&z=14&output=embed`;
+            } else {
+                const query = origin || dest;
+                mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&hl=vi&ie=UTF8&t=m&z=14&output=embed`;
+            }
             iframe.src = mapUrl;
         };
 
-        if (!currentUserLat && !originInput.value.trim()) {
-            if ("geolocation" in navigator) {
-                statusSpan.style.display = 'block';
-                statusSpan.innerText = "Đang lấy vị trí của bạn...";
-                navigator.geolocation.getCurrentPosition((position) => {
-                    currentUserLat = position.coords.latitude;
-                    currentUserLon = position.coords.longitude;
-                    statusSpan.innerText = "Đã lấy được vị trí! Nhấn 'Xem trước'.";
-                    originInput.placeholder = "Vị trí hiện tại của bạn";
-                }, () => {
-                    statusSpan.innerText = "Không lấy được vị trí. Vui lòng nhập thủ công.";
-                    originInput.placeholder = "Nhập điểm xuất phát...";
-                }, { enableHighAccuracy: true });
-            } else {
-                statusSpan.innerText = "Trình duyệt không hỗ trợ GPS.";
-            }
+        if (statusSpan) statusSpan.style.display = 'block';
+        iframe.style.opacity = 0;
+
+        if ("geolocation" in navigator) {
+            statusSpan.innerText = "Đang lấy vị trí của bạn...";
+            navigator.geolocation.getCurrentPosition((position) => {
+                currentUserLat = position.coords.latitude;
+                currentUserLon = position.coords.longitude;
+                statusSpan.innerText = "Đã lấy được vị trí của bạn!";
+                originInput.placeholder = "Vị trí hiện tại của bạn";
+                iframe.src = `https://maps.google.com/maps?q=${currentUserLat},${currentUserLon}&hl=vi&ie=UTF8&t=m&z=14&output=embed`;
+            }, () => {
+                statusSpan.innerText = "Không lấy được vị trí. Hãy nhập thủ công.";
+                originInput.placeholder = "Nhập điểm xuất phát...";
+                iframe.src = `https://maps.google.com/maps?q=Vietnam&hl=vi&ie=UTF8&t=m&z=6&output=embed`;
+            }, { enableHighAccuracy: true });
+        } else {
+            statusSpan.innerText = "Trình duyệt không hỗ trợ GPS.";
+            iframe.src = `https://maps.google.com/maps?q=Vietnam&hl=vi&ie=UTF8&t=m&z=6&output=embed`;
         }
 
         const newPreviewBtn = previewBtn.cloneNode(true);
@@ -2185,8 +2194,12 @@ function initDistanceMap() {
             const origin = getOrigin();
             const dest = getDestination();
 
+            if (!origin && !dest) {
+                showCustomModal("Vui lòng nhập đầy đủ thông tin!", false);
+                return;
+            }
             if (!origin) {
-                showCustomModal("Vui lòng nhập điểm xuất phát hoặc cho phép truy cập vị trí!", false);
+                showCustomModal("Vui lòng nhập điểm xuất phát!", false);
                 return;
             }
             if (!dest) {
