@@ -1,6 +1,8 @@
 const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
-const MUSIC_BASE_URL = IMAGE_BASE_URL = LOCATION_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
+const MUSIC_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
+const IMAGE_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
+const LOCATION_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -1941,6 +1943,9 @@ document.addEventListener('visibilitychange', async () => {
 window.addEventListener('click', requestWakeLock, { once: true });
 
 function initDistanceMap() {
+    let TARGET_LAT = null;
+    let TARGET_LON = null;
+
     fetch(LOCATION_BASE_URL + "location.txt", { cache: "no-store" })
         .then(res => {
             if (res.ok) return res.text();
@@ -1953,7 +1958,7 @@ function initDistanceMap() {
                 TARGET_LON = parseFloat(coords[1].trim());
             }
         })
-        .catch(err => console.log("Lỗi tải tọa độ, sử dụng tọa độ mặc định:", err));
+        .catch(err => console.log("Chưa có tọa độ:", err));
 
     const style = document.createElement('style');
     style.innerHTML = `
@@ -2031,6 +2036,31 @@ function initDistanceMap() {
             width: 100%; height: 100%; border: none; position: absolute; 
             top: 0; left: 0; opacity: 0; transition: opacity 0.5s;
         }
+        .map-controls {
+            display: flex; flex-direction: column; gap: 10px; padding: 15px;
+            background: rgba(0, 0, 0, 0.4); border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .map-controls-row {
+            display: flex; gap: 10px;
+        }
+        .map-input, .map-select, .map-btn {
+            padding: 10px; border: none; border-radius: 8px; font-size: 14px; outline: none;
+            box-sizing: border-box;
+        }
+        .map-input {
+            flex: 1; background: rgba(255, 255, 255, 0.9); color: #333; font-weight: bold;
+        }
+        .map-select {
+            background: rgba(255, 255, 255, 0.9); color: #333; cursor: pointer; font-weight: bold;
+        }
+        .map-btn {
+            background: #d45b79; color: #fff; font-weight: bold; cursor: pointer; transition: 0.2s;
+            text-align: center; width: 100%;
+        }
+        .map-btn:hover { background: #c54c6a; transform: scale(1.02); }
+        @media (max-width: 480px) {
+            .map-controls-row { flex-direction: column; }
+        }
     `;
     document.head.appendChild(style);
 
@@ -2055,17 +2085,34 @@ function initDistanceMap() {
     header.className = 'map-header';
     header.innerText = 'BẢN ĐỒ';
 
+    const controls = document.createElement('div');
+    controls.className = 'map-controls';
+    controls.innerHTML = `
+        <div class="map-controls-row">
+            <input type="text" id="map-dest-input" class="map-input" placeholder="Nhập điểm đến hoặc tọa độ...">
+            <select id="map-mode-select" class="map-select">
+                <option value="bicycling">Xe máy</option>
+                <option value="driving">Xe ô tô</option>
+                <option value="walking">Đi bộ</option>
+                <option value="transit">Phương tiện công cộng</option>
+            </select>
+        </div>
+        <button id="map-start-nav" class="map-btn">DẪN ĐƯỜNG</button>
+    `;
+
     const content = document.createElement('div');
     content.className = 'map-content';
-    content.innerHTML = '<span>Đang thu thập định vị GPS...</span>';
+    content.innerHTML = '<span id="map-status">Đang thu thập định vị GPS...</span>';
 
     const iframe = document.createElement('iframe');
     iframe.className = 'map-iframe';
     iframe.allowFullscreen = true;
     content.appendChild(iframe);
+    iframe.onload = () => { iframe.style.opacity = 1; };
 
     modal.appendChild(closeBtn);
     modal.appendChild(header);
+    modal.appendChild(controls);
     modal.appendChild(content);
     document.body.appendChild(modal);
 
@@ -2095,13 +2142,19 @@ function initDistanceMap() {
         const navBtn = document.getElementById('map-start-nav');
         const statusSpan = document.getElementById('map-status');
         
-        if (!destInput.value) {
-            destInput.value = `${TARGET_LAT}, ${TARGET_LON}`;
+        if (!destInput.value && TARGET_LAT && TARGET_LON) {
+            destInput.placeholder = "Đã tải tọa độ";
         }
 
         const updatePreview = () => {
             if (!currentUserLat || !currentUserLon) return;
-            const dest = destInput.value;
+            
+            let dest = destInput.value.trim();
+            if (!dest && TARGET_LAT && TARGET_LON) {
+                dest = `${TARGET_LAT},${TARGET_LON}`;
+            }
+            if (!dest) return;
+
             let dirflg = 'd';
             if(modeSelect.value === 'walking') dirflg = 'w';
             if(modeSelect.value === 'transit') dirflg = 'r';
@@ -2129,8 +2182,15 @@ function initDistanceMap() {
                 }, () => {
                     header.innerText = "Bạn chưa cấp quyền vị trí";
                     if(statusSpan) statusSpan.innerText = "Hãy bật GPS để có thể xem đường đi!";
-                    const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(destInput.value)}&ie=UTF8&t=m&z=14&output=embed`;
+                
+                let dest = destInput.value.trim();
+                if (!dest && TARGET_LAT && TARGET_LON) {
+                    dest = `${TARGET_LAT},${TARGET_LON}`;
+                }
+                if (dest) {
+                    const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(dest)}&ie=UTF8&t=m&z=14&output=embed`;
                     iframe.src = mapUrl;
+                }
                 }, { enableHighAccuracy: true });
             } else {
                 header.innerText = "Trình duyệt không hỗ trợ GPS";
@@ -2142,7 +2202,16 @@ function initDistanceMap() {
 
         navBtn.addEventListener('click', () => {
             let origin = currentUserLat && currentUserLon ? `${currentUserLat},${currentUserLon}` : '';
-            let dest = destInput.value;
+            
+            let dest = destInput.value.trim();
+            if (!dest && TARGET_LAT && TARGET_LON) {
+                dest = `${TARGET_LAT},${TARGET_LON}`;
+            }
+            if (!dest) {
+                alert("Vui lòng nhập điểm đến!");
+                return;
+            }
+
             let mode = modeSelect.value;
             const googleMapsAppUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${encodeURIComponent(dest)}&travelmode=${mode}`;
             window.open(googleMapsAppUrl, '_blank');
