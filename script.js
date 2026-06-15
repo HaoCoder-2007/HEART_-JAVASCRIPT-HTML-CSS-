@@ -1,7 +1,6 @@
 const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
-const MUSIC_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
-const IMAGE_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
+const MUSIC_BASE_URL = IMAGE_BASE_URL = LOCATION_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -1371,6 +1370,28 @@ function initAlbum() {
             border-color: #d45b79;
             transform: scale(1.1);
         }
+        #album-hover-text {
+            position: fixed;
+            top: 41px;
+            right: 90px;
+            color: #d45b79;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+        #album-btn:hover + #album-hover-text {
+            opacity: 1;
+            transform: translateX(0);
+        }
         #album-modal {
             position: fixed;
             top: 50%;
@@ -1566,6 +1587,11 @@ function initAlbum() {
     btn.innerHTML = '📓';
     document.body.appendChild(btn);
 
+    const hoverText = document.createElement('div');
+    hoverText.id = 'album-hover-text';
+    hoverText.innerText = 'ALBUM ẢNH';
+    document.body.appendChild(hoverText);
+
     const modal = document.createElement('div');
     modal.id = 'album-modal';
 
@@ -1575,7 +1601,7 @@ function initAlbum() {
     
     const header = document.createElement('div');
     header.className = 'album-header';
-    header.innerText = 'ALBUM CỦA HUYỀN ❤️';
+    header.innerText = 'ALBUM ẢNH';
 
     const grid = document.createElement('div');
     grid.className = 'album-grid';
@@ -1651,6 +1677,236 @@ function initAlbum() {
     });
 }
 
+function getZodiacSign(day, month) {
+    if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) return "Bạch Dương ♈︎";
+    if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) return "Kim Ngưu ♉︎";
+    if ((month == 5 && day >= 21) || (month == 6 && day <= 21)) return "Song Tử ♊︎";
+    if ((month == 6 && day >= 22) || (month == 7 && day <= 22)) return "Cự Giải ♋︎";
+    if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) return "Sư Tử ♌︎";
+    if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) return "Xử Nữ ♍︎";
+    if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) return "Thiên Bình ♎︎";
+    if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) return "Bọ Cạp ♏︎";
+    if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) return "Nhân Mã ♐︎";
+    if ((month == 12 && day >= 22) || (month == 1 && day <= 19)) return "Ma Kết ♑︎";
+    if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) return "Bảo Bình ♒︎";
+    if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) return "Song Ngư ♓︎";
+    return "Không xác định";
+}
+
+function initResume() {
+    const profiles = {
+        huyen: {
+            title: "Lê Đặng Thanh Huyền",
+            avatar: "picture/album/avatar_huyen.jpg", 
+            details: [
+                { label: "Biệt danh", value: "Bum" },
+                { label: "Ngày sinh", value: "29/05/2007" },
+                { label: "Cung hoàng đạo", value: getZodiacSign(29, 5) },
+                { label: "Nhóm máu", value: "O" },
+            ]
+        },
+        me: {
+            title: "Trần Gia Hạo",
+            avatar: "picture/album/avatar_hao.jpg", 
+            details: [
+                { label: "Biệt danh", value: "Gia Heo" },
+                { label: "Ngày sinh", value: "07/05/2007" },
+                { label: "Cung hoàng đạo", value: getZodiacSign(7, 5) },
+                { label: "Nhóm máu", value: "A+" },
+            ]
+        },
+    };
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #resume-btn {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 26px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        #resume-btn:hover {
+            background: #d45b79;
+            border-color: #d45b79;
+            transform: scale(1.1);
+        }
+        #resume-hover-text {
+            position: fixed;
+            top: 111px;
+            right: 90px;
+            color: #d45b79;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+        #resume-btn:hover + #resume-hover-text {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        #resume-modal {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 85vw; height: 85vh;
+            max-width: 1000px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            z-index: 999999;
+            display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            backdrop-filter: blur(15px);
+        }
+        #resume-modal.active {
+            opacity: 1; pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        #resume-close {
+            position: absolute; top: 20px; right: 25px;
+            font-size: 24px; color: #fff; cursor: pointer;
+            transition: 0.3s; z-index: 10;
+            width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255, 255, 255, 0.1); border-radius: 50%;
+        }
+        #resume-close:hover {
+            background: #d45b79; transform: scale(1.3);
+        }
+        .resume-header {
+            text-align: center; padding: 25px; font-size: 26px;
+            color: #fff; font-weight: bold;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 1px; flex-shrink: 0;
+        }
+        .resume-content {
+            display: flex; flex-direction: row; gap: 20px;
+            padding: 25px; height: calc(100% - 85px);
+            box-sizing: border-box; overflow: hidden;
+        }
+        .profile-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px; padding: 25px;
+            display: flex; flex-direction: column; align-items: center;
+            overflow-y: auto; scrollbar-width: thin;
+            scrollbar-color: #d45b79 rgba(0,0,0,0.2);
+        }
+        .profile-card::-webkit-scrollbar { width: 6px; }
+        .profile-card::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        .profile-card::-webkit-scrollbar-thumb { background: #d45b79; border-radius: 10px; }
+        
+        .profile-avatar {
+            width: 140px; height: 140px; border-radius: 50%;
+            object-fit: cover; border: 4px solid #d45b79;
+            margin-bottom: 15px; box-shadow: 0 4px 15px rgba(212, 91, 121, 0.4);
+            flex-shrink: 0;
+        }
+        .profile-title {
+            font-size: 22px; font-weight: bold; color: #d45b79;
+            margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .profile-details {
+            width: 100%; display: flex; flex-direction: column; gap: 12px;
+        }
+        .profile-item {
+            background: rgba(0, 0, 0, 0.4); border-radius: 10px;
+            padding: 12px 15px; border-left: 4px solid #d45b79;
+            transition: transform 0.2s;
+        }
+        .profile-item:hover { transform: translateX(5px); }
+        .profile-label {
+            font-size: 12px; color: #ffb6c1; margin-bottom: 4px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .profile-value {
+            font-size: 16px; color: #fff; font-weight: 500; line-height: 1.4;
+        }
+        @media (max-width: 768px) {
+            .resume-content { flex-direction: column; overflow-y: auto; gap: 20px;}
+            .profile-card { overflow-y: visible; }
+            #resume-modal { height: 90vh; width: 95vw; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    const btn = document.createElement('div');
+    btn.id = 'resume-btn';
+    btn.innerHTML = '📝';
+    document.body.appendChild(btn);
+
+    const hoverText = document.createElement('div');
+    hoverText.id = 'resume-hover-text';
+    hoverText.innerText = 'SƠ YẾU LÍ LỊCH';
+    document.body.appendChild(hoverText);
+
+    const modal = document.createElement('div');
+    modal.id = 'resume-modal';
+
+    const closeBtn = document.createElement('div');
+    closeBtn.id = 'resume-close';
+    closeBtn.innerHTML = '✖';
+    
+    const header = document.createElement('div');
+    header.className = 'resume-header';
+    header.innerText = 'SƠ YẾU LÍ LỊCH';
+
+    const content = document.createElement('div');
+    content.className = 'resume-content';
+
+    function createProfileCard(data) {
+        const card = document.createElement('div');
+        card.className = 'profile-card';
+
+        card.innerHTML = `
+            <img class="profile-avatar" src="${data.avatar.startsWith('http') ? data.avatar : IMAGE_BASE_URL + data.avatar}" onerror="this.src='https://via.placeholder.com/150/ffe4e1/ff69b4?text=Avatar'">
+            <div class="profile-title">${data.title}</div>
+            <div class="profile-details">
+                ${data.details.map(item => `
+                    <div class="profile-item">
+                        <div class="profile-label">${item.label}</div>
+                        <div class="profile-value">${item.value}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        return card;
+    }
+
+    content.appendChild(createProfileCard(profiles.huyen));
+    content.appendChild(createProfileCard(profiles.me));
+
+    modal.append(closeBtn, header, content);
+    document.body.appendChild(modal);
+
+    btn.addEventListener('click', (e) => { e.stopPropagation(); modal.classList.add('active'); });
+    closeBtn.addEventListener('click', (e) => { e.stopPropagation(); modal.classList.remove('active'); });
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+}
+
 function scheduleMidnightReload() {
     const now = new Date();
     const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
@@ -1659,6 +1915,242 @@ function scheduleMidnightReload() {
     setTimeout(() => {
         window.location.reload();
     }, msUntilMidnight + 1000);
+}
+
+let wakeLock = null;
+
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', () => {
+                console.log('Screen Wake Lock được giải phóng');
+            });
+        }
+    } catch (err) {
+        console.error(`Lỗi Wake Lock: ${err.name}, ${err.message}`);
+    }
+}
+
+document.addEventListener('visibilitychange', async () => {
+    if (wakeLock !== null && document.visibilityState === 'visible') {
+        await requestWakeLock();
+    }
+});
+
+window.addEventListener('click', requestWakeLock, { once: true });
+
+function initDistanceMap() {
+    fetch(LOCATION_BASE_URL + "location.txt", { cache: "no-store" })
+        .then(res => {
+            if (res.ok) return res.text();
+            throw new Error("Không tìm thấy location.txt");
+        })
+        .then(text => {
+            const coords = text.split(',');
+            if (coords.length >= 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+                TARGET_LAT = parseFloat(coords[0].trim());
+                TARGET_LON = parseFloat(coords[1].trim());
+            }
+        })
+        .catch(err => console.log("Lỗi tải tọa độ, sử dụng tọa độ mặc định:", err));
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #distance-btn {
+            position: fixed;
+            top: 170px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 26px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        #distance-btn:hover {
+            background: #d45b79;
+            border-color: #d45b79;
+            transform: scale(1.1);
+        }
+        #distance-hover-text {
+            position: fixed;
+            top: 181px;
+            right: 90px;
+            color: #d45b79;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+        #distance-btn:hover + #distance-hover-text {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        #map-modal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
+            width: 85vw; height: 85vh; max-width: 1000px; background: rgba(20, 20, 20, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 20px; z-index: 999999;
+            display: flex; flex-direction: column; opacity: 0; pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6); backdrop-filter: blur(15px); overflow: hidden;
+        }
+        #map-modal.active { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+        #map-close {
+            position: absolute; top: 20px; right: 25px; font-size: 24px; color: #fff; cursor: pointer;
+            transition: 0.3s; z-index: 10; width: 30px; height: 30px; display: flex;
+            align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.5); border-radius: 50%;
+        }
+        #map-close:hover { background: #d45b79; transform: scale(1.3); }
+        .map-header {
+            text-align: center; padding: 20px; font-size: 22px; color: #fff; font-weight: bold;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); letter-spacing: 1px; flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        .map-content { 
+            flex: 1; width: 100%; position: relative; background: #222; 
+            display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px;
+        }
+        .map-iframe { 
+            width: 100%; height: 100%; border: none; position: absolute; 
+            top: 0; left: 0; opacity: 0; transition: opacity 0.5s;
+        }
+    `;
+    document.head.appendChild(style);
+
+    const btn = document.createElement('div');
+    btn.id = 'distance-btn';
+    btn.innerHTML = '📍';
+    document.body.appendChild(btn);
+
+    const hoverText = document.createElement('div');
+    hoverText.id = 'distance-hover-text';
+    hoverText.innerText = 'BẢN ĐỒ';
+    document.body.appendChild(hoverText);
+
+    const modal = document.createElement('div');
+    modal.id = 'map-modal';
+
+    const closeBtn = document.createElement('div');
+    closeBtn.id = 'map-close';
+    closeBtn.innerHTML = '✖';
+
+    const header = document.createElement('div');
+    header.className = 'map-header';
+    header.innerText = 'BẢN ĐỒ';
+
+    const content = document.createElement('div');
+    content.className = 'map-content';
+    content.innerHTML = '<span>Đang thu thập định vị GPS...</span>';
+
+    const iframe = document.createElement('iframe');
+    iframe.className = 'map-iframe';
+    iframe.allowFullscreen = true;
+    content.appendChild(iframe);
+
+    modal.appendChild(closeBtn);
+    modal.appendChild(header);
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+
+    function deg2rad(deg) { return deg * (Math.PI / 180); }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return (R * c).toFixed(1);
+    }
+    
+    let currentUserLat = null;
+    let currentUserLon = null;
+
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        modal.classList.add('active');
+        
+        const destInput = document.getElementById('map-dest-input');
+        const modeSelect = document.getElementById('map-mode-select');
+        const navBtn = document.getElementById('map-start-nav');
+        const statusSpan = document.getElementById('map-status');
+        
+        if (!destInput.value) {
+            destInput.value = `${TARGET_LAT}, ${TARGET_LON}`;
+        }
+
+        const updatePreview = () => {
+            if (!currentUserLat || !currentUserLon) return;
+            const dest = destInput.value;
+            let dirflg = 'd';
+            if(modeSelect.value === 'walking') dirflg = 'w';
+            if(modeSelect.value === 'transit') dirflg = 'r';
+            if(modeSelect.value === 'bicycling') dirflg = 'b';
+
+            const destCoords = dest.split(',');
+            if (destCoords.length === 2 && !isNaN(destCoords[0]) && !isNaN(destCoords[1])) {
+                const dist = calculateDistance(currentUserLat, currentUserLon, parseFloat(destCoords[0]), parseFloat(destCoords[1]));
+                header.innerText = `Khoảng cách hiện tại: ${dist} km`;
+            } else {
+                header.innerText = `Tìm đường tới: ${dest}`;
+            }
+
+            const mapUrl = `https://maps.google.com/maps?saddr=${currentUserLat},${currentUserLon}&daddr=${encodeURIComponent(dest)}&dirflg=${dirflg}&ie=UTF8&t=m&z=14&output=embed`;
+            iframe.style.opacity = 0;
+            iframe.src = mapUrl;
+        };
+
+        if (!iframe.src) {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    currentUserLat = position.coords.latitude;
+                    currentUserLon = position.coords.longitude;
+                    updatePreview();
+                }, () => {
+                    header.innerText = "Bạn chưa cấp quyền vị trí";
+                    if(statusSpan) statusSpan.innerText = "Hãy bật GPS để có thể xem đường đi!";
+                    const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(destInput.value)}&ie=UTF8&t=m&z=14&output=embed`;
+                    iframe.src = mapUrl;
+                }, { enableHighAccuracy: true });
+            } else {
+                header.innerText = "Trình duyệt không hỗ trợ GPS";
+            }
+        }
+
+        destInput.addEventListener('change', updatePreview);
+        modeSelect.addEventListener('change', updatePreview);
+
+        navBtn.addEventListener('click', () => {
+            let origin = currentUserLat && currentUserLon ? `${currentUserLat},${currentUserLon}` : '';
+            let dest = destInput.value;
+            let mode = modeSelect.value;
+            const googleMapsAppUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${encodeURIComponent(dest)}&travelmode=${mode}`;
+            window.open(googleMapsAppUrl, '_blank');
+        });
+    });
+
+    closeBtn.addEventListener('click', (e) => { e.stopPropagation(); modal.classList.remove('active'); });
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
 }
 
 updateCounter();
@@ -1670,4 +2162,6 @@ setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
 initBirthdayRecorder();
 initAlbum();
+initResume();
+initDistanceMap();
 scheduleMidnightReload();
