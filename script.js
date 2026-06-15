@@ -1708,7 +1708,7 @@ function initResume() {
                 { label: "Biệt danh", value: "Bum" },
                 { label: "Ngày sinh", value: "29/05/2007" },
                 { label: "Cung hoàng đạo", value: getZodiacSign(29, 5) },
-                { label: "Nhóm máu", value: "O" },
+                { label: "Nhóm máu", value: "O+" },
             ]
         },
         me: {
