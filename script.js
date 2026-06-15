@@ -3,6 +3,7 @@ const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
 const MUSIC_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
 const IMAGE_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
 const LOCATION_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
+const PASSWORD_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -440,6 +441,9 @@ playPauseBtn.addEventListener("click", () => {
 });
 
 window.addEventListener("keydown", (e) => {
+    if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) {
+        return;
+    }
     if (e.code === "Space") {
         e.preventDefault();
         playPauseBtn.click();
@@ -966,7 +970,7 @@ function renderPlaylist() {
                 showCustomModal("Anh thích gì nhất?", true, async (pass) => {
                     if (pass === null || pass === "") return;
                     try {
-                        const response = await fetch(MUSIC_BASE_URL + "password.txt", { cache: "no-store" });
+                        const response = await fetch(PASSWORD_BASE_URL + "password.txt", { cache: "no-store" });
                         if (!response.ok) throw new Error("Không thể tải mật khẩu");
                         const correctPassText = await response.text();
                         const validPasswords = correctPassText.split(/\r?\n|,/).map(p => p.trim().toLowerCase()).filter(p => p.length > 0);
@@ -983,7 +987,7 @@ function renderPlaylist() {
                         }
                     } catch (error) {
                         console.error(error);
-                        showCustomModal("Lỗi kiểm tra mật khẩu. Hãy đảm bảo bạn đã upload file password.txt.", false);
+                        showCustomModal("Lỗi kiểm tra mật khẩu.", false);
                     }
                 });
             } else {
@@ -1943,23 +1947,6 @@ document.addEventListener('visibilitychange', async () => {
 window.addEventListener('click', requestWakeLock, { once: true });
 
 function initDistanceMap() {
-    let TARGET_LAT = null;
-    let TARGET_LON = null;
-
-    fetch(LOCATION_BASE_URL + "location.txt", { cache: "no-store" })
-        .then(res => {
-            if (res.ok) return res.text();
-            throw new Error("Không tìm thấy location.txt");
-        })
-        .then(text => {
-            const coords = text.split(',');
-            if (coords.length >= 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
-                TARGET_LAT = parseFloat(coords[0].trim());
-                TARGET_LON = parseFloat(coords[1].trim());
-            }
-        })
-        .catch(err => console.log("Chưa có tọa độ:", err));
-
     const style = document.createElement('style');
     style.innerHTML = `
         #distance-btn {
@@ -2089,13 +2076,19 @@ function initDistanceMap() {
     controls.className = 'map-controls';
     controls.innerHTML = `
         <div class="map-controls-row">
-            <input type="text" id="map-dest-input" class="map-input" placeholder="Nhập điểm đến hoặc tọa độ...">
+            <input type="text" id="map-origin-input" class="map-input" placeholder="Nhập điểm xuất phát...">
+        </div>
+        <div class="map-controls-row">
+            <input type="text" id="map-dest-input" class="map-input" placeholder="Nhập điểm đến...">
+        </div>
+        <div class="map-controls-row">
             <select id="map-mode-select" class="map-select">
                 <option value="bicycling">Xe máy</option>
                 <option value="driving">Xe ô tô</option>
                 <option value="walking">Đi bộ</option>
-                <option value="transit">Phương tiện công cộng</option>
+                <option value="transit">Xe công cộng</option>
             </select>
+            <button id="map-update-preview" class="map-btn">XEM TRƯỚC</button>
         </div>
         <button id="map-start-nav" class="map-btn">DẪN ĐƯỜNG</button>
     `;
@@ -2115,20 +2108,6 @@ function initDistanceMap() {
     modal.appendChild(controls);
     modal.appendChild(content);
     document.body.appendChild(modal);
-
-    function deg2rad(deg) { return deg * (Math.PI / 180); }
-
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371;
-        const dLat = deg2rad(lat2 - lat1);
-        const dLon = deg2rad(lon2 - lon1);
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return (R * c).toFixed(1);
-    }
     
     let currentUserLat = null;
     let currentUserLon = null;
@@ -2141,79 +2120,83 @@ function initDistanceMap() {
         const modeSelect = document.getElementById('map-mode-select');
         const navBtn = document.getElementById('map-start-nav');
         const statusSpan = document.getElementById('map-status');
-        
-        if (!destInput.value && TARGET_LAT && TARGET_LON) {
-            destInput.placeholder = "Đã tải tọa độ";
-        }
+        const originInput = document.getElementById('map-origin-input');
+        const previewBtn = document.getElementById('map-update-preview');
+
+        const getOrigin = () => {
+            const originValue = originInput.value.trim();
+            if (originValue) return originValue;
+            if (currentUserLat && currentUserLon) return `${currentUserLat},${currentUserLon}`;
+            return null;
+        };
+
+        const getDestination = () => {
+            const destValue = destInput.value.trim();
+            if (destValue) return destValue;
+            return null;
+        };
 
         const updatePreview = () => {
-            if (!currentUserLat || !currentUserLon) return;
-            
-            let dest = destInput.value.trim();
-            if (!dest && TARGET_LAT && TARGET_LON) {
-                dest = `${TARGET_LAT},${TARGET_LON}`;
+            const origin = getOrigin();
+            const dest = getDestination();
+
+            if (!origin || !dest) {
+                showCustomModal("Vui lòng nhập đầy đủ thông tin cần thiết!", false);
+                return;
             }
-            if (!dest) return;
+            
+            header.innerText = "Xem trước đường đi";
+            if(statusSpan) statusSpan.style.display = 'none';
+            iframe.style.opacity = 0;
 
             let dirflg = 'd';
-            if(modeSelect.value === 'walking') dirflg = 'w';
-            if(modeSelect.value === 'transit') dirflg = 'r';
-            if(modeSelect.value === 'bicycling') dirflg = 'b';
+            if (modeSelect.value === 'walking') dirflg = 'w';
+            if (modeSelect.value === 'transit') dirflg = 'r';
+            if (modeSelect.value === 'bicycling') dirflg = 'b';
 
-            const destCoords = dest.split(',');
-            if (destCoords.length === 2 && !isNaN(destCoords[0]) && !isNaN(destCoords[1])) {
-                const dist = calculateDistance(currentUserLat, currentUserLon, parseFloat(destCoords[0]), parseFloat(destCoords[1]));
-                header.innerText = `Khoảng cách hiện tại: ${dist} km`;
-            } else {
-                header.innerText = `Tìm đường tới: ${dest}`;
-            }
-
-            const mapUrl = `https://maps.google.com/maps?saddr=${currentUserLat},${currentUserLon}&daddr=${encodeURIComponent(dest)}&dirflg=${dirflg}&ie=UTF8&t=m&z=14&output=embed`;
-            iframe.style.opacity = 0;
+            const mapUrl = `https://maps.google.com/maps?saddr=${encodeURIComponent(origin)}&daddr=${encodeURIComponent(dest)}&dirflg=${dirflg}&ie=UTF8&t=m&z=14&output=embed`;
             iframe.src = mapUrl;
         };
 
-        if (!iframe.src) {
+        if (!currentUserLat && !originInput.value.trim()) {
             if ("geolocation" in navigator) {
+                statusSpan.style.display = 'block';
+                statusSpan.innerText = "Đang lấy vị trí của bạn...";
                 navigator.geolocation.getCurrentPosition((position) => {
                     currentUserLat = position.coords.latitude;
                     currentUserLon = position.coords.longitude;
-                    updatePreview();
+                    statusSpan.innerText = "Đã lấy được vị trí! Nhấn 'Xem trước'.";
+                    originInput.placeholder = "Vị trí hiện tại của bạn";
                 }, () => {
-                    header.innerText = "Bạn chưa cấp quyền vị trí";
-                    if(statusSpan) statusSpan.innerText = "Hãy bật GPS để có thể xem đường đi!";
-                
-                let dest = destInput.value.trim();
-                if (!dest && TARGET_LAT && TARGET_LON) {
-                    dest = `${TARGET_LAT},${TARGET_LON}`;
-                }
-                if (dest) {
-                    const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(dest)}&ie=UTF8&t=m&z=14&output=embed`;
-                    iframe.src = mapUrl;
-                }
+                    statusSpan.innerText = "Không lấy được vị trí. Vui lòng nhập thủ công.";
+                    originInput.placeholder = "Nhập điểm xuất phát...";
                 }, { enableHighAccuracy: true });
             } else {
-                header.innerText = "Trình duyệt không hỗ trợ GPS";
+                statusSpan.innerText = "Trình duyệt không hỗ trợ GPS.";
             }
         }
 
-        destInput.addEventListener('change', updatePreview);
-        modeSelect.addEventListener('change', updatePreview);
+        const newPreviewBtn = previewBtn.cloneNode(true);
+        previewBtn.parentNode.replaceChild(newPreviewBtn, previewBtn);
+        newPreviewBtn.addEventListener('click', updatePreview);
 
-        navBtn.addEventListener('click', () => {
-            let origin = currentUserLat && currentUserLon ? `${currentUserLat},${currentUserLon}` : '';
-            
-            let dest = destInput.value.trim();
-            if (!dest && TARGET_LAT && TARGET_LON) {
-                dest = `${TARGET_LAT},${TARGET_LON}`;
+        const newNavBtn = navBtn.cloneNode(true);
+        navBtn.parentNode.replaceChild(newNavBtn, navBtn);
+        newNavBtn.addEventListener('click', () => {
+            const origin = getOrigin();
+            const dest = getDestination();
+
+            if (!origin) {
+                showCustomModal("Vui lòng nhập điểm xuất phát hoặc cho phép truy cập vị trí!", false);
+                return;
             }
             if (!dest) {
-                alert("Vui lòng nhập điểm đến!");
+                showCustomModal("Vui lòng nhập điểm đến!", false);
                 return;
             }
 
             let mode = modeSelect.value;
-            const googleMapsAppUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${encodeURIComponent(dest)}&travelmode=${mode}`;
+            const googleMapsAppUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&travelmode=${mode}`;
             window.open(googleMapsAppUrl, '_blank');
         });
     });
