@@ -2145,7 +2145,6 @@ function initDistanceMap() {
                 return;
             }
             
-            header.innerText = "Xem trước đường đi";
             if(statusSpan) statusSpan.style.display = 'none';
             iframe.style.opacity = 0;
 
