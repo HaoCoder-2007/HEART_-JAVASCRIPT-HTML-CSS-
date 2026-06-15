@@ -2166,6 +2166,8 @@ function initDistanceMap() {
         if (statusSpan) statusSpan.style.display = 'block';
         iframe.style.opacity = 0;
 
+        iframe.src = `https://maps.google.com/maps?q=Vietnam&hl=vi&ie=UTF8&t=m&z=6&output=embed`;
+
         if ("geolocation" in navigator) {
             statusSpan.innerText = "Đang lấy vị trí của bạn...";
             navigator.geolocation.getCurrentPosition((position) => {
@@ -2177,11 +2179,9 @@ function initDistanceMap() {
             }, () => {
                 statusSpan.innerText = "Không lấy được vị trí. Hãy nhập thủ công.";
                 originInput.placeholder = "Nhập điểm xuất phát...";
-                iframe.src = `https://maps.google.com/maps?q=Vietnam&hl=vi&ie=UTF8&t=m&z=6&output=embed`;
             }, { enableHighAccuracy: true });
         } else {
             statusSpan.innerText = "Trình duyệt không hỗ trợ GPS.";
-            iframe.src = `https://maps.google.com/maps?q=Vietnam&hl=vi&ie=UTF8&t=m&z=6&output=embed`;
         }
 
         const newPreviewBtn = previewBtn.cloneNode(true);
