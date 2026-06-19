@@ -654,6 +654,7 @@ function showNextPolaroid() {
     } else {
         img.src = IMAGE_BASE_URL + memory.src;
     }
+    img.draggable = false;
     img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
     
     const pin = document.createElement('div');
@@ -1624,6 +1625,7 @@ function initAlbum() {
 
     const lbImg = document.createElement('img');
     lbImg.id = 'album-lightbox-img';
+    lbImg.draggable = false;
 
     const lbCaption = document.createElement('div');
     lbCaption.id = 'album-lightbox-caption';
@@ -1639,6 +1641,7 @@ function initAlbum() {
         const img = document.createElement('img');
         img.className = 'album-img';
         img.src = photo.src.startsWith("http") ? photo.src : IMAGE_BASE_URL + photo.src;
+        img.draggable = false;
         img.loading = "lazy";
         img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
 
@@ -1891,7 +1894,7 @@ function initResume() {
         card.className = 'profile-card';
 
         card.innerHTML = `
-            <img class="profile-avatar" src="${data.avatar.startsWith('http') ? data.avatar : IMAGE_BASE_URL + data.avatar}" onerror="this.src='https://via.placeholder.com/150/ffe4e1/ff69b4?text=Avatar'">
+            <img class="profile-avatar" src="${data.avatar.startsWith('http') ? data.avatar : IMAGE_BASE_URL + data.avatar}" draggable="false" onerror="this.src='https://via.placeholder.com/150/ffe4e1/ff69b4?text=Avatar'">
             <div class="profile-title">${data.title}</div>
             <div class="profile-details">
                 ${data.details.map(item => `
@@ -2220,6 +2223,27 @@ function initDistanceMap() {
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
 }
 
+function initDragSelectionPrevention() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        body.drawing {
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE/Edge */
+            user-select: none; /* Standard */
+        }
+    `;
+    document.head.appendChild(style);
+
+    window.addEventListener('mousedown', (e) => {
+        document.body.classList.add('drawing');
+    });
+
+    window.addEventListener('mouseup', () => {
+        document.body.classList.remove('drawing');
+    });
+}
+
 updateCounter();
 changeNote();
 showPlayer();
@@ -2231,4 +2255,5 @@ initBirthdayRecorder();
 initAlbum();
 initResume();
 initDistanceMap();
+initDragSelectionPrevention();
 scheduleMidnightReload();
