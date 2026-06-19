@@ -1,9 +1,6 @@
 const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
-const MUSIC_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
-const IMAGE_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
-const LOCATION_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
-const PASSWORD_BASE_URL = "https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
+const MUSIC_BASE_URL = IMAGE_BASE_URL = LOCATION_BASE_URL = PASSWORD_BASE_URL ="https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -49,10 +46,12 @@ const albumPhotos = [
 const vTracks = [
     { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/VN/Aingoaianh.mp3" },
     { name: "Ấm - sweet liquor", src: "music/VN/Am.mp3" },
+    { name: "Ánh sao và bầu trời - T.R.I, Cá", src: "music/VN/Anhsaovabautroi.mp3" },
     { name: "Chẳng giống giáng sinh - Lu, Willistic, datfitzx", src: "music/VN/Changgionggiangsinh.mp3" },
     { name: "Chạy khỏi thế giới này - Da LAB, Phương Ly", src: "music/VN/Chaykhoithegioinay.mp3" },
     { name: "Chạy theo em - Nhã, Mihuman", src: "music/VN/Chaytheoem.mp3" },
     { name: "Chuyện đôi ta - Da LAB, Muộii", src: "music/VN/Chuyendoita.mp3" },
+    { name: "Có hay từ bao giờ - Niee, Hast, KEI", src: "music/VN/Cohaytubaogio.mp3" },
     { name: "Cứ chill thôi - Chillies, SUNI, Rhymastic", src: "music/VN/Cuchillthoi.mp3" },
     { name: "Đóa hoa - TeuYungBoy, BIG WIND, DONAL", src: "music/VN/Doahoa.mp3" },
     { name: "Đôi mắt kẻ tình si - GREY D", src: "music/VN/Doimatketinhsi.mp3" },
@@ -63,6 +62,7 @@ const vTracks = [
     { name: "Hông về tình yêu - Khoi Vu", src: "music/VN/Hongvetinhyeu.mp3" },
     { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/VN/Honvaodaydi.mp3" },
     { name: "Không buông - Hngle, Ari", src: "music/VN/Khongbuong.mp3" },
+    { name: "Lỡ một mai tôi quên tên người - Khiem", src: "music/VN/Lomotmaitoiquentennguoi.mp3" },
     { name: "Love my friend - Shayda", src: "music/VN/Lovemyfriend.mp3" },
     { name: "Nằm bên anh - Minh Đinh, Hà An Huy", src: "music/VN/Nambenanh.mp3" },
     { name: "Nếu lúc đó - Tlinh, 2pillz", src: "music/VN/Neulucdo.mp3" },
@@ -79,6 +79,7 @@ const vTracks = [
     { name: "Thanh xuân - Da LAB", src: "music/VN/Thanhxuan.mp3" },
     { name: "Thích quá rùi nà - Tlinh, Trung Trần", src: "music/VN/Thichquaruina.mp3" },
     { name: "Tìm thấy nhau - SIVAN", src: "music/VN/Timthaynhau.mp3" },
+    { name: "Tình yêu chậm trễ - MONSTAR", src: "music/VN/Tinhyeuchamtre.mp3" },
     { name: "Tiny love - Thịnh Suy", src: "music/VN/Tinylove.mp3" },
     { name: "To the moon - Hooligan", src: "music/VN/Tothemoon.mp3" },
     { name: "Trafalgar D.Law -  Don Raemo, Bewata", src: "music/VN/Trafalgardlaw.mp3" },
@@ -101,10 +102,12 @@ const usukTracks = [
     { name: "Girls like you - Maroon 5", src: "music/US_UK/Girlslikeyou.mp3" },
     { name: "Golden hour - JVKE", src: "music/US_UK/Goldenhour.mp3" },
     { name: "I love you 3000 - Stephanie Poetri", src: "music/US_UK/Iloveyou3000.mp3" },
+    { name: "I love you so - The Walters", src: "music/US_UK/Iloveyouso.mp3" },
     { name: "Just the two of us - Grover Washington Jr, Bill Withers", src: "music/US_UK/Justthetwoofus.mp3" },
     { name: "Kiss me more - Doja Cat", src: "music/US_UK/Kissmemore.mp3" },
     { name: "Love is gone - Slander, Dylan Matthew", src: "music/US_UK/Loveisgone.mp3" },
     { name: "Memories - Maroon 5", src: "music/US_UK/Memories.mp3" },
+    { name: "Nothing's gonna change my love for you - Geogre Benson", src: "music/US_UK/Nothing'sgonnachangemyloveforyou.mp3" },
     { name: "Perfect - Ed Sheeran", src: "music/US_UK/Perfect.mp3" },
     { name: "Snowman - Sia", src: "music/US_UK/Snowman.mp3" },
     { name: "Tip toe - HYBS", src: "music/US_UK/Tiptoe.mp3" },
