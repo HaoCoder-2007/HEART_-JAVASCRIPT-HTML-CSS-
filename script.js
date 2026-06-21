@@ -1,6 +1,7 @@
 const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
 const MUSIC_BASE_URL = IMAGE_BASE_URL = LOCATION_BASE_URL = PASSWORD_BASE_URL ="https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
+const ALARM_VOLUME = 1.0;
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -28,17 +29,17 @@ const memories = [
 ];
 
 const albumPhotos = [
-    { src: "picture/album/1.jpg", text: "Đà Lạt" },
-    { src: "picture/album/2.jpg", text: "Ngầu" },
-    { src: "picture/album/3.jpg", text: "Màu đỏ chứng tỏ yêu anh" },
-    { src: "picture/album/4.jpg", text: "Cô điều dưỡng" },
-    { src: "picture/album/5.jpg", text: "Gái đẹp" },
-    { src: "picture/album/6.jpg", text: "Tỷ tỷ Douyin" },
-    { src: "picture/album/7.jpg", text: "Dễ thương" },
-    { src: "picture/album/8.jpg", text: "Học quốc phòng" },
-    { src: "picture/album/9.jpg", text: "Học bài mà ngủ gục" },
-    { src: "picture/album/10.jpg", text: "Xinh" },
-    // { src: "picture/album/.jpg", text: "" },
+    { src: "picture/album/1.jpg", text: "Đà Lạt", year: 2025 },
+    { src: "picture/album/2.jpg", text: "Ngầu quá ta", year: 2025 },
+    { src: "picture/album/10.jpg", text: "Xinh", year: 2025 },
+    { src: "picture/album/3.jpg", text: "Màu đỏ chứng tỏ yêu anh", year: 2025 },
+    { src: "picture/album/4.jpg", text: "Cô điều dưỡng", year: 2025 },
+    { src: "picture/album/5.jpg", text: "Gái đẹp", year: 2025 },
+    { src: "picture/album/7.jpg", text: "Dễ thương", year: 2025 },
+    { src: "picture/album/6.jpg", text: "Tỷ tỷ Douyin", year: 2026 },
+    { src: "picture/album/8.jpg", text: "Học quốc phòng", year: 2026 },
+    { src: "picture/album/9.jpg", text: "Học bài mà ngủ gục", year: 2026 },
+    // { src: "picture/album/.jpg", text: "", year: },
 ];
 //======================================================================================================================================================
 
@@ -371,6 +372,7 @@ function loadTrack(index) {
 }
 
 let fadeInterval;
+let alarmFadeInterval = null;
 
 function playMusic() {
     if (visualizerCanvas) visualizerCanvas.style.opacity = '1';
@@ -1123,7 +1125,7 @@ function initBirthdayRecorder() {
             }
             #bday-recorder.dragging {
                 transform: scale(1.15) rotate(8deg);
-                box-shadow: 0 20px 30px rgba(255, 51, 102, 0.3);, inset 0 2px 4px rgba(255,255,255,0.4);
+                box-shadow: 0 20px 30px rgba(255, 51, 102, 0.3);
                 transition: transform 0.1s, box-shadow 0.1s;
             }
             .recorder-tape {
@@ -1457,74 +1459,91 @@ function initAlbum() {
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             letter-spacing: 1px;
         }
-        .album-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 25px;
-            padding: 30px;
-            overflow-y: auto;
+        .album-content {
             flex: 1;
+            overflow-y: auto;
+            padding: 30px;
             scrollbar-width: thin;
             scrollbar-color: #d45b79 rgba(0,0,0,0.2);
         }
-        .album-grid::-webkit-scrollbar {
+        .album-content::-webkit-scrollbar {
             width: 8px;
         }
-        .album-grid::-webkit-scrollbar-track {
+        .album-content::-webkit-scrollbar-track {
             background: rgba(0,0,0,0.2);
             border-radius: 10px;
         }
-        .album-grid::-webkit-scrollbar-thumb {
+        .album-content::-webkit-scrollbar-thumb {
             background: #d45b79;
             border-radius: 10px;
         }
-        @media (max-width: 1024px) {
-            .album-grid { grid-template-columns: repeat(3, 1fr); }
+        .timeline-year-section {
+            margin-bottom: 40px;
         }
-        @media (max-width: 768px) {
-            .album-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px;}
-            #album-modal { width: 95vw; height: 90vh; }
-        }
-        @media (max-width: 480px) {
-            .album-grid { grid-template-columns: repeat(1, 1fr); }
-        }
-        .album-item {
-            background: #fff;
-            padding: 10px;
-            border-radius: 4px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        .timeline-year-header {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            transition: transform 0.3s, box-shadow 0.3s;
+            gap: 20px;
+            margin-bottom: 20px;
             position: relative;
+        }
+        .timeline-year-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, #d45b79, transparent);
+        }
+        .timeline-year-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #d45b79;
+            text-shadow: 0 0 10px rgba(212, 91, 121, 0.5);
+            white-space: nowrap;
+        }
+        .timeline-photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 0 10px;
+        }
+        .timeline-photo-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
             cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: #fff;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
         }
-        .album-item::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 15px;
-            background: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            border-radius: 2px;
-            z-index: 1;
-        }
-        .album-item:hover {
+        .timeline-photo-item:hover {
             transform: translateY(-8px) scale(1.03) rotate(1deg);
             box-shadow: 0 12px 25px rgba(0,0,0,0.4);
             z-index: 2;
         }
-        .album-img {
+        .timeline-photo-item img {
             width: 100%;
-            aspect-ratio: 1;
+            height: 100%;
             object-fit: cover;
-            border-radius: 2px;
-            background-color: #f0f0f0;
-            z-index: 0;
+            transition: transform 0.3s;
+        }
+        .timeline-photo-item:hover img {
+            transform: scale(1.1);
+        }
+        .timeline-photo-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: #fff;
+            font-size: 14px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .timeline-photo-item:hover .timeline-photo-caption {
+            opacity: 1;
         }
         #album-lightbox {
             position: absolute;
@@ -1589,6 +1608,15 @@ function initAlbum() {
             background: #d45b79;
             transform: rotate(90deg);
         }
+        @media (max-width: 768px) {
+            .timeline-photos {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            .timeline-year-text {
+                font-size: 22px;
+            }
+        }
     `;
     document.head.appendChild(style);
 
@@ -1613,8 +1641,8 @@ function initAlbum() {
     header.className = 'album-header';
     header.innerText = 'ALBUM ẢNH';
 
-    const grid = document.createElement('div');
-    grid.className = 'album-grid';
+    const content = document.createElement('div');
+    content.className = 'album-content';
 
     const lightbox = document.createElement('div');
     lightbox.id = 'album-lightbox';
@@ -1634,30 +1662,79 @@ function initAlbum() {
     lightbox.appendChild(lbImg);
     lightbox.appendChild(lbCaption);
 
-    albumPhotos.forEach(photo => {
-        const item = document.createElement('div');
-        item.className = 'album-item';
-        
-        const img = document.createElement('img');
-        img.className = 'album-img';
-        img.src = photo.src.startsWith("http") ? photo.src : IMAGE_BASE_URL + photo.src;
-        img.draggable = false;
-        img.loading = "lazy";
-        img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
-
-        item.appendChild(img);
-        grid.appendChild(item);
-
-        item.addEventListener('click', () => {
-            lbImg.src = img.src;
-            lbCaption.innerText = photo.text;
-            lightbox.classList.add('active');
+    function groupPhotosByYear(photos) {
+        const grouped = {};
+        photos.forEach(photo => {
+            const year = photo.year || 'Khác';
+            if (!grouped[year]) {
+                grouped[year] = [];
+            }
+            grouped[year].push(photo);
         });
+
+        const sortedYears = Object.keys(grouped).sort((a, b) => {
+            if (a === 'Khác') return 1;
+            if (b === 'Khác') return -1;
+            return b.localeCompare(a);
+        });
+
+        return sortedYears.map(year => ({
+            year: year,
+            photos: grouped[year]
+        }));
+    }
+
+    const timelineData = groupPhotosByYear(albumPhotos);
+
+    timelineData.forEach(section => {
+        const sectionDiv = document.createElement('div');
+        sectionDiv.className = 'timeline-year-section';
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'timeline-year-header';
+        headerDiv.innerHTML = `
+            <div class="timeline-year-line"></div>
+            <div class="timeline-year-text">${section.year}</div>
+            <div class="timeline-year-line"></div>
+        `;
+        sectionDiv.appendChild(headerDiv);
+
+        const photosGrid = document.createElement('div');
+        photosGrid.className = 'timeline-photos';
+
+        section.photos.forEach(photo => {
+            const photoItem = document.createElement('div');
+            photoItem.className = 'timeline-photo-item';
+
+            const img = document.createElement('img');
+            img.src = photo.src.startsWith("http") ? photo.src : IMAGE_BASE_URL + photo.src;
+            img.draggable = false;
+            img.loading = "lazy";
+            img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
+
+            const caption = document.createElement('div');
+            caption.className = 'timeline-photo-caption';
+            caption.innerText = photo.text;
+
+            photoItem.appendChild(img);
+            photoItem.appendChild(caption);
+
+            photoItem.addEventListener('click', () => {
+                lbImg.src = img.src;
+                lbCaption.innerText = photo.text;
+                lightbox.classList.add('active');
+            });
+
+            photosGrid.appendChild(photoItem);
+        });
+
+        sectionDiv.appendChild(photosGrid);
+        content.appendChild(sectionDiv);
     });
 
     modal.appendChild(closeBtn);
     modal.appendChild(header);
-    modal.appendChild(grid);
+    modal.appendChild(content);
     modal.appendChild(lightbox);
     document.body.appendChild(modal);
 
@@ -2244,6 +2321,287 @@ function initDragSelectionPrevention() {
     });
 }
 
+let countdownInterval = null;
+let countdownTotalSeconds = 0;
+let countdownRemaining = 0;
+let isTimerRunning = false;
+let isTimerAlerting = false;
+let originalMusicVolume = null;
+const DUCK_VOLUME = 0.20;
+let timerAlarmAudio = null;
+
+function initCountdownTimer() {
+    // 1. Nút hiển thị thời gian chính
+    const elTimerDisplayBtn = document.createElement('div');
+    elTimerDisplayBtn.id = 'timer-btn';
+    elTimerDisplayBtn.innerHTML = '00:00:00';
+    elTimerDisplayBtn.style.position = 'fixed';
+    elTimerDisplayBtn.style.top = '240px';
+    elTimerDisplayBtn.style.right = '30px';
+    elTimerDisplayBtn.style.zIndex = '10005'; /* Tăng z-index cao hơn hẳn layer container */
+    document.body.appendChild(elTimerDisplayBtn);
+    
+    // 2. Chữ Hover (Cấu hình style trực tiếp qua JS để đảm bảo vị trí)
+    const timerHoverText = document.createElement('div');
+    timerHoverText.id = 'timer-hover-text';
+    timerHoverText.innerText = 'BỘ ĐẾM NGƯỢC';
+    timerHoverText.style.position = 'fixed';
+    timerHoverText.style.top = '251px';
+    timerHoverText.style.right = '175px';
+    timerHoverText.style.zIndex = '10005';
+    timerHoverText.style.color = '#d45b79';
+    timerHoverText.style.padding = '6px 14px';
+    timerHoverText.style.borderRadius = '15px';
+    timerHoverText.style.fontSize = '15px';
+    timerHoverText.style.fontWeight = 'bold';
+    timerHoverText.style.letterSpacing = '1px';
+    timerHoverText.style.whiteSpace = 'nowrap';
+    timerHoverText.style.opacity = '0';
+    timerHoverText.style.transform = 'translateX(20px)';
+    timerHoverText.style.transition = 'all 0.2s ease';
+    timerHoverText.style.pointerEvents = 'none';
+    document.body.appendChild(timerHoverText);
+
+    const timerStopHint = document.createElement('div');
+    timerStopHint.id = 'timer-stop-hint';
+    timerStopHint.innerText = 'Nhấn để dừng';
+    timerStopHint.style.position = 'fixed';
+    timerStopHint.style.top = '305px';
+    timerStopHint.style.right = '55px';
+    timerStopHint.style.zIndex = '10005';
+    document.body.appendChild(timerStopHint);
+
+    const timerModal = document.createElement('div');
+    timerModal.id = 'timer-modal';
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #timer-stop-hint {
+            color: #ff3366;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(255, 51, 102, 0.6);
+            pointer-events: none;
+            text-align: center;
+            width: 90px;
+            display: none;
+        }
+        #timer-stop-hint.active {
+            display: block !important;
+            animation: bounceAlert 0.6s infinite alternate ease-in-out;
+        }
+        @keyframes bounceAlert {
+            from { transform: translateY(0); opacity: 0.7; }
+            to { transform: translateY(6px); opacity: 1; text-shadow: 0 0 15px #ff3366; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    timerModal.innerHTML = `
+        <div id="timer-close">✖</div>
+        <h3>HẸN GIỜ</h3>
+        <div class="timer-inputs">
+            <div class="timer-input-group">
+                <label>Giờ</label>
+                <input type="number" id="timer-hours" min="0" max="99" value="0">
+            </div>
+            <span class="timer-separator">:</span>
+            <div class="timer-input-group">
+                <label>Phút</label>
+                <input type="number" id="timer-minutes" min="0" max="59" value="0">
+            </div>
+            <span class="timer-separator">:</span>
+            <div class="timer-input-group">
+                <label>Giây</label>
+                <input type="number" id="timer-seconds" min="0" max="59" value="0">
+            </div>
+        </div>
+        <div class="timer-buttons">
+            <button class="timer-btn secondary" id="timer-cancel">Hủy</button>
+            <button class="timer-btn primary" id="timer-start">Bắt đầu</button>
+        </div>
+    `;
+
+    document.body.appendChild(timerModal);
+
+    elTimerDisplayBtn.addEventListener('mouseenter', () => {
+        if (!isTimerAlerting) {
+            timerHoverText.style.opacity = '1';
+            timerHoverText.style.transform = 'translateX(0)';
+        }
+    });
+
+    elTimerDisplayBtn.addEventListener('mouseleave', () => {
+        timerHoverText.style.opacity = '0';
+        timerHoverText.style.transform = 'translateX(20px)';
+    });
+
+    function toggleTimer() {
+        if (isTimerAlerting) {
+            stopAlarm();
+        } else if (isTimerRunning) {
+            cancelTimer();
+        } else {
+            showTimerModal();
+        }
+    }
+
+    function showTimerModal() {
+        timerModal.classList.add('active');
+        document.getElementById('timer-hours').value = '0';
+        document.getElementById('timer-minutes').value = '0';
+        document.getElementById('timer-seconds').value = '0';
+    }
+
+    function hideTimerModal() {
+        timerModal.classList.remove('active');
+    }
+
+    function startTimer() {
+        const hours = parseInt(document.getElementById('timer-hours').value) || 0;
+        const minutes = parseInt(document.getElementById('timer-minutes').value) || 0;
+        const seconds = parseInt(document.getElementById('timer-seconds').value) || 0;
+
+        countdownTotalSeconds = hours * 3600 + minutes * 60 + seconds;
+
+        if (countdownTotalSeconds <= 0) {
+            showCustomModal('Vui lòng nhập thời gian hợp lệ!', false);
+            return;
+        }
+
+        countdownRemaining = countdownTotalSeconds;
+        isTimerRunning = true;
+        hideTimerModal();
+        updateTimerDisplay();
+        startCountdown();
+    }
+
+    function startCountdown() {
+        if (countdownInterval) clearInterval(countdownInterval);
+
+        countdownInterval = setInterval(() => {
+            countdownRemaining--;
+
+            if (countdownRemaining <= 0) {
+                countdownRemaining = 0;
+                updateTimerDisplay();
+                stopCountdown();
+                triggerAlarm();
+            } else {
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
+
+    function stopCountdown() {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+        isTimerRunning = false;
+    }
+
+    function cancelTimer() {
+        stopCountdown();
+        stopAlarm();
+        countdownRemaining = 0;
+        updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+        const hours = Math.floor(countdownRemaining / 3600);
+        const minutes = Math.floor((countdownRemaining % 3600) / 60);
+        const seconds = countdownRemaining % 60;
+
+        const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        elTimerDisplayBtn.innerHTML = `${timeStr}`;
+    }
+
+    function triggerAlarm() {
+        isTimerAlerting = true;
+        elTimerDisplayBtn.classList.add('alert');
+        timerHoverText.style.opacity = '0';
+
+        if (audio && !audio.paused) {
+            if (audio.volume > DUCK_VOLUME) {
+                originalMusicVolume = audio.volume;
+                clearInterval(alarmFadeInterval);
+                const fadeStep = originalMusicVolume / 20;
+                let currentVol = originalMusicVolume;
+                alarmFadeInterval = setInterval(() => {
+                    currentVol -= fadeStep;
+                    if (currentVol <= DUCK_VOLUME) {
+                        audio.volume = DUCK_VOLUME;
+                        clearInterval(alarmFadeInterval);
+                    } else {
+                        audio.volume = currentVol;
+                    }
+                }, 25);
+            } else {
+                originalMusicVolume = null;
+            }
+        }
+
+        if (!timerAlarmAudio) {
+            timerAlarmAudio = new Audio();
+            timerAlarmAudio.loop = true;
+        }
+        
+        if (timerStopHint) timerStopHint.classList.add('active');
+        const alarmSrc = 'music/SPECIAL/Alarm.mp3';
+        timerAlarmAudio.src = alarmSrc.startsWith('http') ? alarmSrc : MUSIC_BASE_URL + alarmSrc;
+        timerAlarmAudio.volume = ALARM_VOLUME;
+        timerAlarmAudio.play().catch(err => console.log("Lỗi phát báo thức:", err));
+    }
+
+    function stopAlarm() {
+        isTimerAlerting = false;
+        elTimerDisplayBtn.classList.remove('alert');
+
+        if (timerAlarmAudio && !timerAlarmAudio.paused) {
+            timerAlarmAudio.pause();
+            timerAlarmAudio.currentTime = 0;
+        }
+
+        if (originalMusicVolume !== null && audio && !audio.paused) {
+            clearInterval(alarmFadeInterval);
+            clearInterval(fadeInterval);
+
+            if (volumeBar) {
+                volumeBar.value = originalMusicVolume * 100;
+            }
+            const fadeStep = (originalMusicVolume - DUCK_VOLUME) / 20;
+            let currentVol = DUCK_VOLUME;
+            alarmFadeInterval = setInterval(() => {
+                currentVol += fadeStep;
+                if (currentVol >= originalMusicVolume) {
+                    audio.volume = originalMusicVolume;
+                    clearInterval(alarmFadeInterval);
+                    originalMusicVolume = null; 
+                } else {
+                    audio.volume = currentVol;
+                }
+            }, 25);
+        } else {
+            originalMusicVolume = null;
+        }
+
+        if (timerStopHint) timerStopHint.classList.remove('active');
+    }
+
+    elTimerDisplayBtn.addEventListener('click', toggleTimer);
+
+    document.getElementById('timer-start').addEventListener('click', startTimer);
+    document.getElementById('timer-cancel').addEventListener('click', hideTimerModal);
+    document.getElementById('timer-close').addEventListener('click', hideTimerModal);
+
+    timerModal.addEventListener('click', (e) => {
+        if (e.target === timerModal) hideTimerModal();
+    });
+}
+
 updateCounter();
 changeNote();
 showPlayer();
@@ -2256,4 +2614,5 @@ initAlbum();
 initResume();
 initDistanceMap();
 initDragSelectionPrevention();
+initCountdownTimer();
 scheduleMidnightReload();

@@ -352,6 +352,205 @@ input[type="range"] {
 #playlist-btn:hover,
 #shuffle-btn:hover { color: #c54c6a; }
 
+#timer-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 140px;
+    height: 50px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    z-index: 1000;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    user-select: none;
+    touch-action: none;
+}
+
+#timer-btn:hover {
+    background: #d45b79;
+    border-color: #d45b79;
+    transform: scale(1.05);
+}
+
+#timer-btn:active {
+    cursor: grabbing;
+}
+
+#timer-btn.dragging {
+    transform: scale(1.1);
+    box-shadow: 0 10px 25px rgba(255, 51, 102, 0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+#timer-btn.alert {
+    animation: timerPulse 0.5s infinite alternate;
+}
+
+#timer-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: rgba(20, 20, 20, 0.95);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    z-index: 999999;
+    padding: 30px;
+    min-width: 320px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    backdrop-filter: blur(15px);
+}
+
+#timer-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#timer-modal h3 {
+    color: #fff;
+    text-align: center;
+    margin: 0 0 20px 0;
+    font-size: 20px;
+    letter-spacing: 1px;
+}
+
+.timer-inputs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.timer-input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.timer-input-group label {
+    color: #ff85a2;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.timer-input-group input {
+    width: 70px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 18px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.timer-input-group input:focus {
+    border-color: #d45b79;
+}
+
+.timer-separator {
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.timer-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.timer-btn {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.timer-btn.primary {
+    background: #d45b79;
+    color: #fff;
+}
+
+.timer-btn.primary:hover {
+    background: #c54c6a;
+    transform: scale(1.05);
+}
+
+.timer-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.timer-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#timer-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+#timer-close:hover {
+    background: #d45b79;
+    transform: scale(1.2);
+}
+
+#timer-stop-hint {
+    color: #ff3366;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(255, 51, 102, 0.6);
+    pointer-events: none;
+    text-align: center;
+    width: 84px;
+}
+
+#timer-stop-hint.active {
+    display: block !important;
+    animation: bounceAlert 0.6s infinite alternate ease-in-out;
+}
+
 .polaroid-card {
     position: fixed;
     top: 20px;
@@ -462,4 +661,21 @@ input[type="range"] {
     0% { transform: translateX(20%); } 
     50% { transform: translateX(-20%); }
     100% { transform: translateX(20%); }
+}
+
+@keyframes timerPulse {
+    from { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.7); }
+    to { box-shadow: 0 0 0 15px rgba(255, 51, 102, 0); }
+}
+
+@keyframes bounceAlert {
+    from {
+        transform: translateY(0);
+        opacity: 0.7;
+    }
+    to {
+        transform: translateY(6px);
+        opacity: 1;
+        text-shadow: 0 0 15px #ff3366;
+    }
 }
