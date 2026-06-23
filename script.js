@@ -2,13 +2,7 @@ const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
 const MUSIC_BASE_URL = IMAGE_BASE_URL = LOCATION_BASE_URL = PASSWORD_BASE_URL ="https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/"; //Vercel Blob URL
 const ALARM_VOLUME = 1.0;
-const WEATHER_API_KEY = "5727a5b43000d171e14dbe2988498460"; //OpenWeatherMap API key
-const WEATHER_CITY = "Ho Chi Minh City";
-let weatherLat = null;
-let weatherLon = null;
-let weatherLocationName = WEATHER_CITY;
-const WEATHER_API_URL_COORDS = `https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid=${WEATHER_API_KEY}&units=metric&lang=vi`;
-const WEATHER_API_URL_CITY = `https://api.openweathermap.org/data/2.5/weather?q=${WEATHER_CITY}&appid=${WEATHER_API_KEY}&units=metric&lang=vi`;
+const WEATHER_API_KEY = "5727a5b43000d171e14dbe2988498460"; //OpenWeatherMap API key;
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -1978,7 +1972,8 @@ function initResume() {
         card.className = 'profile-card';
 
         card.innerHTML = `
-            <img class="profile-avatar" src="${data.avatar.startsWith('http') ? data.avatar : IMAGE_BASE_URL + data.avatar}" draggable="false" onerror="this.src='https://via.placeholder.com/150/ffe4e1/ff69b4?text=Avatar'">
+            <img class="profile-avatar" src="${data.avatar.startsWith('http') ? data.avatar : `${IMAGE_BASE_URL}${data.avatar}?v=${new Date().getTime()}`}" 
+                 draggable="false" onerror="this.src='https://via.placeholder.com/150/ffe4e1/ff69b4?text=Avatar'">
             <div class="profile-title">${data.title}</div>
             <div class="profile-details">
                 ${data.details.map(item => `
@@ -2028,13 +2023,12 @@ async function requestWakeLock() {
     }
 }
 
-document.addEventListener('visibilitychange', async () => {
-    if (wakeLock !== null && document.visibilityState === 'visible') {
-        await requestWakeLock();
-    }
-});
+function initWakeLock() {
+    requestWakeLock();
+    setInterval(requestWakeLock, 60000);
+}
 
-window.addEventListener('click', requestWakeLock, { once: true });
+window.addEventListener('click', initWakeLock, { once: true });
 
 function initDistanceMap() {
     const style = document.createElement('style');
@@ -2343,7 +2337,7 @@ function initCountdownTimer() {
     elTimerDisplayBtn.innerHTML = '00:00:00';
     elTimerDisplayBtn.style.position = 'fixed';
     elTimerDisplayBtn.style.top = 'auto';
-    elTimerDisplayBtn.style.bottom = '620px';
+    elTimerDisplayBtn.style.bottom = '680px';
     elTimerDisplayBtn.style.right = '30px';
     elTimerDisplayBtn.style.zIndex = '10005';
     document.body.appendChild(elTimerDisplayBtn);
@@ -2353,7 +2347,7 @@ function initCountdownTimer() {
     timerHoverText.innerText = 'BỘ ĐẾM NGƯỢC';
     timerHoverText.style.position = 'fixed';
     timerHoverText.style.top = 'auto';
-    timerHoverText.style.bottom = '631px';
+    timerHoverText.style.bottom = '691px';
     timerHoverText.style.right = '175px';
     timerHoverText.style.zIndex = '10005';
     timerHoverText.style.color = '#d45b79';
@@ -2374,7 +2368,7 @@ function initCountdownTimer() {
     timerStopHint.innerText = 'Nhấn để dừng';
     timerStopHint.style.position = 'fixed';
     timerStopHint.style.top = 'auto';
-    timerStopHint.style.bottom = '570px';
+    timerStopHint.style.bottom = '630px';
     timerStopHint.style.right = '55px';
     timerStopHint.style.zIndex = '10005';
     document.body.appendChild(timerStopHint);
@@ -2435,10 +2429,6 @@ function initCountdownTimer() {
     document.body.appendChild(timerModal);
 
     elTimerDisplayBtn.addEventListener('mouseenter', () => {
-        if (!isTimerAlerting) {
-            timerHoverText.style.opacity = '1';
-            timerHoverText.style.transform = 'translateX(0)';
-        }
     });
 
     elTimerDisplayBtn.addEventListener('mouseleave', () => {
@@ -2633,9 +2623,7 @@ function initWeather() {
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         #weather-btn:hover {
-            background: #d45b79;
-            border-color: #d45b79;
-            transform: scale(1.1);
+            transform: scale(1.1) !important;
         }
         #weather-hover-text {
             position: fixed;
@@ -2827,6 +2815,17 @@ function initWeather() {
     modal.appendChild(content);
     document.body.appendChild(modal);
 
+    btn.addEventListener('mouseenter', () => {
+        const currentColor = btn.style.borderColor || 'rgba(255, 255, 255, 0.3)';
+        btn.style.background = currentColor;
+        btn.style.borderColor = currentColor;
+    });
+
+    btn.addEventListener('mouseleave', () => {
+        btn.style.background = 'rgba(0, 0, 0, 0.4)';
+        btn.style.borderColor = btn.dataset.tempColor || 'rgba(255, 255, 255, 0.3)';
+    });
+
     function getWeatherIcon(weatherMain, weatherIconCode) {
         const iconMap = {
             'Clear': '☀️',
@@ -2875,52 +2874,106 @@ function initWeather() {
         return '#3333ff';
     }
 
-    async function fetchWeather() {
-        try {
-            const response = await fetch(WEATHER_API_URL);
-            if (!response.ok) throw new Error('Weather API error');
-            const data = await response.json();
+    function getUvColor(uv) {
+        if (uv >= 11) return '#9933ff';
+        if (uv >= 8) return '#ff3333';
+        if (uv >= 6) return '#ff9933';
+        if (uv >= 3) return '#ffcc33';
+        if (uv >= 0) return '#99ff33';
+        return '#ffffff';
+    }
 
+    async function fetchWeather(lat, lon) {
+        const WEATHER_CITY = "Ho Chi Minh City";
+        let weatherUrl;
+        let uvUrl;
+
+        if (lat && lon) {
+            weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=vi`;
+            uvUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,daily,alerts&appid=${WEATHER_API_KEY}`;
+        } else {
+            weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${WEATHER_CITY}&appid=${WEATHER_API_KEY}&units=metric&lang=vi`;
+        }
+
+        try {
+            const weatherResponse = await fetch(weatherUrl);
+            if (!weatherResponse.ok) throw new Error('Lỗi API thời tiết');
+            const data = await weatherResponse.json();
+
+            const locationName = data.name || WEATHER_CITY;
             const temp = Math.round(data.main.temp);
             const feelsLike = Math.round(data.main.feels_like);
-            const humidity = data.main.humidity;
-            const windSpeed = data.wind.speed;
-            const pressure = data.main.pressure;
             const weatherMain = data.weather[0].main;
             const weatherIconCode = data.weather[0].icon;
             const descriptionText = data.weather[0].description;
 
-            const icon = getWeatherIcon(weatherMain, weatherIconCode);
-            const color = getTempColor(temp);
+            let uvIndex = '--';
+            if (!uvUrl) {
+                const cityLat = data.coord.lat;
+                const cityLon = data.coord.lon;
+                uvUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${cityLat}&lon=${cityLon}&exclude=minutely,hourly,daily,alerts&appid=${WEATHER_API_KEY}`;
+            }
 
+            try {
+                const uvResponse = await fetch(uvUrl);
+                if (uvResponse.ok) {
+                    const uvData = await uvResponse.json();
+                    uvIndex = uvData.current.uvi.toFixed(1);
+                }
+            } catch (uvError) {
+                console.error('Lỗi lấy chỉ số UV:', uvError);
+            }
+
+            const icon = getWeatherIcon(weatherMain, weatherIconCode);
+            const tempColor = getTempColor(temp);
+
+            if (weatherIconCode.includes('n')) {
+                uvIndex = '0.0';
+            }
+
+            const uvColor = getUvColor(parseFloat(uvIndex));
+
+            header.innerText = `THỜI TIẾT \n\n <${locationName.toUpperCase()}>`;
             btn.innerHTML = icon;
-            btn.style.borderColor = color;
-            btn.style.boxShadow = `0 4px 10px rgba(0,0,0,0.3), 0 0 15px ${color}33`;
+            btn.style.borderColor = tempColor;
+            btn.dataset.tempColor = tempColor;
+            btn.style.boxShadow = `0 4px 10px rgba(0,0,0,0.3), 0 0 15px ${tempColor}33`;
 
             mainIcon.textContent = icon;
             tempLarge.textContent = `${temp}°C`;
-            tempLarge.style.color = color;
+            tempLarge.style.color = tempColor;
             description.textContent = descriptionText;
 
             document.getElementById('weather-feels').textContent = `${feelsLike}°C`;
-            document.getElementById('weather-feels').style.color = color;
+            document.getElementById('weather-feels').style.color = tempColor;
+            document.getElementById('weather-uv-index').textContent = `${uvIndex} UV`;
+            document.getElementById('weather-uv-index').style.color = uvColor;
 
-            modal.title = `${descriptionText.charAt(0).toUpperCase() + descriptionText.slice(1)} - ${temp}°C`;
         } catch (error) {
             console.error('Lỗi lấy thời tiết:', error);
+            header.innerText = 'THỜI TIẾT';
             btn.innerHTML = '🌡️';
             btn.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+            btn.dataset.tempColor = 'rgba(255, 255, 255, 0.3)';
             btn.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
             mainIcon.textContent = '🌡️';
             tempLarge.textContent = '--°C';
             tempLarge.style.color = '#fff';
+            document.getElementById('weather-feels').style.color = '#fff';
+            document.getElementById('weather-uv-index').style.color = '#fff';
             description.textContent = 'Không thể tải thời tiết';
-            modal.title = 'Không thể tải thời tiết';
         }
     }
 
-    fetchWeather();
-    setInterval(fetchWeather, 300000);
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => fetchWeather(position.coords.latitude, position.coords.longitude),
+            () => fetchWeather(),
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    } else {
+        fetchWeather();
+    }
 
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
