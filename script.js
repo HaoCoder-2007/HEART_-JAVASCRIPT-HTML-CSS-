@@ -2608,7 +2608,7 @@ function initWeather() {
     style.innerHTML = `
         #weather-btn {
             position: fixed;
-            bottom: 660px;
+            bottom: 610px;
             right: 30px;
             width: 50px;
             height: 50px;
@@ -2632,7 +2632,7 @@ function initWeather() {
         }
         #weather-hover-text {
             position: fixed;
-            bottom: 670px;
+            bottom: 620px;
             right: 90px;
             color: #d45b79;
             padding: 6px 14px;
