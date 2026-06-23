@@ -1,7 +1,10 @@
 const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
-const MUSIC_BASE_URL = IMAGE_BASE_URL = LOCATION_BASE_URL = PASSWORD_BASE_URL ="https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/";
+const MUSIC_BASE_URL = IMAGE_BASE_URL = LOCATION_BASE_URL = PASSWORD_BASE_URL ="https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/"; //Vercel Blob URL
 const ALARM_VOLUME = 1.0;
+const WEATHER_API_KEY = "5727a5b43000d171e14dbe2988498460"; //OpenWeatherMap API key
+const WEATHER_CITY = "Ho Chi Minh City";
+const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/weather?q=${WEATHER_CITY}&appid=${WEATHER_API_KEY}&units=metric&lang=vi`;
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -30,7 +33,7 @@ const memories = [
 
 const albumPhotos = [
     { src: "picture/album/1.jpg", text: "Đà Lạt", year: 2025 },
-    { src: "picture/album/2.jpg", text: "Ngầu quá ta", year: 2025 },
+    { src: "picture/album/2.jpg", text: "Ngầu", year: 2025 },
     { src: "picture/album/10.jpg", text: "Xinh", year: 2025 },
     { src: "picture/album/3.jpg", text: "Màu đỏ chứng tỏ yêu anh", year: 2025 },
     { src: "picture/album/4.jpg", text: "Cô điều dưỡng", year: 2025 },
@@ -1693,7 +1696,7 @@ function initAlbum() {
         const headerDiv = document.createElement('div');
         headerDiv.className = 'timeline-year-header';
         headerDiv.innerHTML = `
-            <div class="timeline-year-line"></div>
+            <div class="timeline-year-line" style="transform: rotate(180deg);"></div>
             <div class="timeline-year-text">${section.year}</div>
             <div class="timeline-year-line"></div>
         `;
@@ -2331,17 +2334,15 @@ const DUCK_VOLUME = 0.20;
 let timerAlarmAudio = null;
 
 function initCountdownTimer() {
-    // 1. Nút hiển thị thời gian chính
     const elTimerDisplayBtn = document.createElement('div');
     elTimerDisplayBtn.id = 'timer-btn';
     elTimerDisplayBtn.innerHTML = '00:00:00';
     elTimerDisplayBtn.style.position = 'fixed';
     elTimerDisplayBtn.style.top = '240px';
     elTimerDisplayBtn.style.right = '30px';
-    elTimerDisplayBtn.style.zIndex = '10005'; /* Tăng z-index cao hơn hẳn layer container */
+    elTimerDisplayBtn.style.zIndex = '10005';
     document.body.appendChild(elTimerDisplayBtn);
     
-    // 2. Chữ Hover (Cấu hình style trực tiếp qua JS để đảm bảo vị trí)
     const timerHoverText = document.createElement('div');
     timerHoverText.id = 'timer-hover-text';
     timerHoverText.innerText = 'BỘ ĐẾM NGƯỢC';
@@ -2602,6 +2603,333 @@ function initCountdownTimer() {
     });
 }
 
+function initWeather() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #weather-btn {
+            position: fixed;
+            bottom: 660px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 26px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        #weather-btn:hover {
+            background: #d45b79;
+            border-color: #d45b79;
+            transform: scale(1.1);
+        }
+        #weather-hover-text {
+            position: fixed;
+            bottom: 670px;
+            right: 90px;
+            color: #d45b79;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+        #weather-btn:hover + #weather-hover-text {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        #weather-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            z-index: 999999;
+            padding: 30px;
+            min-width: 320px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            backdrop-filter: blur(15px);
+        }
+        #weather-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        #weather-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        #weather-close:hover {
+            background: #d45b79;
+            transform: scale(1.2);
+        }
+        .weather-header {
+            text-align: center;
+            padding: 20px;
+            font-size: 22px;
+            color: #fff;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+        .weather-content {
+            text-align: center;
+            padding: 20px;
+        }
+        .weather-main-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            line-height: 1;
+        }
+        .weather-temp-large {
+            font-size: 48px;
+            font-weight: bold;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+        .weather-description {
+            font-size: 18px;
+            color: #ff85a2;
+            text-transform: capitalize;
+            margin-bottom: 20px;
+        }
+        .weather-details {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .weather-detail-item {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border-left: 4px solid #d45b79;
+            min-width: 120px;
+        }
+        .weather-detail-label {
+            font-size: 12px;
+            color: #ffb6c1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+        .weather-detail-value {
+            font-size: 18px;
+            color: #fff;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+        }
+    `;
+    document.head.appendChild(style);
+
+    const btn = document.createElement('div');
+    btn.id = 'weather-btn';
+    btn.innerHTML = '🌡️';
+    document.body.appendChild(btn);
+
+    const hoverText = document.createElement('div');
+    hoverText.id = 'weather-hover-text';
+    hoverText.innerText = 'THỜI TIẾT';
+    document.body.appendChild(hoverText);
+
+    const modal = document.createElement('div');
+    modal.id = 'weather-modal';
+
+    const closeBtn = document.createElement('div');
+    closeBtn.id = 'weather-close';
+    closeBtn.innerHTML = '✖';
+
+    const header = document.createElement('div');
+    header.className = 'weather-header';
+    header.innerText = 'THỜI TIẾT';
+
+    const content = document.createElement('div');
+    content.className = 'weather-content';
+
+    const mainIcon = document.createElement('div');
+    mainIcon.className = 'weather-main-icon';
+    mainIcon.textContent = '🌡️';
+
+    const tempLarge = document.createElement('div');
+    tempLarge.className = 'weather-temp-large';
+    tempLarge.textContent = '--°C';
+
+    const description = document.createElement('div');
+    description.className = 'weather-description';
+    description.textContent = 'Đang tải...';
+
+    const details = document.createElement('div');
+    details.className = 'weather-details';
+
+    const detailItems = [
+        { label: 'Cảm giác', value: '--°C', id: 'weather-feels' },
+    ];
+
+    detailItems.forEach(item => {
+        const detailDiv = document.createElement('div');
+        detailDiv.className = 'weather-detail-item';
+        detailDiv.innerHTML = `
+            <div class="weather-detail-label">${item.label}</div>
+            <div class="weather-detail-value" id="${item.id}">${item.value}</div>
+        `;
+        details.appendChild(detailDiv);
+    });
+
+    content.appendChild(mainIcon);
+    content.appendChild(tempLarge);
+    content.appendChild(description);
+    content.appendChild(details);
+
+    modal.appendChild(closeBtn);
+    modal.appendChild(header);
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+
+    function getWeatherIcon(weatherMain, weatherIconCode) {
+        const iconMap = {
+            'Clear': '☀️',
+            'Clouds': '☁️',
+            'Rain': '🌧️',
+            'Drizzle': '🌦️',
+            'Thunderstorm': '⛈️',
+            'Snow': '❄️',
+            'Mist': '🌫️',
+            'Fog': '🌫️',
+            'Haze': '🌫️',
+            'Dust': '🌫️',
+            'Sand': '🌫️',
+            'Ash': '🌫️',
+            'Squall': '💨',
+            'Tornado': '🌪️'
+        };
+
+        if (iconMap[weatherMain]) return iconMap[weatherMain];
+
+        if (weatherIconCode) {
+            const code = parseInt(weatherIconCode.substring(0, 2));
+            if (code === 1) return '☀️';
+            if (code === 2) return '⛅';
+            if (code === 3) return '☁️';
+            if (code === 4) return '☁️';
+            if (code >= 9 && code <= 10) return '🌧️';
+            if (code === 11) return '⛈️';
+            if (code === 13) return '❄️';
+            if (code === 50) return '🌫️';
+        }
+
+        return '🌡️';
+    }
+
+    function getTempColor(temp) {
+        if (temp >= 35) return '#ff3333';
+        if (temp >= 30) return '#ff6633';
+        if (temp >= 25) return '#ff9933';
+        if (temp >= 20) return '#ffcc33';
+        if (temp >= 15) return '#ffff33';
+        if (temp >= 10) return '#99ff33';
+        if (temp >= 5) return '#33ccff';
+        if (temp >= 0) return '#3399ff';
+        if (temp >= -5) return '#3366ff';
+        return '#3333ff';
+    }
+
+    async function fetchWeather() {
+        try {
+            const response = await fetch(WEATHER_API_URL);
+            if (!response.ok) throw new Error('Weather API error');
+            const data = await response.json();
+
+            const temp = Math.round(data.main.temp);
+            const feelsLike = Math.round(data.main.feels_like);
+            const humidity = data.main.humidity;
+            const windSpeed = data.wind.speed;
+            const pressure = data.main.pressure;
+            const weatherMain = data.weather[0].main;
+            const weatherIconCode = data.weather[0].icon;
+            const descriptionText = data.weather[0].description;
+
+            const icon = getWeatherIcon(weatherMain, weatherIconCode);
+            const color = getTempColor(temp);
+
+            btn.innerHTML = icon;
+            btn.style.borderColor = color;
+            btn.style.boxShadow = `0 4px 10px rgba(0,0,0,0.3), 0 0 15px ${color}33`;
+
+            mainIcon.textContent = icon;
+            tempLarge.textContent = `${temp}°C`;
+            tempLarge.style.color = color;
+            description.textContent = descriptionText;
+
+            document.getElementById('weather-feels').textContent = `${feelsLike}°C`;
+            document.getElementById('weather-feels').style.color = color;
+
+            modal.title = `${descriptionText.charAt(0).toUpperCase() + descriptionText.slice(1)} - ${temp}°C`;
+        } catch (error) {
+            console.error('Lỗi lấy thời tiết:', error);
+            btn.innerHTML = '🌡️';
+            btn.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+            btn.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
+            mainIcon.textContent = '🌡️';
+            tempLarge.textContent = '--°C';
+            tempLarge.style.color = '#fff';
+            description.textContent = 'Không thể tải thời tiết';
+            modal.title = 'Không thể tải thời tiết';
+        }
+    }
+
+    fetchWeather();
+    setInterval(fetchWeather, 300000);
+
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        modal.classList.add('active');
+    });
+
+    closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        modal.classList.remove('active');
+    });
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('active');
+    });
+}
+
 updateCounter();
 changeNote();
 showPlayer();
@@ -2609,6 +2937,7 @@ showNextPolaroid();
 setInterval(createLeaf, 500);
 setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
+initWeather();
 initBirthdayRecorder();
 initAlbum();
 initResume();
