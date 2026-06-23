@@ -4,7 +4,11 @@ const MUSIC_BASE_URL = IMAGE_BASE_URL = LOCATION_BASE_URL = PASSWORD_BASE_URL ="
 const ALARM_VOLUME = 1.0;
 const WEATHER_API_KEY = "5727a5b43000d171e14dbe2988498460"; //OpenWeatherMap API key
 const WEATHER_CITY = "Ho Chi Minh City";
-const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/weather?q=${WEATHER_CITY}&appid=${WEATHER_API_KEY}&units=metric&lang=vi`;
+let weatherLat = null;
+let weatherLon = null;
+let weatherLocationName = WEATHER_CITY;
+const WEATHER_API_URL_COORDS = `https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid=${WEATHER_API_KEY}&units=metric&lang=vi`;
+const WEATHER_API_URL_CITY = `https://api.openweathermap.org/data/2.5/weather?q=${WEATHER_CITY}&appid=${WEATHER_API_KEY}&units=metric&lang=vi`;
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -2338,7 +2342,8 @@ function initCountdownTimer() {
     elTimerDisplayBtn.id = 'timer-btn';
     elTimerDisplayBtn.innerHTML = '00:00:00';
     elTimerDisplayBtn.style.position = 'fixed';
-    elTimerDisplayBtn.style.top = '240px';
+    elTimerDisplayBtn.style.top = 'auto';
+    elTimerDisplayBtn.style.bottom = '620px';
     elTimerDisplayBtn.style.right = '30px';
     elTimerDisplayBtn.style.zIndex = '10005';
     document.body.appendChild(elTimerDisplayBtn);
@@ -2347,7 +2352,8 @@ function initCountdownTimer() {
     timerHoverText.id = 'timer-hover-text';
     timerHoverText.innerText = 'BỘ ĐẾM NGƯỢC';
     timerHoverText.style.position = 'fixed';
-    timerHoverText.style.top = '251px';
+    timerHoverText.style.top = 'auto';
+    timerHoverText.style.bottom = '631px';
     timerHoverText.style.right = '175px';
     timerHoverText.style.zIndex = '10005';
     timerHoverText.style.color = '#d45b79';
@@ -2367,7 +2373,8 @@ function initCountdownTimer() {
     timerStopHint.id = 'timer-stop-hint';
     timerStopHint.innerText = 'Nhấn để dừng';
     timerStopHint.style.position = 'fixed';
-    timerStopHint.style.top = '305px';
+    timerStopHint.style.top = 'auto';
+    timerStopHint.style.bottom = '570px';
     timerStopHint.style.right = '55px';
     timerStopHint.style.zIndex = '10005';
     document.body.appendChild(timerStopHint);
@@ -2608,7 +2615,7 @@ function initWeather() {
     style.innerHTML = `
         #weather-btn {
             position: fixed;
-            bottom: 610px;
+            top: 240px;
             right: 30px;
             width: 50px;
             height: 50px;
@@ -2632,7 +2639,7 @@ function initWeather() {
         }
         #weather-hover-text {
             position: fixed;
-            bottom: 620px;
+            top: 251px;
             right: 90px;
             color: #d45b79;
             padding: 6px 14px;
@@ -2723,7 +2730,7 @@ function initWeather() {
         }
         .weather-description {
             font-size: 18px;
-            color: #ff85a2;
+            color: #ffffff;
             text-transform: capitalize;
             margin-bottom: 20px;
         }
@@ -2735,15 +2742,14 @@ function initWeather() {
             margin-top: 20px;
         }
         .weather-detail-item {
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(5, 5, 5, 0.4);
             padding: 12px 20px;
             border-radius: 10px;
-            border-left: 4px solid #d45b79;
             min-width: 120px;
         }
         .weather-detail-label {
             font-size: 12px;
-            color: #ffb6c1;
+            color: #ffffff;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 5px;
@@ -2798,6 +2804,7 @@ function initWeather() {
 
     const detailItems = [
         { label: 'Cảm giác', value: '--°C', id: 'weather-feels' },
+        { label: 'Chỉ số UV', value: '-- UV', id: 'weather-uv-index' },
     ];
 
     detailItems.forEach(item => {
