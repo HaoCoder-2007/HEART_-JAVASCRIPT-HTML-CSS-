@@ -2429,6 +2429,8 @@ function initCountdownTimer() {
     document.body.appendChild(timerModal);
 
     elTimerDisplayBtn.addEventListener('mouseenter', () => {
+        timerHoverText.style.opacity = '1';
+        timerHoverText.style.transform = 'translateX(0)';
     });
 
     elTimerDisplayBtn.addEventListener('mouseleave', () => {
@@ -2792,7 +2794,7 @@ function initWeather() {
 
     const detailItems = [
         { label: 'Cảm giác', value: '--°C', id: 'weather-feels' },
-        { label: 'Chỉ số UV', value: '-- UV', id: 'weather-uv-index' },
+        { label: 'Chỉ số UV', value: '--', id: 'weather-uv-index' },
     ];
 
     detailItems.forEach(item => {
@@ -2946,7 +2948,7 @@ function initWeather() {
 
             document.getElementById('weather-feels').textContent = `${feelsLike}°C`;
             document.getElementById('weather-feels').style.color = tempColor;
-            document.getElementById('weather-uv-index').textContent = `${uvIndex} UV`;
+            document.getElementById('weather-uv-index').textContent = `${uvIndex}`;
             document.getElementById('weather-uv-index').style.color = uvColor;
 
         } catch (error) {
