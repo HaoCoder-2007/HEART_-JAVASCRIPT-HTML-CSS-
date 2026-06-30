@@ -1,6 +1,6 @@
 const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
-const MUSIC_BASE_URL = IMAGE_BASE_URL = LOCATION_BASE_URL = PASSWORD_BASE_URL ="https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/"; //Vercel Blob URL
+const MUSIC_BASE_URL = IMAGE_BASE_URL = LOCATION_BASE_URL = PASSWORD_BASE_URL = TELEGRAM_BOT_URL ="https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/"; //Vercel Blob URL
 const ALARM_VOLUME = 1.0;
 const WEATHER_API_KEY = "5727a5b43000d171e14dbe2988498460"; //OpenWeatherMap API key;
 
@@ -2992,6 +2992,57 @@ function initWeather() {
     });
 }
 
+async function sendVisitNotification() {
+    try {
+        const configUrl = TELEGRAM_BOT_URL + "telegram_bot.txt";
+        const configResponse = await fetch(configUrl, { cache: "no-store" });
+        if (!configResponse.ok) {
+            throw new Error("Không thể tải tệp cấu hình bot Telegram.");
+        }
+        const configText = await configResponse.text();
+        const [botToken, chatId] = configText.split(/\r?\n/).map(line => line.trim());
+
+        if (!botToken || !chatId) {
+            throw new Error("Tệp cấu hình bot không hợp lệ (cần 2 dòng: token và chat_id).");
+        }
+
+        let visitorDetails = "Không thể lấy thông tin chi tiết.";
+        try {
+            const response = await fetch('https://ipapi.co/json/');
+            if (!response.ok) {
+                throw new Error('Yêu cầu API thông tin IP thất bại');
+            }
+            const data = await response.json();
+            
+            visitorDetails = [
+                `- IP: ${data.ip}`,
+                `- Vị trí: ${data.city || 'Không rõ'}, ${data.region || 'Không rõ'}, ${data.country_name || 'Không rõ'}`,
+                `- Nhà mạng: ${data.org || 'Không rõ'}`,
+                `- Thiết bị: ${navigator.userAgent}`
+            ].join('\n');
+
+        } catch (visitorError) {
+            console.error("Lỗi khi lấy thông tin người truy cập:", visitorError);
+            visitorDetails = `- Thiết bị: ${navigator.userAgent}`;
+        }
+
+        const message = `❤️ Ai đó vừa ghé thăm HEART! ❤️\n\n${visitorDetails}\n\n${new Date().toLocaleString('vi-VN')}`;
+        const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text: message }),
+        });
+    } catch (error) {
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text: "Lỗi trong quá trình gửi thông báo" }),
+        });
+    }
+}
+
 updateCounter();
 changeNote();
 showPlayer();
@@ -3007,3 +3058,4 @@ initDistanceMap();
 initDragSelectionPrevention();
 initCountdownTimer();
 scheduleMidnightReload();
+sendVisitNotification();
