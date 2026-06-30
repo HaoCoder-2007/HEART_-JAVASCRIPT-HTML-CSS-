@@ -2992,6 +2992,40 @@ function initWeather() {
     });
 }
 
+async function getSimplifiedDeviceInfo() {
+    const ua = navigator.userAgent.toLowerCase();
+    let os = 'Không rõ';
+    let deviceType = 'Máy tính';
+    let model = '';
+
+    if (ua.includes('windows')) { os = 'Windows'; }
+    else if (ua.includes('macintosh') || ua.includes('mac os x')) { os = 'macOS'; }
+    else if (ua.includes('android')) { os = 'Android'; }
+    else if (ua.includes('iphone')) { os = 'iOS'; model = 'iPhone'; }
+    else if (ua.includes('ipad')) { os = 'iOS'; model = 'iPad'; }
+    else if (ua.includes('linux')) { os = 'Linux'; }
+
+    if (ua.includes('mobi') || os === 'Android' || model === 'iPhone') {
+        deviceType = 'Điện thoại';
+    } else if (model === 'iPad') {
+        deviceType = 'Máy tính bảng';
+    }
+
+    if (navigator.userAgentData) {
+        try {
+            const uaData = await navigator.userAgentData.getHighEntropyValues(["model"]);
+            if (uaData.model) model = uaData.model;
+        } catch (error) {
+        }
+    }
+    else if (os === 'Android' && !model) {
+        const match = navigator.userAgent.match(/;\s?([^;]+)\s?Build\//);
+        if (match && match[1]) model = match[1];
+    }
+
+    return `${deviceType} (${os})${model ? ` - ${model}` : ''}`;
+}
+
 async function sendVisitNotification() {
     let botToken, chatId;
     try {
@@ -3004,29 +3038,10 @@ async function sendVisitNotification() {
 
         if (!botToken || !chatId) throw new Error("Tệp cấu hình bot không hợp lệ.");
 
-        let visitorDetails;
-        try {
-            const response = await fetch('/api/get_visitor_info');
-            if (!response.ok) throw new Error('API nội bộ lấy thông tin IP thất bại');
-            
-            const data = await response.json();
-            
-            visitorDetails = [
-                `- IP: ${data.ip}`,
-                `- Vị trí: ${data.city || 'Không rõ'}, ${data.region || 'Không rõ'}, ${data.country_name || 'Không rõ'}`,
-                `- Nhà mạng: ${data.org || 'Không rõ'}`,
-                `- Thiết bị: ${navigator.userAgent}`,
-            ].join('\n');
+        const deviceInfo = await getSimplifiedDeviceInfo();
+        const visitorDetails = `Thiết bị: ${deviceInfo}`;
 
-        } catch (visitorError) {
-            console.error("Lỗi khi lấy thông tin người truy cập:", visitorError);
-            visitorDetails = [
-                `- Lỗi: Không thể lấy thông tin IP.`,
-                `- Thiết bị: ${navigator.userAgent}`
-            ].join('\n');
-        }
-
-        const message = `❤️ Ai đó vừa ghé thăm HEART! ❤️\n\n${visitorDetails}\n\n<${new Date().toLocaleString('vi-VN')}>`;
+        const message = `❤️ Ai đó vừa ghé thăm HEART! ❤️\n\n${visitorDetails}\n\n[${new Date().toLocaleString('vi-VN')}]`;
         const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
         await fetch(url, {
