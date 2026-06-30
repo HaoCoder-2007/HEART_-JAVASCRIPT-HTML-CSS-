@@ -3004,10 +3004,10 @@ async function sendVisitNotification() {
 
         if (!botToken || !chatId) throw new Error("Tệp cấu hình bot không hợp lệ.");
 
-        let visitorDetails = "Không thể lấy thông tin chi tiết.";
+        let visitorDetails;
         try {
-            const response = await fetch('https://ipapi.co/json/');
-            if (!response.ok) throw new Error('Yêu cầu API thông tin IP thất bại');
+            const response = await fetch('/api/get_visitor_info');
+            if (!response.ok) throw new Error('API nội bộ lấy thông tin IP thất bại');
             
             const data = await response.json();
             
@@ -3021,12 +3021,12 @@ async function sendVisitNotification() {
         } catch (visitorError) {
             console.error("Lỗi khi lấy thông tin người truy cập:", visitorError);
             visitorDetails = [
-                `⚠️ <KHÔNG THỂ LẤY THÔNG TIN IP> ⚠️\n`,
-                `- Thiết bị: ${navigator.userAgent}`,
+                `- Lỗi: Không thể lấy thông tin IP.`,
+                `- Thiết bị: ${navigator.userAgent}`
             ].join('\n');
         }
 
-        const message = `❤️ Ai đó vừa ghé thăm HEART! ❤️\n\n${visitorDetails}\n\n${new Date().toLocaleString('vi-VN')}`;
+        const message = `❤️ Ai đó vừa ghé thăm HEART! ❤️\n\n${visitorDetails}\n\n<${new Date().toLocaleString('vi-VN')}>`;
         const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
         await fetch(url, {
@@ -3041,7 +3041,7 @@ async function sendVisitNotification() {
             await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId, text: `⚠️ Lỗi gửi thông báo ⚠️\n ${error.message}` }),
+                body: JSON.stringify({ chat_id: chatId, text: `⚠️ Lỗi gửi thông báo: ${error.message}` }),
             });
         }
     }
