@@ -2993,22 +2993,23 @@ function initWeather() {
 }
 
 async function getSimplifiedDeviceInfo() {
-    const ua = navigator.userAgent.toLowerCase();
+    const ua = navigator.userAgent;
     let os = 'Không rõ';
     let deviceType = 'Máy tính';
     let model = '';
 
-    if (ua.includes('windows')) { os = 'Windows'; }
-    else if (ua.includes('macintosh') || ua.includes('mac os x')) { os = 'macOS'; }
-    else if (ua.includes('android')) { os = 'Android'; }
-    else if (ua.includes('iphone')) { os = 'iOS'; model = 'iPhone'; }
-    else if (ua.includes('ipad')) { os = 'iOS'; model = 'iPad'; }
-    else if (ua.includes('linux')) { os = 'Linux'; }
+    if (navigator.userAgentData) {
+        deviceType = navigator.userAgentData.mobile ? 'Điện thoại' : 'Máy tính';
+        os = navigator.userAgentData.platform;
+    } else {
+        if (/Windows/i.test(ua)) os = 'Windows';
+        else if (/Macintosh|Mac OS X/i.test(ua)) os = 'macOS';
+        else if (/Android/i.test(ua)) os = 'Android';
+        else if (/iPhone|iPad|iPod/i.test(ua)) os = 'iOS';
+        else if (/Linux/i.test(ua)) os = 'Linux';
 
-    if (ua.includes('mobi') || os === 'Android' || model === 'iPhone') {
-        deviceType = 'Điện thoại';
-    } else if (model === 'iPad') {
-        deviceType = 'Máy tính bảng';
+        if (/Mobi|Android|iPhone/i.test(ua)) deviceType = 'Điện thoại';
+        else if (/iPad/i.test(ua)) deviceType = 'Máy tính bảng';
     }
 
     if (navigator.userAgentData) {
@@ -3018,8 +3019,9 @@ async function getSimplifiedDeviceInfo() {
         } catch (error) {
         }
     }
-    else if (os === 'Android' && !model) {
-        const match = navigator.userAgent.match(/;\s?([^;]+)\s?Build\//);
+    
+    if (!model && /Android/i.test(ua)) {
+        const match = ua.match(/;\s?([^;]+?)\s?(Build|;|\))/);
         if (match && match[1]) model = match[1];
     }
 
