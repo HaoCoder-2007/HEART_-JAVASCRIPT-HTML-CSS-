@@ -3025,6 +3025,37 @@ async function getSimplifiedDeviceInfo() {
         if (match && match[1]) model = match[1];
     }
 
+    const DEVICE_MODEL_MAP = {
+        // Samsung
+        'SM-S928B': 'Samsung Galaxy S24 Ultra',
+        'SM-S918B': 'Samsung Galaxy S23 Ultra',
+        'SM-S908E': 'Samsung Galaxy S22 Ultra',
+        'SM-G998B': 'Samsung Galaxy S21 Ultra',
+        'SM-A546E': 'Samsung Galaxy A54',
+        'SM-A536E': 'Samsung Galaxy A53 5G',
+        'SM-A525F': 'Samsung Galaxy A52',
+        'SM-A736B': 'Samsung Galaxy A73 5G',
+        'SM-M546B': 'Samsung Galaxy M54',
+
+        // Xiaomi / Redmi / POCO
+        '21091116I': 'Xiaomi 11T Pro',
+        '2312DRA50G': 'Redmi Note 13 Pro 5G',
+        '23117RA68G' : 'Redmi Note 13 Pro 4G',
+        '23021RAA2Y': 'Redmi Note 12 4G',
+        '22011211G': 'Redmi Note 11 Pro+ 5G',
+        '2201117TG': 'Redmi Note 11 Pro 4G',
+        'M2101K6G': 'POCO F3',
+
+        // OPPO
+        'CPH2525': 'OPPO Reno11 F 5G',
+        'CPH2457': 'OPPO Reno8 Pro 5G',
+        'CPH2359': 'OPPO Reno8 T 4G',
+        'CPH2387': 'OPPO A77s',
+    };
+
+    const commercialName = DEVICE_MODEL_MAP[model.trim()];
+    if (commercialName) model = commercialName;
+
     return `${deviceType} (${os})${model ? ` - ${model}` : ''}`;
 }
 
