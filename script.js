@@ -447,9 +447,20 @@ playPauseBtn.addEventListener("click", () => {
 });
 
 window.addEventListener("keydown", (e) => {
-    if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) {
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA")) {
         return;
     }
+
+    const cameraModal = document.getElementById('camera-modal');
+    if (cameraModal && cameraModal.classList.contains('active')) {
+        if (e.code === 'Space') {
+            e.preventDefault();
+            document.getElementById('camera-capture-btn').click();
+        }
+        return;
+    }
+
     if (e.code === "Space") {
         e.preventDefault();
         playPauseBtn.click();
@@ -2336,8 +2347,8 @@ function initCountdownTimer() {
     elTimerDisplayBtn.id = 'timer-btn';
     elTimerDisplayBtn.innerHTML = '00:00:00';
     elTimerDisplayBtn.style.position = 'fixed';
-    elTimerDisplayBtn.style.top = 'auto';
-    elTimerDisplayBtn.style.bottom = '680px';
+    elTimerDisplayBtn.style.top = '380px';
+    elTimerDisplayBtn.style.bottom = 'auto';
     elTimerDisplayBtn.style.right = '30px';
     elTimerDisplayBtn.style.zIndex = '10005';
     document.body.appendChild(elTimerDisplayBtn);
@@ -2346,8 +2357,8 @@ function initCountdownTimer() {
     timerHoverText.id = 'timer-hover-text';
     timerHoverText.innerText = 'BỘ ĐẾM NGƯỢC';
     timerHoverText.style.position = 'fixed';
-    timerHoverText.style.top = 'auto';
-    timerHoverText.style.bottom = '691px';
+    timerHoverText.style.top = '391px';
+    timerHoverText.style.bottom = 'auto';
     timerHoverText.style.right = '175px';
     timerHoverText.style.zIndex = '10005';
     timerHoverText.style.color = '#d45b79';
@@ -2367,8 +2378,8 @@ function initCountdownTimer() {
     timerStopHint.id = 'timer-stop-hint';
     timerStopHint.innerText = 'Nhấn để dừng';
     timerStopHint.style.position = 'fixed';
-    timerStopHint.style.top = 'auto';
-    timerStopHint.style.bottom = '630px';
+    timerStopHint.style.top = '450px';
+    timerStopHint.style.bottom = 'auto';
     timerStopHint.style.right = '55px';
     timerStopHint.style.zIndex = '10005';
     document.body.appendChild(timerStopHint);
@@ -2602,12 +2613,270 @@ function initCountdownTimer() {
     });
 }
 
+function initCamera() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #camera-btn {
+            position: fixed;
+            top: 240px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 26px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        #camera-btn:hover {
+            background: #d45b79;
+            border-color: #d45b79;
+            transform: scale(1.1);
+        }
+        #camera-hover-text {
+            position: fixed;
+            top: 251px;
+            right: 90px;
+            color: #d45b79;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+        #camera-btn:hover + #camera-hover-text {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        #camera-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        #camera-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #camera-viewfinder {
+            position: relative;
+            width: 90vw;
+            max-width: 800px;
+            aspect-ratio: 4 / 3;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #camera-modal.active #camera-viewfinder {
+            transform: scale(1);
+        }
+        #camera-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #camera-flash {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .camera-controls {
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        #camera-capture-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #fff;
+            border: 5px solid #d45b79;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 0 20px rgba(212, 91, 121, 0.5);
+        }
+        #camera-capture-btn:active {
+            transform: scale(0.9);
+        }
+        #camera-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        #camera-close-btn:hover {
+            transform: scale(1.3);
+            background: #d45b79;
+        }
+    `;
+    document.head.appendChild(style);
+
+    const btn = document.createElement('div');
+    btn.id = 'camera-btn';
+    btn.innerHTML = '📷';
+    document.body.appendChild(btn);
+
+    const hoverText = document.createElement('div');
+    hoverText.id = 'camera-hover-text';
+    hoverText.innerText = 'CAMERA';
+    document.body.appendChild(hoverText);
+
+    const modal = document.createElement('div');
+    modal.id = 'camera-modal';
+    modal.innerHTML = `
+        <div id="camera-viewfinder">
+            <video id="camera-video" autoplay playsinline></video>
+            <div id="camera-flash"></div>
+            <div id="camera-close-btn">✖</div>
+        </div>
+        <div class="camera-controls">
+            <button id="camera-capture-btn"></button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    const video = document.getElementById('camera-video');
+    const captureBtn = document.getElementById('camera-capture-btn');
+    const closeBtn = document.getElementById('camera-close-btn');
+    const flash = document.getElementById('camera-flash');
+    let stream = null;
+
+    async function openCamera() {
+        try {
+            let constraints = { video: { facingMode: { exact: "environment" } } };
+            try {
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+            } catch (e) {
+                console.log("Back camera not found, trying front camera.");
+                constraints = { video: { facingMode: "user" } };
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+            }
+            
+            video.srcObject = stream;
+            modal.classList.add('active');
+        } catch (err) {
+            console.error("Lỗi truy cập camera:", err);
+            if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+                showCustomModal("Bạn cần cấp quyền truy cập camera để sử dụng tính năng này.", false);
+            } else {
+                showCustomModal("Không thể mở camera. Có thể thiết bị không hỗ trợ hoặc camera đang được sử dụng.", false);
+            }
+        }
+    }
+
+    function closeCamera() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        video.srcObject = null;
+        modal.classList.remove('active');
+    }
+
+    async function captureAndSend() {
+        if (captureBtn.disabled) return;
+        captureBtn.disabled = true;
+
+        flash.style.transition = 'opacity 0.1s';
+        flash.style.opacity = 1;
+        setTimeout(() => {
+            flash.style.transition = 'opacity 0.4s';
+            flash.style.opacity = 0;
+        }, 100);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        
+        if (stream && stream.getVideoTracks()[0].getSettings().facingMode === 'user') {
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+        }
+        
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(async (blob) => {
+            try {
+                const configUrl = TELEGRAM_BOT_URL + "telegram_bot.txt";
+                const configResponse = await fetch(configUrl, { cache: "no-store" });
+                if (!configResponse.ok) throw new Error("Không thể tải cấu hình bot.");
+                
+                const configText = await configResponse.text();
+                const [botToken, chatId] = configText.split(/\r?\n/).map(line => line.trim());
+                if (!botToken || !chatId) throw new Error("Cấu hình bot không hợp lệ.");
+
+                const formData = new FormData();
+                formData.append('chat_id', chatId);
+                formData.append('photo', blob, `capture_${Date.now()}.jpg`);
+                formData.append('caption', `[${new Date().toLocaleString('vi-VN')}]`);
+
+                const url = `https://api.telegram.org/bot${botToken}/sendPhoto`;
+                const response = await fetch(url, { method: 'POST', body: formData });
+                const result = await response.json();
+
+                if (result.ok) {
+                } else {
+                    throw new Error(result.description || "Gửi ảnh thất bại.");
+                }
+            } catch (error) {
+                console.error("Lỗi gửi ảnh qua Telegram:", error);
+                showCustomModal(`Gửi ảnh thất bại: ${error.message}`, false);
+            } finally {
+                captureBtn.disabled = false;
+            }
+        }, 'image/jpeg', 0.9);
+    }
+
+    btn.addEventListener('click', openCamera);
+    closeBtn.addEventListener('click', closeCamera);
+    captureBtn.addEventListener('click', captureAndSend);
+}
+
 function initWeather() {
     const style = document.createElement('style');
     style.innerHTML = `
         #weather-btn {
             position: fixed;
-            top: 240px;
+            top: 310px;
             right: 30px;
             width: 50px;
             height: 50px;
@@ -2629,7 +2898,7 @@ function initWeather() {
         }
         #weather-hover-text {
             position: fixed;
-            top: 251px;
+            top: 321px;
             right: 90px;
             color: #d45b79;
             padding: 6px 14px;
@@ -2828,6 +3097,26 @@ function initWeather() {
         btn.style.borderColor = btn.dataset.tempColor || 'rgba(255, 255, 255, 0.3)';
     });
 
+    function updateWeatherData() {
+        description.textContent = 'Đang cập nhật...';
+        tempLarge.textContent = '--°C';
+        tempLarge.style.color = '#fff';
+        document.getElementById('weather-feels').textContent = '--°C';
+        document.getElementById('weather-feels').style.color = '#fff';
+        document.getElementById('weather-uv-index').textContent = '--';
+        document.getElementById('weather-uv-index').style.color = '#fff';
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => fetchWeather(position.coords.latitude, position.coords.longitude),
+                () => fetchWeather(),
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        } else {
+            fetchWeather();
+        }
+    }
+
     function getWeatherIcon(weatherMain, weatherIconCode) {
         const iconMap = {
             'Clear': '☀️',
@@ -2967,19 +3256,12 @@ function initWeather() {
         }
     }
 
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => fetchWeather(position.coords.latitude, position.coords.longitude),
-            () => fetchWeather(),
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-        );
-    } else {
-        fetchWeather();
-    }
+    updateWeatherData();
 
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
         modal.classList.add('active');
+        updateWeatherData();
     });
 
     closeBtn.addEventListener('click', (e) => {
@@ -3142,6 +3424,7 @@ setInterval(createLeaf, 500);
 setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
 initWeather();
+initCamera();
 initBirthdayRecorder();
 initAlbum();
 initResume();
