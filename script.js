@@ -340,7 +340,7 @@ function drawVisualizer() {
     analyser.getByteFrequencyData(dataArray);
     
     const bufferLength = analyser.frequencyBinCount;
-    const barWidth = visualizerCanvas.width / bufferLength;
+    const barWidth = (visualizerCanvas.width / bufferLength) * 1.5;
     let barHeight;
     let x = 0;
     
