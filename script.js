@@ -1066,6 +1066,7 @@ function renderPlaylist() {
 }
 
 function showPlaylistUI() {
+    closeAllModals('.playlist-ui');
     playlistUI.classList.add('active');
     clearTimeout(playlistHideTimeout);
     playlistHideTimeout = setTimeout(() => {
@@ -1365,6 +1366,35 @@ function initBirthdayRecorder() {
         recorder.addEventListener('mousedown', onPointerDown);
         recorder.addEventListener('touchstart', onPointerDown, { passive: false });
     }
+}
+
+function closeAllModals(exceptSelector = null) {
+    const modalSelectors = [
+        '#album-modal', 
+        '#resume-modal', 
+        '#map-modal', 
+        '#camera-modal', 
+        '#weather-modal', 
+        '#timer-modal',
+    ];
+
+    modalSelectors.forEach(selector => {
+        if (selector === exceptSelector) return;
+
+        const modal = document.querySelector(selector);
+        if (modal && modal.classList.contains('active')) {
+            if (selector === '#camera-modal') {
+                const closeBtn = document.getElementById('camera-close-btn');
+                if (closeBtn) {
+                    closeBtn.click();
+                } else {
+                    modal.classList.remove('active');
+                }
+            } else {
+                modal.classList.remove('active');
+            }
+        }
+    });
 }
 
 function initAlbum() {
@@ -1752,6 +1782,7 @@ function initAlbum() {
 
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
+        closeAllModals('#album-modal');
         modal.classList.add('active');
     });
 
@@ -2004,7 +2035,11 @@ function initResume() {
     modal.append(closeBtn, header, content);
     document.body.appendChild(modal);
 
-    btn.addEventListener('click', (e) => { e.stopPropagation(); modal.classList.add('active'); });
+    btn.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        closeAllModals('#resume-modal');
+        modal.classList.add('active'); 
+    });
     closeBtn.addEventListener('click', (e) => { e.stopPropagation(); modal.classList.remove('active'); });
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
 }
@@ -2209,6 +2244,7 @@ function initDistanceMap() {
 
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
+        closeAllModals('#map-modal');
         modal.classList.add('active');
         
         const destInput = document.getElementById('map-dest-input');
@@ -2460,6 +2496,7 @@ function initCountdownTimer() {
     }
 
     function showTimerModal() {
+        closeAllModals('#timer-modal');
         timerModal.classList.add('active');
         document.getElementById('timer-hours').value = '0';
         document.getElementById('timer-minutes').value = '0';
@@ -2849,6 +2886,7 @@ function initCamera() {
     }
 
     async function openCamera() {
+        closeAllModals('#camera-modal');
         modal.classList.add('active');
         document.getElementById('camera-caption-input').value = '';
         document.getElementById('camera-caption-input').focus();
@@ -3326,6 +3364,7 @@ function initWeather() {
 
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
+        closeAllModals('#weather-modal');
         modal.classList.add('active');
         updateWeatherData();
     });
