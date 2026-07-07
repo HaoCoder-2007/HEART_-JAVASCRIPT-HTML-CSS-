@@ -2688,9 +2688,31 @@ function initCamera() {
             background: #000;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 3px solid #d45b79;
+            box-shadow: 0 0 20px rgba(212, 91, 121, 0.7), 0 10px 30px rgba(0,0,0,0.5);
             transform: scale(0.9);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #camera-flip-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        #camera-flip-btn:hover {
+            transform: scale(1.3) rotate(360deg);
+            background: #d45b79;
         }
         #camera-modal.active #camera-viewfinder {
             transform: scale(1);
@@ -2712,7 +2734,23 @@ function initCamera() {
             display: flex;
             align-items: center;
             gap: 20px;
+            width: 90vw;
+            max-width: 800px;
         }
+        #camera-caption-input {
+            flex-grow: 1;
+            height: 50px;
+            padding: 0 20px;
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        #camera-caption-input::placeholder { color: rgba(255, 255, 255, 0.6); }
+        #camera-caption-input:focus { border-color: #d45b79; }
         #camera-capture-btn {
             width: 70px;
             height: 70px;
@@ -2766,9 +2804,11 @@ function initCamera() {
         <div id="camera-viewfinder">
             <video id="camera-video" autoplay playsinline></video>
             <div id="camera-flash"></div>
+            <div id="camera-flip-btn">⟳</div>
             <div id="camera-close-btn">✖</div>
         </div>
         <div class="camera-controls">
+            <input type="text" id="camera-caption-input" placeholder="Thêm chú thích...">
             <button id="camera-capture-btn"></button>
         </div>
     `;
@@ -2777,41 +2817,60 @@ function initCamera() {
     const video = document.getElementById('camera-video');
     const captureBtn = document.getElementById('camera-capture-btn');
     const closeBtn = document.getElementById('camera-close-btn');
+    const flipBtn = document.getElementById('camera-flip-btn');
     const flash = document.getElementById('camera-flash');
     let stream = null;
+    let currentFacingMode = 'environment';
 
-    async function openCamera() {
+    async function startCameraStream(facingMode) {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+
+        const constraints = { video: { facingMode: facingMode } };
         try {
-            let constraints = { video: { facingMode: { exact: "environment" } } };
-            try {
-                stream = await navigator.mediaDevices.getUserMedia(constraints);
-            } catch (e) {
-                console.log("Back camera not found, trying front camera.");
-                constraints = { video: { facingMode: "user" } };
-                stream = await navigator.mediaDevices.getUserMedia(constraints);
-            }
-            
+            stream = await navigator.mediaDevices.getUserMedia(constraints);
             video.srcObject = stream;
-            modal.classList.add('active');
+            currentFacingMode = facingMode;
+
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoInputs = devices.filter(device => device.kind === 'videoinput');
+            flipBtn.style.display = videoInputs.length > 1 ? 'flex' : 'none';
         } catch (err) {
-            console.error("Lỗi truy cập camera:", err);
-            if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-                showCustomModal("Bạn cần cấp quyền truy cập camera để sử dụng tính năng này.", false);
+            console.error(`Lỗi khi mở camera ${facingMode}:`, err);
+            if (facingMode === 'environment') {
+                console.log("Không tìm thấy camera sau, thử camera trước.");
+                await startCameraStream('user');
             } else {
                 showCustomModal("Không thể mở camera. Có thể thiết bị không hỗ trợ hoặc camera đang được sử dụng.", false);
+                closeCamera();
             }
         }
+    }
+
+    async function openCamera() {
+        modal.classList.add('active');
+        document.getElementById('camera-caption-input').value = '';
+        document.getElementById('camera-caption-input').focus();
+        await startCameraStream('environment');
     }
 
     function closeCamera() {
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
+            stream = null;
         }
         video.srcObject = null;
         modal.classList.remove('active');
+        if (flipBtn) flipBtn.style.display = 'none';
     }
 
-    async function captureAndSend() {
+    async function flipCamera() {
+        const newFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
+        await startCameraStream(newFacingMode);
+    }
+
+    async function captureAndProcess() {
         if (captureBtn.disabled) return;
         captureBtn.disabled = true;
 
@@ -2826,12 +2885,12 @@ function initCamera() {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
-        
+
         if (stream && stream.getVideoTracks()[0].getSettings().facingMode === 'user') {
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
         }
-        
+
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob(async (blob) => {
@@ -2839,21 +2898,27 @@ function initCamera() {
                 const configUrl = TELEGRAM_BOT_URL + "telegram_bot.txt";
                 const configResponse = await fetch(configUrl, { cache: "no-store" });
                 if (!configResponse.ok) throw new Error("Không thể tải cấu hình bot.");
-                
                 const configText = await configResponse.text();
                 const [botToken, chatId] = configText.split(/\r?\n/).map(line => line.trim());
                 if (!botToken || !chatId) throw new Error("Cấu hình bot không hợp lệ.");
 
+                const captionInput = document.getElementById('camera-caption-input');
+                const userCaption = captionInput.value.trim();
+                const timestamp = new Date().toLocaleString('vi-VN');
+                const finalCaption = userCaption ? `${userCaption}\n\n[${timestamp}]` : `[${timestamp}]`;
+
                 const formData = new FormData();
                 formData.append('chat_id', chatId);
                 formData.append('photo', blob, `capture_${Date.now()}.jpg`);
-                formData.append('caption', `[${new Date().toLocaleString('vi-VN')}]`);
+                formData.append('caption', finalCaption);
 
                 const url = `https://api.telegram.org/bot${botToken}/sendPhoto`;
                 const response = await fetch(url, { method: 'POST', body: formData });
                 const result = await response.json();
 
                 if (result.ok) {
+                    showCustomModal("Đã gửi ảnh thành công!", false);
+                    captionInput.value = '';
                 } else {
                     throw new Error(result.description || "Gửi ảnh thất bại.");
                 }
@@ -2868,7 +2933,8 @@ function initCamera() {
 
     btn.addEventListener('click', openCamera);
     closeBtn.addEventListener('click', closeCamera);
-    captureBtn.addEventListener('click', captureAndSend);
+    flipBtn.addEventListener('click', flipCamera);
+    captureBtn.addEventListener('click', captureAndProcess);
 }
 
 function initWeather() {
