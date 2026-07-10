@@ -2240,7 +2240,7 @@ function initDistanceMap() {
 
     const btn = document.createElement('div');
     btn.id = 'distance-btn';
-    btn.innerHTML = '📍';
+    btn.innerHTML = '🗺️';
     document.body.appendChild(btn);
 
     const hoverText = document.createElement('div');
@@ -3578,6 +3578,218 @@ async function sendVisitNotification() {
     }
 }
 
+function initAIAssistant() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        console.warn("Trình duyệt không hỗ trợ Speech Recognition. Tính năng AI sẽ không hoạt động.");
+        return;
+    }
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #ai-assistant-btn {
+            position: fixed;
+            bottom: 170px; /* Cao hơn music visualizer */
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 26px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        #ai-assistant-btn:hover {
+            background: #d45b79;
+            border-color: #d45b79;
+            transform: scale(1.1);
+        }
+        #ai-assistant-btn.listening {
+            animation: pulse-ai 1.5s infinite;
+            background: #d45b79;
+            border-color: #d45b79;
+        }
+        @keyframes pulse-ai {
+            0% { box-shadow: 0 0 0 0 rgba(212, 91, 121, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(212, 91, 121, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 91, 121, 0); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    const btn = document.createElement('div');
+    btn.id = 'ai-assistant-btn';
+    btn.innerHTML = '✨';
+    document.body.appendChild(btn);
+    
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'vi-VN';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    let isListening = false;
+
+    btn.addEventListener('click', () => {
+        if (isListening) {
+            recognition.stop();
+            return;
+        }
+        try {
+            recognition.start();
+        } catch (e) {
+            console.error("Lỗi khi bắt đầu nhận dạng giọng nói:", e);
+            showCustomModal("Không thể bắt đầu nhận dạng giọng nói. Vui lòng kiểm tra quyền truy cập micro.", false);
+        }
+    });
+
+    recognition.onstart = () => {
+        isListening = true;
+        btn.classList.add('listening');
+        btn.title = 'Đang lắng nghe... (Nhấn để dừng)';
+    };
+
+    recognition.onend = () => {
+        isListening = false;
+        btn.classList.remove('listening');
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Lỗi nhận dạng giọng nói:', event.error);
+        let errorMessage = "Đã xảy ra lỗi. Vui lòng thử lại.";
+        if (event.error === 'no-speech') {
+            errorMessage = "Không nhận diện được giọng nói.";
+        } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+            errorMessage = "Quyền truy cập micro đã bị từ chối.";
+        }
+        showCustomModal(errorMessage, false);
+    };
+
+    recognition.onresult = (event) => {
+        const command = event.results[0][0].transcript.toLowerCase().trim();
+        console.log('Lệnh đã nhận:', command);
+        btn.title = `Đang xử lý: "${command}"`;
+        sendToGemini(command);
+    };
+
+    async function sendToGemini(command) {
+        btn.classList.add('listening');
+
+        const playlistNames = playlistsData.map(p => {
+            let name = p.name.toLowerCase()
+                .replace(/─────.─────\n/g, '').replace(/\n/g, ' ').replace(/\t/g, '')
+                .replace(/[❄️🎄🏵️🧧🔒︎]/g, '').trim();
+            if (p.theme === 'xmas') return "Giáng sinh";
+            if (p.theme === 'tet') return "Tết";
+            return name;
+        });
+
+        try {
+            const response = await fetch('/api/ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command, playlistNames }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Lỗi từ server: ${response.statusText}`);
+            }
+
+            const action = await response.json();
+            console.log('Hành động từ AI:', action);
+            executeAIAction(action);
+
+        } catch (error) {
+            console.error('Lỗi khi giao tiếp với AI backend:', error);
+            showCustomModal("Không thể kết nối với trợ lý AI. Vui lòng thử lại.", false);
+        } finally {
+        }
+    }
+
+    function executeAIAction(action) {
+        if (!action || !action.action) {
+            showCustomModal(`Lỗi xử lý lệnh.`, false);
+            return;
+        }
+
+        switch (action.action) {
+            case 'play':
+                if (audio.paused) { playPauseBtn.click(); showCustomModal("Đang phát nhạc.", false); }
+                break;
+            case 'pause':
+                if (!audio.paused) { playPauseBtn.click(); showCustomModal("Đã tạm dừng nhạc.", false); }
+                break;
+            case 'next_song':
+                nextBtn.click();
+                break;
+            case 'prev_song':
+                prevBtn.click();
+                break;
+            case 'set_volume':
+                if (typeof action.value === 'number') {
+                    const vol = Math.max(0, Math.min(100, action.value));
+                    volumeBar.value = vol;
+                    volumeBar.dispatchEvent(new Event("input"));
+                    showCustomModal(`Đã chỉnh âm lượng thành ${vol}%.`, false);
+                }
+                break;
+            case 'increase_volume':
+                volumeBar.value = Math.min(parseInt(volumeBar.value, 10) + 20, 100);
+                volumeBar.dispatchEvent(new Event("input"));
+                showCustomModal(`Đã tăng âm lượng.`, false);
+                break;
+            case 'decrease_volume':
+                volumeBar.value = Math.max(parseInt(volumeBar.value, 10) - 20, 0);
+                volumeBar.dispatchEvent(new Event("input"));
+                showCustomModal(`Đã giảm âm lượng.`, false);
+                break;
+            case 'mute':
+                volumeBar.value = 0;
+                volumeBar.dispatchEvent(new Event("input"));
+                showCustomModal(`Đã tắt tiếng.`, false);
+                break;
+            case 'change_playlist':
+                if (action.value) {
+                    const targetName = action.value.toLowerCase();
+                    let foundIndex = -1;
+
+                    for (let i = 0; i < playlistsData.length; i++) {
+                        const plData = playlistsData[i];
+                        let simplifiedName = plData.name.toLowerCase()
+                            .replace(/─────.─────\n/g, '').replace(/\n/g, ' ').replace(/\t/g, '')
+                            .replace(/[❄️🎄🏵️🧧🔒︎]/g, '').trim();
+                        
+                        if (plData.theme && targetName.includes(plData.theme)) { foundIndex = i; break; }
+                        if (simplifiedName.includes(targetName) || targetName.includes(simplifiedName)) { foundIndex = i; break; }
+                    }
+
+                    if (foundIndex !== -1) {
+                        const plData = playlistsData[foundIndex];
+                        if (plData.isLocked && !plData.isUnlocked) {
+                            showCustomModal(`Playlist "${plData.name.replace('🔒︎', '')}" đang bị khóa.`, false);
+                        } else {
+                            changePlaylist(foundIndex);
+                            showCustomModal(`Đang chuyển sang playlist "${plData.name.replace(/<[^>]*>/g, '').replace('🔒︎', '').replace(/\n/g, ' ')}".`, false);
+                        }
+                    } else {
+                        showCustomModal(`Không tìm thấy playlist: "${action.value}"`, false);
+                    }
+                }
+                break;
+            case 'unknown':
+            default:
+                showCustomModal(`Không hiểu lệnh: "${action.command || ''}"`, false);
+                break;
+        }
+    }
+}
+
 //-------------------------------------------------------BASE-------------------------------------------------------------------------------------------
 updateCounter();
 changeNote();
@@ -3596,6 +3808,7 @@ initDistanceMap();
 initCamera();
 initWeather();
 initCountdownTimer();
-//-------------------------------------------------------BOT-------------------------------------------------------------------------------------------
+//-------------------------------------------------------BOT&AI----------------------------------------------------------------------------------------
 sendVisitNotification();
+initAIAssistant();
 //======================================================================================================================================================
