@@ -3850,6 +3850,7 @@ function initAIAssistant() {
         if (isListening) {
             intentionalStop = true;
             recognition.stop();
+<<<<<<< HEAD
         } else {
             try {
                 intentionalStop = false;
@@ -3858,6 +3859,14 @@ function initAIAssistant() {
                 console.error("Lỗi khi bắt đầu nhận dạng giọng nói:", e);
                 showCustomModal("Không thể bắt đầu nhận dạng giọng nói. Có thể do lỗi trình duyệt hoặc chưa cấp quyền.", false);
             }
+=======
+            return;
+        }
+        try {
+            recognition.start();
+        } catch (e) {
+            console.error("Lỗi khi bắt đầu nhận dạng giọng nói:", e);
+>>>>>>> 581ccce (Update)
         }
     });
 
@@ -3905,6 +3914,7 @@ function initAIAssistant() {
             return;
         }
 
+<<<<<<< HEAD
         console.log('Final transcript:', transcript);
 
         if (isAwaitingCommand) {
@@ -3928,6 +3938,68 @@ function initAIAssistant() {
                     btn.style.borderColor = '';
                 }
             }, 5000);
+=======
+        switch (action.action) {
+            case 'play':
+                if (audio.paused) { playPauseBtn.click();}
+                break;
+            case 'pause':
+                if (!audio.paused) { playPauseBtn.click();}
+                break;
+            case 'next_song':
+                nextBtn.click();
+                break;
+            case 'prev_song':
+                prevBtn.click();
+                break;
+            case 'set_volume':
+                if (typeof action.value === 'number') {
+                    const vol = Math.max(0, Math.min(100, action.value));
+                    volumeBar.value = vol;
+                    volumeBar.dispatchEvent(new Event("input"));
+                }
+                break;
+            case 'increase_volume':
+                volumeBar.value = Math.min(parseInt(volumeBar.value, 10) + 20, 100);
+                volumeBar.dispatchEvent(new Event("input"));
+                break;
+            case 'decrease_volume':
+                volumeBar.value = Math.max(parseInt(volumeBar.value, 10) - 20, 0);
+                volumeBar.dispatchEvent(new Event("input"));
+                break;
+            case 'mute':
+                volumeBar.value = 0;
+                volumeBar.dispatchEvent(new Event("input"));
+                break;
+            case 'change_playlist':
+                if (action.value) {
+                    const targetName = action.value.toLowerCase();
+                    let foundIndex = -1;
+    
+                    for (let i = 0; i < playlistsData.length; i++) {
+                        const plData = playlistsData[i];
+                        let simplifiedName = plData.name.toLowerCase()
+                            .replace(/─────.─────\n/g, '').replace(/\n/g, ' ').replace(/\t/g, '')
+                            .replace(/[❄️🎄🏵️🧧🔒︎]/g, '').trim();
+                        
+                        if (plData.theme && targetName.includes(plData.theme)) { foundIndex = i; break; }
+                        if (simplifiedName.includes(targetName) || targetName.includes(simplifiedName)) { foundIndex = i; break; }
+                    }
+    
+                    if (foundIndex !== -1) {
+                        const plData = playlistsData[foundIndex];
+                        if (plData.isLocked && !plData.isUnlocked) {
+                        } else {
+                            changePlaylist(foundIndex);
+                        }
+                    }
+                }
+                break;
+            case 'unknown':
+            default:
+                showCustomModal(`Không hiểu lệnh: "${action.command || ''}"`, false);
+                break;
+>>>>>>> 581ccce (Update)
         }
     };
 

@@ -2,4 +2,9 @@
 music/
 picture/
 txt/
+<<<<<<< HEAD
 temp.js
+=======
+node_modules/
+.env*.local
+>>>>>>> 581ccce (Update)
