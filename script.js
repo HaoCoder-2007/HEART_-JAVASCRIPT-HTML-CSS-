@@ -2044,14 +2044,71 @@ function initResume() {
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
 }
 
-function scheduleMidnightReload() {
+function midnightUpdate() {
+    const currentPlaylistName = playlistsData[currentPlaylistDataIndex].name;
+
+    const nonSeasonalPlaylists = playlistsData.filter(p => p.theme !== 'xmas' && p.theme !== 'tet');
+    playlistsData.length = 0;
+    playlistsData.push(...nonSeasonalPlaylists);
+
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+
+    if (month === 12) {
+        playlistsData.unshift({
+            name: "─────🎄─────\n❄️Merry Christmas❄️\n─────🎄─────",
+            tracks: xmasTracks,
+            activeBg: "#ffffff",
+            activeColor: "#000000e0",
+            theme: "xmas"
+        });
+    }
+
+    if (month === 1 || (month === 2 && day <= 15)) {
+        playlistsData.unshift({
+            name: "─────🏵️─────\n🧧\tHappy New Year\t🧧\n─────🏵️─────",
+            tracks: tetTracks,
+            activeBg: "#d41515c2",
+            activeColor: "#ffbb00",
+            theme: "tet"
+        });
+    }
+
+    let newIndex = playlistsData.findIndex(p => p.name === currentPlaylistName);
+    if (newIndex === -1) {
+        const allPlaylistIndex = playlistsData.findIndex(p => p.name === "Tất cả");
+        currentPlaylistDataIndex = (allPlaylistIndex !== -1) ? allPlaylistIndex : 0;
+    } else {
+        currentPlaylistDataIndex = newIndex;
+    }
+    playlist = playlistsData[currentPlaylistDataIndex].tracks;
+    
+    if (playlistUI.classList.contains('active')) {
+        renderPlaylist();
+    }
+
+    const recorder = document.getElementById('bday-recorder');
+    const isBirthday = (today.getDate() === B_DAY && (today.getMonth() + 1) === B_MONTH);
+
+    if (isBirthday && !recorder) {
+        initBirthdayRecorder();
+    } else if (!isBirthday && recorder) {
+        recorder.remove();
+    }
+
+    updateCounter();
+}
+
+function scheduleMidnightUpdate() {
     const now = new Date();
-    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1, 0);
     const msUntilMidnight = tomorrow - now;
     
     setTimeout(() => {
-        window.location.reload();
-    }, msUntilMidnight + 1000);
+        midnightUpdate();
+        scheduleMidnightUpdate();
+    }, msUntilMidnight);
 }
 
 let wakeLock = null;
@@ -3521,6 +3578,7 @@ async function sendVisitNotification() {
     }
 }
 
+//-------------------------------------------------------BASE-------------------------------------------------------------------------------------------
 updateCounter();
 changeNote();
 showPlayer();
@@ -3528,13 +3586,16 @@ showNextPolaroid();
 setInterval(createLeaf, 500);
 setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
-initWeather();
-initCamera();
+initDragSelectionPrevention();
+scheduleMidnightUpdate();
+//-------------------------------------------------------APP--------------------------------------------------------------------------------------------
 initBirthdayRecorder();
 initAlbum();
 initResume();
 initDistanceMap();
-initDragSelectionPrevention();
+initCamera();
+initWeather();
 initCountdownTimer();
-scheduleMidnightReload();
+//-------------------------------------------------------BOT-------------------------------------------------------------------------------------------
 sendVisitNotification();
+//======================================================================================================================================================
