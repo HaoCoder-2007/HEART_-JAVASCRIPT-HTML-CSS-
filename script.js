@@ -1,8 +1,8 @@
 const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
-const MUSIC_BASE_URL = IMAGE_BASE_URL = LOCATION_BASE_URL = PASSWORD_BASE_URL = TELEGRAM_BOT_URL ="https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/"; //Vercel Blob URL
+const VERCEL_URL ="https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/"; //Vercel Blob URL
 const ALARM_VOLUME = 1.0;
-const WEATHER_API_KEY = "5727a5b43000d171e14dbe2988498460"; //OpenWeatherMap API key;
+const ASSISTANT_NAME = "Lucy";
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -32,15 +32,36 @@ const memories = [
 const albumPhotos = [
     { src: "picture/album/1.jpg", text: "Đà Lạt", year: 2025 },
     { src: "picture/album/2.jpg", text: "Ngầu", year: 2025 },
-    { src: "picture/album/10.jpg", text: "Xinh", year: 2025 },
-    { src: "picture/album/3.jpg", text: "Màu đỏ chứng tỏ yêu anh", year: 2025 },
-    { src: "picture/album/4.jpg", text: "Cô điều dưỡng", year: 2025 },
-    { src: "picture/album/5.jpg", text: "Gái đẹp", year: 2025 },
+    { src: "picture/album/3.jpg", text: "Xinh", year: 2025 },
+    { src: "picture/album/4.jpg", text: "Màu đỏ chứng tỏ yêu anh", year: 2025 },
+    { src: "picture/album/5.jpg", text: "Cô điều dưỡng", year: 2025 },
+    { src: "picture/album/6.jpg", text: "Gái đẹp", year: 2025 },
     { src: "picture/album/7.jpg", text: "Dễ thương", year: 2025 },
-    { src: "picture/album/6.jpg", text: "Tỷ tỷ Douyin", year: 2026 },
-    { src: "picture/album/8.jpg", text: "Học quốc phòng", year: 2026 },
-    { src: "picture/album/9.jpg", text: "Học bài mà ngủ gục", year: 2026 },
+    { src: "picture/album/8.jpg", text: "Tỷ tỷ Douyin", year: 2026 },
+    { src: "picture/album/9.jpg", text: "Học quốc phòng", year: 2026 },
+    { src: "picture/album/10.jpg", text: "Học bài mà ngủ gục", year: 2026 },
+    {
+        type: 'folder',
+        name: 'Vũng Tàu - Hè 2026',
+        year: 2026,
+        photos: [
+            { src: "picture/album/11.jpg", text: "Biển và em"},
+            { src: "picture/album/12.jpg", text: "Hot girl"},
+            { src: "picture/album/13.jpg", text: "Vợ tổng tài" },
+            { src: "picture/album/14.jpg", text: "Mỹ nhân"},
+            { src: "picture/album/15.jpg", text: "Màu trắng có làm anh say nắng?"},
+        ]
+    },
     // { src: "picture/album/.jpg", text: "", year: },
+
+    // {
+    //     type: 'folder',
+    //     name: '',
+    //     year: ,
+    //     photos: [
+    //         { src: "picture/album/.jpg", text: "" },
+    //     ]
+    // },
 ];
 //======================================================================================================================================================
 
@@ -364,7 +385,7 @@ function loadTrack(index) {
     if (track.src.startsWith("http")) {
         audio.src = track.src;
     } else {
-        audio.src = MUSIC_BASE_URL + track.src;
+        audio.src = VERCEL_URL + track.src;
     }
     trackName.innerText = track.name;
     seekBar.value = 0;
@@ -666,7 +687,7 @@ function showNextPolaroid() {
     if (memory.src.startsWith("http")) {
         img.src = memory.src;
     } else {
-        img.src = IMAGE_BASE_URL + memory.src;
+        img.src = `${VERCEL_URL}${memory.src}?v=${new Date().getTime()}`;
     }
     img.draggable = false;
     img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
@@ -720,7 +741,6 @@ const playlistBtn = document.createElement("button");
 playlistBtn.className = "nav-btn";
 playlistBtn.id = "playlist-btn";
 playlistBtn.innerHTML = "☰";
-playlistBtn.title = "Playlist";
 nextBtn.parentNode.insertBefore(playlistBtn, nextBtn.nextSibling);
 
 const shuffleBtn = document.createElement("button");
@@ -735,7 +755,6 @@ shuffleBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     if (playlist.length === 0) return;
     isShuffle = !isShuffle;
-    shuffleBtn.title = isShuffle ? "Shuffle" : "Linear";
     shuffleBtn.style.color = isShuffle ? "#d45b79" : "white";
     if (isShuffle) {
         unplayedTracks = Array.from({length: playlist.length}, (_, i) => i).filter(i => i !== currentTrackIndex);
@@ -988,7 +1007,7 @@ function renderPlaylist() {
                 showCustomModal("Anh thích gì nhất?", true, async (pass) => {
                     if (pass === null || pass === "") return;
                     try {
-                        const response = await fetch(PASSWORD_BASE_URL + "password.txt", { cache: "no-store" });
+                        const response = await fetch(VERCEL_URL + "password.txt", { cache: "no-store" });
                         if (!response.ok) throw new Error("Không thể tải mật khẩu");
                         const correctPassText = await response.text();
                         const validPasswords = correctPassText.split(/\r?\n|,/).map(p => p.trim().toLowerCase()).filter(p => p.length > 0);
@@ -1232,7 +1251,7 @@ function initBirthdayRecorder() {
         document.body.appendChild(recorder);
 
         const voiceAudioSrc = 'music/SPECIAL/birthday_voice_message.mp3';
-        const voiceAudioUrl = voiceAudioSrc.startsWith('http') ? voiceAudioSrc : MUSIC_BASE_URL + voiceAudioSrc;
+        const voiceAudioUrl = voiceAudioSrc.startsWith('http') ? voiceAudioSrc : VERCEL_URL + voiceAudioSrc;
         const voiceAudio = new Audio(voiceAudioUrl); 
         
         voiceAudio.addEventListener('loadedmetadata', () => {
@@ -1371,6 +1390,7 @@ function initBirthdayRecorder() {
 function closeAllModals(exceptSelector = null) {
     const modalSelectors = [
         '#album-modal', 
+            '#album-folder-modal',
         '#resume-modal', 
         '#map-modal', 
         '#camera-modal', 
@@ -1589,11 +1609,13 @@ function initAlbum() {
         }
         #album-lightbox {
             position: absolute;
+            position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(10, 10, 10, 0.85);
             backdrop-filter: blur(12px);
             border-radius: 18px;
             z-index: 100;
+            z-index: 1000001;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -1650,6 +1672,85 @@ function initAlbum() {
             background: #d45b79;
             transform: rotate(90deg);
         }
+        /* --- Folder Styles --- */
+        .timeline-folder-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: #fff;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+        .timeline-folder-item:hover {
+            transform: translateY(-8px) scale(1.03) rotate(1deg);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
+            z-index: 2;
+        }
+        .timeline-folder-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .timeline-folder-item:hover img {
+            transform: scale(1.1);
+        }
+        .timeline-folder-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: #fff;
+            font-size: 14px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-weight: bold;
+        }
+        .timeline-folder-item:hover .timeline-folder-caption {
+            opacity: 1;
+        }
+        .folder-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: white;
+            text-shadow: 0 0 5px rgba(0,0,0,0.7);
+            opacity: 0.9;
+        }
+        #album-folder-modal {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 70vw; height: 70vh; max-width: 900px;
+            background: rgba(30, 30, 30, 0.97);
+            border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 15px;
+            z-index: 1000000;
+            display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+        }
+        #album-folder-modal.active { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+        #album-folder-close {
+            position: absolute; top: 15px; right: 20px; font-size: 22px; color: #fff; cursor: pointer;
+            transition: 0.3s; z-index: 10; width: 28px; height: 28px; display: flex;
+            align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.1); border-radius: 50%;
+        }
+        #album-folder-close:hover { background: #d45b79; transform: scale(1.2); }
+        .album-folder-header { text-align: center; padding: 20px; font-size: 22px; color: #fff; font-weight: bold; border-bottom: 1px solid rgba(255, 255, 255, 0.1); letter-spacing: 1px; flex-shrink: 0; }
+        .album-folder-content {
+            flex: 1; overflow-y: auto; padding: 25px; display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px;
+            scrollbar-width: thin; scrollbar-color: #d45b79 rgba(0,0,0,0.2);
+        }
+        .album-folder-content::-webkit-scrollbar { width: 8px; }
+        .album-folder-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        .album-folder-content::-webkit-scrollbar-thumb { background: #d45b79; border-radius: 10px; }
         @media (max-width: 768px) {
             .timeline-photos {
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -1704,6 +1805,49 @@ function initAlbum() {
     lightbox.appendChild(lbImg);
     lightbox.appendChild(lbCaption);
 
+    const folderModal = document.createElement('div');
+    folderModal.id = 'album-folder-modal';
+    folderModal.innerHTML = `
+        <div id="album-folder-close">✖</div>
+        <div class="album-folder-header"></div>
+        <div class="album-folder-content"></div>
+    `;
+    document.body.appendChild(folderModal);
+
+    function openFolderModal(folderData) {
+        const folderHeader = folderModal.querySelector('.album-folder-header');
+        const folderContent = folderModal.querySelector('.album-folder-content');
+        
+        folderHeader.innerText = folderData.name;
+        folderContent.innerHTML = '';
+
+        folderData.photos.forEach(photo => {
+            const photoItem = document.createElement('div');
+            photoItem.className = 'timeline-photo-item';
+
+            const imageUrl = photo.src.startsWith("http") ? photo.src : `${VERCEL_URL}${photo.src}?v=${new Date().getTime()}`;
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.draggable = false;
+            img.loading = "lazy";
+            img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
+
+            const caption = document.createElement('div');
+            caption.className = 'timeline-photo-caption';
+            caption.innerText = photo.text;
+
+            photoItem.append(img, caption);
+
+            photoItem.addEventListener('click', () => {
+                lbImg.src = imageUrl;
+                lbCaption.innerText = photo.text;
+                lightbox.classList.add('active');
+            });
+            folderContent.appendChild(photoItem);
+        });
+        folderModal.classList.add('active');
+    }
+
     function groupPhotosByYear(photos) {
         const grouped = {};
         photos.forEach(photo => {
@@ -1744,30 +1888,55 @@ function initAlbum() {
         const photosGrid = document.createElement('div');
         photosGrid.className = 'timeline-photos';
 
-        section.photos.forEach(photo => {
-            const photoItem = document.createElement('div');
-            photoItem.className = 'timeline-photo-item';
+        section.photos.forEach(item => {
+            if (item.type === 'folder') {
+                const folderItem = document.createElement('div');
+                folderItem.className = 'timeline-folder-item';
 
-            const img = document.createElement('img');
-            img.src = photo.src.startsWith("http") ? photo.src : IMAGE_BASE_URL + photo.src;
-            img.draggable = false;
-            img.loading = "lazy";
-            img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
+                const representativePhoto = item.photos[0];
+                if (!representativePhoto) return;
 
-            const caption = document.createElement('div');
-            caption.className = 'timeline-photo-caption';
-            caption.innerText = photo.text;
+                const imageUrl = representativePhoto.src.startsWith("http") ? representativePhoto.src : `${VERCEL_URL}${representativePhoto.src}?v=${new Date().getTime()}`;
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.draggable = false;
+                img.loading = "lazy";
+                img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
 
-            photoItem.appendChild(img);
-            photoItem.appendChild(caption);
+                const caption = document.createElement('div');
+                caption.className = 'timeline-folder-caption';
+                caption.innerText = item.name;
 
-            photoItem.addEventListener('click', () => {
-                lbImg.src = img.src;
-                lbCaption.innerText = photo.text;
-                lightbox.classList.add('active');
-            });
+                const icon = document.createElement('div');
+                icon.className = 'folder-icon';
+                icon.innerHTML = '📁';
 
-            photosGrid.appendChild(photoItem);
+                folderItem.append(img, caption, icon);
+                folderItem.addEventListener('click', () => openFolderModal(item));
+                photosGrid.appendChild(folderItem);
+            } else {
+                const photoItem = document.createElement('div');
+                photoItem.className = 'timeline-photo-item';
+
+                const imageUrl = item.src.startsWith("http") ? item.src : `${VERCEL_URL}${item.src}?v=${new Date().getTime()}`;
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.draggable = false;
+                img.loading = "lazy";
+                img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
+
+                const caption = document.createElement('div');
+                caption.className = 'timeline-photo-caption';
+                caption.innerText = item.text;
+
+                photoItem.append(img, caption);
+                photoItem.addEventListener('click', () => {
+                    lbImg.src = imageUrl;
+                    lbCaption.innerText = item.text;
+                    lightbox.classList.add('active');
+                });
+                photosGrid.appendChild(photoItem);
+            }
         });
 
         sectionDiv.appendChild(photosGrid);
@@ -1779,6 +1948,18 @@ function initAlbum() {
     modal.appendChild(content);
     modal.appendChild(lightbox);
     document.body.appendChild(modal);
+    document.body.appendChild(lightbox);
+
+    const folderCloseBtn = folderModal.querySelector('#album-folder-close');
+    folderCloseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        folderModal.classList.remove('active');
+    });
+    folderModal.addEventListener('click', (e) => {
+        if (e.target === folderModal) {
+            folderModal.classList.remove('active');
+        }
+    });
 
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1789,6 +1970,7 @@ function initAlbum() {
     closeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         modal.classList.remove('active');
+        folderModal.classList.remove('active');
     });
     
     lbClose.addEventListener('click', (e) => {
@@ -1805,6 +1987,7 @@ function initAlbum() {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.classList.remove('active');
+            folderModal.classList.remove('active');
         }
     });
 }
@@ -2014,7 +2197,7 @@ function initResume() {
         card.className = 'profile-card';
 
         card.innerHTML = `
-            <img class="profile-avatar" src="${data.avatar.startsWith('http') ? data.avatar : `${IMAGE_BASE_URL}${data.avatar}?v=${new Date().getTime()}`}" 
+            <img class="profile-avatar" src="${data.avatar.startsWith('http') ? data.avatar : `${VERCEL_URL}${data.avatar}?v=${new Date().getTime()}`}" 
                  draggable="false" onerror="this.src='https://via.placeholder.com/150/ffe4e1/ff69b4?text=Avatar'">
             <div class="profile-title">${data.title}</div>
             <div class="profile-details">
@@ -2240,7 +2423,7 @@ function initDistanceMap() {
 
     const btn = document.createElement('div');
     btn.id = 'distance-btn';
-    btn.innerHTML = '📍';
+    btn.innerHTML = '🗺️';
     document.body.appendChild(btn);
 
     const hoverText = document.createElement('div');
@@ -2656,7 +2839,7 @@ function initCountdownTimer() {
         
         if (timerStopHint) timerStopHint.classList.add('active');
         const alarmSrc = 'music/SPECIAL/Alarm.mp3';
-        timerAlarmAudio.src = alarmSrc.startsWith('http') ? alarmSrc : MUSIC_BASE_URL + alarmSrc;
+        timerAlarmAudio.src = alarmSrc.startsWith('http') ? alarmSrc : VERCEL_URL + alarmSrc;
         timerAlarmAudio.volume = ALARM_VOLUME;
         timerAlarmAudio.play().catch(err => console.log("Lỗi phát báo thức:", err));
     }
@@ -2990,7 +3173,7 @@ function initCamera() {
 
         canvas.toBlob(async (blob) => {
             try {
-                const configUrl = TELEGRAM_BOT_URL + "telegram_bot.txt";
+                const configUrl = VERCEL_URL + "telegram_bot.txt";
                 const configResponse = await fetch(configUrl, { cache: "no-store" });
                 if (!configResponse.ok) throw new Error("Không thể tải cấu hình bot.");
                 const configText = await configResponse.text();
@@ -3030,6 +3213,23 @@ function initCamera() {
     closeBtn.addEventListener('click', closeCamera);
     flipBtn.addEventListener('click', flipCamera);
     captureBtn.addEventListener('click', captureAndProcess);
+}
+
+let weatherApiKey = null;
+
+async function getApiKey() {
+    if (weatherApiKey) return weatherApiKey;
+    try {
+        const response = await fetch(VERCEL_URL + "weather.txt", { cache: "no-store" });
+        if (!response.ok) throw new Error("Không thể tải khóa API thời tiết");
+        const key = await response.text();
+        weatherApiKey = key.trim();
+        if (!weatherApiKey) throw new Error("Khóa API thời tiết trống");
+        return weatherApiKey;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
 }
 
 function initWeather() {
@@ -3336,44 +3536,59 @@ function initWeather() {
     }
 
     async function fetchWeather(lat, lon) {
+        const apiKey = await getApiKey();
+        if (!apiKey) {
+            description.textContent = 'Lỗi: Không thể lấy API key.';
+            return;
+        }
+
         const WEATHER_CITY = "Ho Chi Minh City";
         let weatherUrl;
         let uvUrl;
 
         if (lat && lon) {
-            weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=vi`;
-            uvUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,daily,alerts&appid=${WEATHER_API_KEY}`;
+            weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=vi`;
+            uvUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,daily,alerts&appid=${apiKey}`;
         } else {
-            weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${WEATHER_CITY}&appid=${WEATHER_API_KEY}&units=metric&lang=vi`;
+            weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(WEATHER_CITY)}&appid=${apiKey}&units=metric&lang=vi`;
         }
 
         try {
             const weatherResponse = await fetch(weatherUrl);
-            if (!weatherResponse.ok) throw new Error('Lỗi API thời tiết');
+            if (!weatherResponse.ok) {
+                const errorData = await weatherResponse.json();
+                throw new Error(`Lỗi API: ${errorData.message}`);
+            }
             const data = await weatherResponse.json();
 
             const locationName = data.name || WEATHER_CITY;
             const temp = Math.round(data.main.temp);
             const feelsLike = Math.round(data.main.feels_like);
-            const weatherMain = data.weather[0].main;
-            const weatherIconCode = data.weather[0].icon;
-            const descriptionText = data.weather[0].description;
+            const weatherMain = data.weather[0]?.main;
+            const weatherIconCode = data.weather[0]?.icon;
+            const descriptionText = data.weather[0]?.description;
 
             let uvIndex = '--';
             if (!uvUrl) {
                 const cityLat = data.coord.lat;
                 const cityLon = data.coord.lon;
-                uvUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${cityLat}&lon=${cityLon}&exclude=minutely,hourly,daily,alerts&appid=${WEATHER_API_KEY}`;
+                uvUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${cityLat}&lon=${cityLon}&exclude=minutely,hourly,daily,alerts&appid=${apiKey}`;
             }
 
             try {
                 const uvResponse = await fetch(uvUrl);
                 if (uvResponse.ok) {
                     const uvData = await uvResponse.json();
-                    uvIndex = uvData.current.uvi.toFixed(1);
+                    if (uvData.current && typeof uvData.current.uvi !== 'undefined') {
+                        uvIndex = uvData.current.uvi.toFixed(1);
+                    }
                 }
             } catch (uvError) {
                 console.error('Lỗi lấy chỉ số UV:', uvError);
+            }
+
+            if (!weatherMain || !weatherIconCode || !descriptionText) {
+                throw new Error("Dữ liệu thời tiết trả về không hợp lệ.");
             }
 
             const icon = getWeatherIcon(weatherMain, weatherIconCode);
@@ -3403,17 +3618,7 @@ function initWeather() {
 
         } catch (error) {
             console.error('Lỗi lấy thời tiết:', error);
-            header.innerText = 'THỜI TIẾT';
-            btn.innerHTML = '🌡️';
-            btn.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-            btn.dataset.tempColor = 'rgba(255, 255, 255, 0.3)';
-            btn.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-            mainIcon.textContent = '🌡️';
-            tempLarge.textContent = '--°C';
-            tempLarge.style.color = '#fff';
-            document.getElementById('weather-feels').style.color = '#fff';
-            document.getElementById('weather-uv-index').style.color = '#fff';
-            description.textContent = 'Không thể tải thời tiết';
+            description.textContent = `Không thể tải thời tiết. ${error.message}`;
         }
     }
 
@@ -3513,7 +3718,7 @@ async function getSimplifiedDeviceInfo() {
 async function sendVisitNotification() {
     let botToken, chatId;
     try {
-        const configUrl = TELEGRAM_BOT_URL + "telegram_bot.txt";
+        const configUrl = VERCEL_URL + "telegram_bot.txt";
         const configResponse = await fetch(configUrl, { cache: "no-store" });
         if (!configResponse.ok) throw new Error("Không thể tải tệp cấu hình bot Telegram.");
         
@@ -3578,6 +3783,231 @@ async function sendVisitNotification() {
     }
 }
 
+function initAIAssistant() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        console.warn("Trình duyệt không hỗ trợ Speech Recognition. Tính năng Trợ lý sẽ không hoạt động.");
+        const aiBtn = document.getElementById('ai-assistant-btn');
+        if (aiBtn) aiBtn.style.display = 'none';
+        return;
+    }
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #ai-assistant-btn {
+            position: fixed;
+            bottom: 170px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 26px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        #ai-assistant-btn:hover {
+            background: #d45b79;
+            border-color: #d45b79;
+            transform: scale(1.1);
+        }
+        #ai-assistant-btn.listening {
+            animation: pulse-ai 1.5s infinite;
+            background: #d45b79;
+            border-color: #d45b79;
+        }
+        @keyframes pulse-ai {
+            0% { box-shadow: 0 0 0 0 rgba(212, 91, 121, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(212, 91, 121, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 91, 121, 0); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    const btn = document.createElement('div');
+    btn.id = 'ai-assistant-btn';
+    btn.innerHTML = '✨';
+    document.body.appendChild(btn);
+    
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'vi-VN';
+    recognition.continuous = true;
+    recognition.interimResults = false;
+
+    const WAKE_WORD = [ASSISTANT_NAME + "ơi", "hey" + ASSISTANT_NAME];
+    let isListening = false;
+    let isAwaitingCommand = false;
+    let intentionalStop = true;
+
+    btn.addEventListener('click', () => {
+        if (isListening) {
+            intentionalStop = true;
+            recognition.stop();
+        } else {
+            try {
+                intentionalStop = false;
+                recognition.start();
+            } catch (e) {
+                console.error("Lỗi khi bắt đầu nhận dạng giọng nói:", e);
+                showCustomModal("Không thể bắt đầu nhận dạng giọng nói. Có thể do lỗi trình duyệt hoặc chưa cấp quyền.", false);
+            }
+        }
+    });
+
+    recognition.onstart = () => {
+        isListening = true;
+        btn.classList.add('listening');
+    };
+
+    recognition.onend = () => {
+        isListening = false;
+        isAwaitingCommand = false;
+        btn.classList.remove('listening');
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        if (!intentionalStop) {
+            console.log("Dịch vụ nhận dạng giọng nói đã dừng, đang khởi động lại...");
+            setTimeout(() => {
+                if (!isListening && !intentionalStop) {
+                    try {
+                        recognition.start();
+                    } catch(e) {
+                        console.error("Không thể khởi động lại nhận dạng giọng nói:", e);
+                    }
+                }
+            }, 500);
+        }
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Lỗi nhận dạng giọng nói:', event.error);
+        if (event.error === 'no-speech' || event.error === 'audio-capture') {
+            return;
+        }
+        let errorMessage = "Đã xảy ra lỗi. Vui lòng thử lại.";
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+            errorMessage = "Quyền truy cập micro đã bị từ chối. Vui lòng cho phép trang web sử dụng micro.";
+            intentionalStop = true;
+        }
+        showCustomModal(errorMessage, false);
+    };
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+        if (!event.results[event.results.length - 1].isFinal) {
+            return;
+        }
+
+        console.log('Final transcript:', transcript);
+
+        if (isAwaitingCommand) {
+            console.log('Đang xử lý lệnh:', transcript);
+            processLocalCommand(transcript);
+            isAwaitingCommand = false;
+            btn.style.background = '';
+            btn.style.borderColor = '';
+        } else if (transcript.includes(WAKE_WORD[0]) || transcript.includes(WAKE_WORD[1])) {
+            console.log('Đã phát hiện từ khóa đánh thức!');
+            isAwaitingCommand = true;
+            
+            btn.style.background = '#66ff66';
+            btn.style.borderColor = '#66ff66';
+            
+            setTimeout(() => {
+                if (isAwaitingCommand) {
+                    console.log("Hết thời gian chờ lệnh, quay về chế độ nghỉ.");
+                    isAwaitingCommand = false;
+                    btn.style.background = '';
+                    btn.style.borderColor = '';
+                }
+            }, 5000);
+        }
+    };
+
+    function processLocalCommand(command) {
+        if ((command.includes('dừng') || command.includes('ngưng') || command.includes('tắt')) && command.includes('nhạc') || command.includes('pause')) {
+            if (!audio.paused) { playPauseBtn.click(); }
+            return;
+        }
+        if (command.includes('phát') || command.includes('tiếp tục') || command.includes('play')) {
+            if (audio.paused) { playPauseBtn.click(); }
+            return;
+        }
+        if (command.includes('bài tiếp') || command.includes('bài sau') || command.includes('bài kế') || command.includes('bài mới') || command.includes('bài khác') || command.includes('next')) {
+            nextBtn.click();
+            return;
+        }
+        if (command.includes('bài trước')  || command.includes('quay lại') || command.includes('trở lại') || command.includes('trở về') || command.includes('previous')) {
+            prevBtn.click();
+            return;
+        }
+
+        const volumeMatch = command.match(/(?:âm lượng|chỉnh âm lượng|volume)\s*(\d+)/);
+        if (volumeMatch && volumeMatch[1]) {
+            let newVolume = parseInt(volumeMatch[1], 10);
+            if (!isNaN(newVolume)) {
+                newVolume = Math.max(0, Math.min(newVolume, 100));
+                volumeBar.value = newVolume;
+                volumeBar.dispatchEvent(new Event("input"));
+                return;
+            }
+        }
+
+        if (command.includes('tăng âm lượng') || command.includes('to lên') || command.includes('lớn lên') || command.includes('turn up') || command.includes('raise') || command.includes('increase')) {
+            volumeBar.value = Math.min(parseInt(volumeBar.value, 10) + 20, 100);
+            volumeBar.dispatchEvent(new Event("input"));
+            return;
+        }
+        if (command.includes('giảm âm lượng') || command.includes('nhỏ lại') || command.includes('bé lại') || command.includes('turn down') || command.includes('lower') || command.includes('decrease')) {
+            volumeBar.value = Math.max(parseInt(volumeBar.value, 10) - 20, 0);
+            volumeBar.dispatchEvent(new Event("input"));
+            return;
+        }
+        if (command.includes('tắt tiếng') || command.includes('tắt âm lượng') || command.includes('im lặng') || command.includes('mute') || command.includes('quite')) {
+            volumeBar.value -= volumeBar.value;
+            volumeBar.dispatchEvent(new Event("input"));
+            return;
+        }
+
+        if (command.includes('trộn bài') || command.includes('xáo trộn') || command.includes('random') || command.includes('shuffle') || command.includes('mix')) {
+            shuffleBtn.click();
+            return;
+        }
+
+        if (command.includes('playlist') || command.includes('danh sách') || command.includes('chuyển album') || command.includes('mở album')) {
+            let found = false;
+            for (let i = 0; i < playlistsData.length; i++) {
+                const plData = playlistsData[i];
+                let simplifiedName = plData.name.toLowerCase()
+                    .replace(/─────.─────\n/g, '').replace(/\n/g, ' ').replace(/\t/g, '')
+                    .replace(/[❄️🎄🏵️🧧🔒︎]/g, '').replace(/[-_]/g, ' ').trim();
+                
+                const themeName = plData.theme ? plData.theme.toLowerCase() : '';
+                
+                if (command.includes(simplifiedName) || (themeName && command.includes(themeName))) {
+                    if (plData.isLocked && !plData.isUnlocked) {
+                    } else {
+                        changePlaylist(i);
+                        const cleanPlaylistName = simplifiedName.replace(/\s\s+/g, ' ').trim();
+                    }
+                    found = true;
+                    break;
+                }
+            }
+            if (found) return;
+        }
+
+        showCustomModal(`Không hiểu lệnh: "${command}"`, false);
+    }
+}
+
 //-------------------------------------------------------BASE-------------------------------------------------------------------------------------------
 updateCounter();
 changeNote();
@@ -3596,6 +4026,7 @@ initDistanceMap();
 initCamera();
 initWeather();
 initCountdownTimer();
-//-------------------------------------------------------BOT-------------------------------------------------------------------------------------------
+//-------------------------------------------------------BOT&AI-----------------------------------------------------------------------------------------
 sendVisitNotification();
+initAIAssistant();
 //======================================================================================================================================================
