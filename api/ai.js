@@ -1,20 +1,24 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   try {
+    if (!process.env.GEMINI_API_KEY) {
+      console.error("GEMINI_API_KEY is not set in environment variables on Vercel.");
+      return res.status(500).json({ error: 'API Key của dịch vụ AI chưa được cấu hình trên server.' });
+    }
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+
     const { command, playlistNames } = req.body;
 
     if (!command) {
       return res.status(400).json({ error: 'Command is required' });
     }
-
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     const prompt = `
       Bạn là một trợ lý AI cho một trình phát nhạc.
@@ -52,15 +56,22 @@ module.exports = async (req, res) => {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
+    
+    console.log("Raw response from Gemini:", text);
 
     const jsonString = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
-    const actionObject = JSON.parse(jsonString);
-    
-    res.status(200).json(actionObject);
+    try {
+      const actionObject = JSON.parse(jsonString);
+      res.status(200).json(actionObject);
+    } catch (parseError) {
+      console.error("Lỗi phân tích JSON từ Gemini:", parseError);
+      console.error("Chuỗi JSON không hợp lệ:", jsonString);
+      res.status(500).json({ error: 'Phản hồi từ AI không hợp lệ. Vui lòng thử lại.' });
+    }
 
   } catch (error) {
-    console.error('Error calling Gemini API:', error);
-    res.status(500).json({ error: 'Failed to process command with AI' });
+    console.error('Lỗi trong serverless function (api/ai.js):', error);
+    res.status(500).json({ error: 'Có lỗi xảy ra khi gọi dịch vụ AI.' });
   }
 };
