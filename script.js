@@ -3645,14 +3645,12 @@ function initAIAssistant() {
             recognition.start();
         } catch (e) {
             console.error("Lỗi khi bắt đầu nhận dạng giọng nói:", e);
-            showCustomModal("Không thể bắt đầu nhận dạng giọng nói. Vui lòng kiểm tra quyền truy cập micro.", false);
         }
     });
 
     recognition.onstart = () => {
         isListening = true;
         btn.classList.add('listening');
-        btn.title = 'Đang lắng nghe... (Nhấn để dừng)';
     };
 
     recognition.onend = () => {
@@ -3674,7 +3672,6 @@ function initAIAssistant() {
     recognition.onresult = (event) => {
         const command = event.results[0][0].transcript.toLowerCase().trim();
         console.log('Lệnh đã nhận:', command);
-        btn.title = `Đang xử lý: "${command}"`;
         sendToGemini(command);
     };
 
@@ -3698,7 +3695,14 @@ function initAIAssistant() {
             });
 
             if (!response.ok) {
-                throw new Error(`Lỗi từ server: ${response.statusText}`);
+                let errorMsg = `Lỗi từ server: ${response.statusText}`;
+                try {
+                    const errorJson = await response.json();
+                    if (errorJson.error) {
+                        errorMsg = `Lỗi AI: ${errorJson.error}`;
+                    }
+                } catch (e) {}
+                throw new Error(errorMsg);
             }
 
             const action = await response.json();
@@ -3707,7 +3711,7 @@ function initAIAssistant() {
 
         } catch (error) {
             console.error('Lỗi khi giao tiếp với AI backend:', error);
-            showCustomModal("Không thể kết nối với trợ lý AI. Vui lòng thử lại.", false);
+            showCustomModal(error.message || "Không thể kết nối với trợ lý AI.", false);
         } finally {
         }
     }
@@ -3720,10 +3724,10 @@ function initAIAssistant() {
 
         switch (action.action) {
             case 'play':
-                if (audio.paused) { playPauseBtn.click(); showCustomModal("Đang phát nhạc.", false); }
+                if (audio.paused) { playPauseBtn.click();}
                 break;
             case 'pause':
-                if (!audio.paused) { playPauseBtn.click(); showCustomModal("Đã tạm dừng nhạc.", false); }
+                if (!audio.paused) { playPauseBtn.click();}
                 break;
             case 'next_song':
                 nextBtn.click();
@@ -3736,29 +3740,25 @@ function initAIAssistant() {
                     const vol = Math.max(0, Math.min(100, action.value));
                     volumeBar.value = vol;
                     volumeBar.dispatchEvent(new Event("input"));
-                    showCustomModal(`Đã chỉnh âm lượng thành ${vol}%.`, false);
                 }
                 break;
             case 'increase_volume':
                 volumeBar.value = Math.min(parseInt(volumeBar.value, 10) + 20, 100);
                 volumeBar.dispatchEvent(new Event("input"));
-                showCustomModal(`Đã tăng âm lượng.`, false);
                 break;
             case 'decrease_volume':
                 volumeBar.value = Math.max(parseInt(volumeBar.value, 10) - 20, 0);
                 volumeBar.dispatchEvent(new Event("input"));
-                showCustomModal(`Đã giảm âm lượng.`, false);
                 break;
             case 'mute':
                 volumeBar.value = 0;
                 volumeBar.dispatchEvent(new Event("input"));
-                showCustomModal(`Đã tắt tiếng.`, false);
                 break;
             case 'change_playlist':
                 if (action.value) {
                     const targetName = action.value.toLowerCase();
                     let foundIndex = -1;
-
+    
                     for (let i = 0; i < playlistsData.length; i++) {
                         const plData = playlistsData[i];
                         let simplifiedName = plData.name.toLowerCase()
@@ -3768,17 +3768,13 @@ function initAIAssistant() {
                         if (plData.theme && targetName.includes(plData.theme)) { foundIndex = i; break; }
                         if (simplifiedName.includes(targetName) || targetName.includes(simplifiedName)) { foundIndex = i; break; }
                     }
-
+    
                     if (foundIndex !== -1) {
                         const plData = playlistsData[foundIndex];
                         if (plData.isLocked && !plData.isUnlocked) {
-                            showCustomModal(`Playlist "${plData.name.replace('🔒︎', '')}" đang bị khóa.`, false);
                         } else {
                             changePlaylist(foundIndex);
-                            showCustomModal(`Đang chuyển sang playlist "${plData.name.replace(/<[^>]*>/g, '').replace('🔒︎', '').replace(/\n/g, ' ')}".`, false);
                         }
-                    } else {
-                        showCustomModal(`Không tìm thấy playlist: "${action.value}"`, false);
                     }
                 }
                 break;
