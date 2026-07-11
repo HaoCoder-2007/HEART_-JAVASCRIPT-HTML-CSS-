@@ -3916,7 +3916,7 @@ function initAIAssistant() {
             volumeBar.dispatchEvent(new Event("input"));
             return;
         }
-        if (command.includes('giảm âm lượng') || command.includes('nhỏ lại') || command.includes('bé lại') || command.includes('turn up')) {
+        if (command.includes('giảm âm lượng') || command.includes('nhỏ lại') || command.includes('bé lại') || command.includes('turn down')) {
             volumeBar.value = Math.max(parseInt(volumeBar.value, 10) - 20, 0);
             volumeBar.dispatchEvent(new Event("input"));
             return;
