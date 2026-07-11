@@ -1,7 +1,17 @@
 *.txt
 .idea/
+# Local data
 music/
 picture/
 txt/
+
+# Dependencies
 node_modules/
-.env*.local
+
+# Environment variables
+.env*
+.env.local
+.env.*.local
+
+# IDE configuration
+.idea/

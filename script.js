@@ -2,7 +2,6 @@ const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
 const MUSIC_BASE_URL = IMAGE_BASE_URL = LOCATION_BASE_URL = PASSWORD_BASE_URL = TELEGRAM_BOT_URL ="https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/"; //Vercel Blob URL
 const ALARM_VOLUME = 1.0;
-const WEATHER_API_KEY = "5727a5b43000d171e14dbe2988498460"; //OpenWeatherMap API key;
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -3581,7 +3580,9 @@ async function sendVisitNotification() {
 function initAIAssistant() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-        console.warn("Trình duyệt không hỗ trợ Speech Recognition. Tính năng AI sẽ không hoạt động.");
+        console.warn("Trình duyệt không hỗ trợ Speech Recognition. Tính năng Trợ lý sẽ không hoạt động.");
+        const aiBtn = document.getElementById('ai-assistant-btn');
+        if (aiBtn) aiBtn.style.display = 'none';
         return;
     }
 
@@ -3589,7 +3590,7 @@ function initAIAssistant() {
     style.innerHTML = `
         #ai-assistant-btn {
             position: fixed;
-            bottom: 170px; /* Cao hơn music visualizer */
+            bottom: 170px;
             left: 30px;
             width: 50px;
             height: 50px;
@@ -3645,6 +3646,7 @@ function initAIAssistant() {
             recognition.start();
         } catch (e) {
             console.error("Lỗi khi bắt đầu nhận dạng giọng nói:", e);
+            showCustomModal("Không thể bắt đầu nhận dạng giọng nói. Có thể do lỗi trình duyệt.", false);
         }
     });
 
@@ -3664,7 +3666,7 @@ function initAIAssistant() {
         if (event.error === 'no-speech') {
             errorMessage = "Không nhận diện được giọng nói.";
         } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-            errorMessage = "Quyền truy cập micro đã bị từ chối.";
+            errorMessage = "Quyền truy cập micro đã bị từ chối. Vui lòng cho phép trang web sử dụng micro.";
         }
         showCustomModal(errorMessage, false);
     };
@@ -3672,117 +3674,71 @@ function initAIAssistant() {
     recognition.onresult = (event) => {
         const command = event.results[0][0].transcript.toLowerCase().trim();
         console.log('Lệnh đã nhận:', command);
-        sendToGemini(command);
+        processLocalCommand(command);
     };
 
-    async function sendToGemini(command) {
-        btn.classList.add('listening');
-
-        const playlistNames = playlistsData.map(p => {
-            let name = p.name.toLowerCase()
-                .replace(/─────.─────\n/g, '').replace(/\n/g, ' ').replace(/\t/g, '')
-                .replace(/[❄️🎄🏵️🧧🔒︎]/g, '').trim();
-            if (p.theme === 'xmas') return "Giáng sinh";
-            if (p.theme === 'tet') return "Tết";
-            return name;
-        });
-
-        try {
-            const response = await fetch('/api/ai', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ command, playlistNames }),
-            });
-
-            if (!response.ok) {
-                let errorMsg = `Lỗi từ server: ${response.statusText}`;
-                try {
-                    const errorJson = await response.json();
-                    if (errorJson.error) {
-                        errorMsg = `Lỗi AI: ${errorJson.error}`;
-                    }
-                } catch (e) {}
-                throw new Error(errorMsg);
-            }
-
-            const action = await response.json();
-            console.log('Hành động từ AI:', action);
-            executeAIAction(action);
-
-        } catch (error) {
-            console.error('Lỗi khi giao tiếp với AI backend:', error);
-            showCustomModal(error.message || "Không thể kết nối với trợ lý AI.", false);
-        } finally {
+    function processLocalCommand(command) {
+        if (command.includes('dừng') || command.includes('tạm dừng') || command.includes('pause')) {
+            if (!audio.paused) { playPauseBtn.click(); }
+            return;
         }
-    }
-
-    function executeAIAction(action) {
-        if (!action || !action.action) {
-            showCustomModal(`Lỗi xử lý lệnh.`, false);
+        if (command.includes('phát') || command.includes('tiếp tục') || command.includes('play')) {
+            if (audio.paused) { playPauseBtn.click(); }
+            return;
+        }
+        if (command.includes('bài tiếp') || command.includes('bài sau') || command.includes('next')) {
+            nextBtn.click();
+            return;
+        }
+        if (command.includes('bài trước') || command.includes('quay lại') || command.includes('previous')) {
+            prevBtn.click();
             return;
         }
 
-        switch (action.action) {
-            case 'play':
-                if (audio.paused) { playPauseBtn.click();}
-                break;
-            case 'pause':
-                if (!audio.paused) { playPauseBtn.click();}
-                break;
-            case 'next_song':
-                nextBtn.click();
-                break;
-            case 'prev_song':
-                prevBtn.click();
-                break;
-            case 'set_volume':
-                if (typeof action.value === 'number') {
-                    const vol = Math.max(0, Math.min(100, action.value));
-                    volumeBar.value = vol;
-                    volumeBar.dispatchEvent(new Event("input"));
-                }
-                break;
-            case 'increase_volume':
-                volumeBar.value = Math.min(parseInt(volumeBar.value, 10) + 20, 100);
-                volumeBar.dispatchEvent(new Event("input"));
-                break;
-            case 'decrease_volume':
-                volumeBar.value = Math.max(parseInt(volumeBar.value, 10) - 20, 0);
-                volumeBar.dispatchEvent(new Event("input"));
-                break;
-            case 'mute':
-                volumeBar.value = 0;
-                volumeBar.dispatchEvent(new Event("input"));
-                break;
-            case 'change_playlist':
-                if (action.value) {
-                    const targetName = action.value.toLowerCase();
-                    let foundIndex = -1;
-    
-                    for (let i = 0; i < playlistsData.length; i++) {
-                        const plData = playlistsData[i];
-                        let simplifiedName = plData.name.toLowerCase()
-                            .replace(/─────.─────\n/g, '').replace(/\n/g, ' ').replace(/\t/g, '')
-                            .replace(/[❄️🎄🏵️🧧🔒︎]/g, '').trim();
-                        
-                        if (plData.theme && targetName.includes(plData.theme)) { foundIndex = i; break; }
-                        if (simplifiedName.includes(targetName) || targetName.includes(simplifiedName)) { foundIndex = i; break; }
-                    }
-    
-                    if (foundIndex !== -1) {
-                        const plData = playlistsData[foundIndex];
-                        if (plData.isLocked && !plData.isUnlocked) {
-                        } else {
-                            changePlaylist(foundIndex);
-                        }
-                    }
-                }
-                break;
-            case 'unknown':
-            default:
-                showCustomModal(`Không hiểu lệnh: "${action.command || ''}"`, false);
-                break;
+        if (command.includes('tăng âm lượng') || command.includes('to lên')) {
+            volumeBar.value = Math.min(parseInt(volumeBar.value, 10) + 20, 100);
+            volumeBar.dispatchEvent(new Event("input"));
+            return;
         }
+        if (command.includes('giảm âm lượng') || command.includes('nhỏ lại')) {
+            volumeBar.value = Math.max(parseInt(volumeBar.value, 10) - 20, 0);
+            volumeBar.dispatchEvent(new Event("input"));
+            return;
+        }
+        if (command.includes('tắt tiếng') || command.includes('mute')) {
+            volumeBar.value = 0;
+            volumeBar.dispatchEvent(new Event("input"));
+            return;
+        }
+
+        if (command.includes('trộn bài') || command.includes('xáo trộn') || command.includes('random')) {
+            shuffleBtn.click();
+            return;
+        }
+
+        if (command.includes('mở playlist') || command.includes('chuyển album') || command.includes('mở album')) {
+            let found = false;
+            for (let i = 0; i < playlistsData.length; i++) {
+                const plData = playlistsData[i];
+                let simplifiedName = plData.name.toLowerCase()
+                    .replace(/─────.─────\n/g, '').replace(/\n/g, ' ').replace(/\t/g, '')
+                    .replace(/[❄️🎄🏵️🧧🔒︎]/g, '').trim();
+                
+                const themeName = plData.theme ? plData.theme.toLowerCase() : '';
+                
+                if (command.includes(simplifiedName) || (themeName && command.includes(themeName))) {
+                    if (plData.isLocked && !plData.isUnlocked) {
+                    } else {
+                        changePlaylist(i);
+                    }
+                    found = true;
+                    break;
+                }
+            }
+            if (found) return;
+        }
+
+        showCustomModal(`Không hiểu lệnh: "${command}"`, false);
     }
 }
 
@@ -3804,7 +3760,7 @@ initDistanceMap();
 initCamera();
 initWeather();
 initCountdownTimer();
-//-------------------------------------------------------BOT&AI----------------------------------------------------------------------------------------
+//-------------------------------------------------------BOT&AI-----------------------------------------------------------------------------------------
 sendVisitNotification();
 initAIAssistant();
 //======================================================================================================================================================
