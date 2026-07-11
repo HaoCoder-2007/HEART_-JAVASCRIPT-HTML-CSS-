@@ -3883,7 +3883,7 @@ function initAIAssistant() {
     };
 
     function processLocalCommand(command) {
-        if (command.includes('dừng') || command.includes('ngưng') || command.includes('tắt') || command.includes('pause')) {
+        if ((command.includes('dừng') || command.includes('ngưng') || command.includes('tắt')) && command.includes('nhạc') || command.includes('pause')) {
             if (!audio.paused) { playPauseBtn.click(); }
             return;
         }
@@ -3900,18 +3900,29 @@ function initAIAssistant() {
             return;
         }
 
-        if (command.includes('tăng âm lượng') || command.includes('to lên') || command.includes('lớn lên')) {
+        const volumeMatch = command.match(/(?:âm lượng|chỉnh âm lượng|volume)\s*(\d+)/);
+        if (volumeMatch && volumeMatch[1]) {
+            let newVolume = parseInt(volumeMatch[1], 10);
+            if (!isNaN(newVolume)) {
+                newVolume = Math.max(0, Math.min(newVolume, 100));
+                volumeBar.value = newVolume;
+                volumeBar.dispatchEvent(new Event("input"));
+                return;
+            }
+        }
+
+        if (command.includes('tăng âm lượng') || command.includes('to lên') || command.includes('lớn lên') || command.includes('turn up')) {
             volumeBar.value = Math.min(parseInt(volumeBar.value, 10) + 20, 100);
             volumeBar.dispatchEvent(new Event("input"));
             return;
         }
-        if (command.includes('giảm âm lượng') || command.includes('nhỏ lại') || command.includes('bé lại')) {
+        if (command.includes('giảm âm lượng') || command.includes('nhỏ lại') || command.includes('bé lại') || command.includes('turn up')) {
             volumeBar.value = Math.max(parseInt(volumeBar.value, 10) - 20, 0);
             volumeBar.dispatchEvent(new Event("input"));
             return;
         }
         if (command.includes('tắt tiếng') || command.includes('tắt âm lượng') || command.includes('im lặng') || command.includes('mute')) {
-            volumeBar.value = 0;
+            volumeBar.value -= volumeBar.value;
             volumeBar.dispatchEvent(new Event("input"));
             return;
         }
