@@ -3888,19 +3888,19 @@ function initAIAssistant() {
     };
 
     function processLocalCommand(command) {
-        if ((command.includes('dừng') || command.includes('ngưng') || command.includes('tắt')) && command.includes('nhạc') || command.includes('pause')) {
+        if ((command.includes('dừng') || command.includes('ngưng') || command.includes('ngừng') || command.includes('tắt')) && command.includes('nhạc') || command.includes('pause') || command.includes('stop')) {
             if (!audio.paused) { playPauseBtn.click(); }
             return;
         }
-        if (command.includes('phát') || command.includes('tiếp tục') || command.includes('play')) {
+        if (command.includes('phát') || command.includes('tiếp tục') || command.includes('play') || command.includes('continue')) {
             if (audio.paused) { playPauseBtn.click(); }
             return;
         }
-        if (command.includes('bài tiếp') || command.includes('bài sau') || command.includes('bài kế') || command.includes('bài mới') || command.includes('bài khác') || command.includes('next')) {
+        if (command.includes('bài tiếp') || command.includes('bài sau') || command.includes('bài kế') || command.includes('bài mới') || command.includes('bài khác') || command.includes('next') || command.includes('new')) {
             nextBtn.click();
             return;
         }
-        if (command.includes('bài trước')  || command.includes('quay lại') || command.includes('trở lại') || command.includes('trở về') || command.includes('previous')) {
+        if (command.includes('bài trước') || command.includes('lùi lại') || command.includes('lùi về') || command.includes('lui lại') || command.includes('lui về') || command.includes('quay lại') || command.includes('quay về') || command.includes('trở lại') || command.includes('trở về') || command.includes('previous')) {
             prevBtn.click();
             return;
         }
@@ -3932,12 +3932,12 @@ function initAIAssistant() {
             return;
         }
 
-        if (command.includes('trộn bài') || command.includes('xáo trộn') || command.includes('random') || command.includes('shuffle') || command.includes('mix')) {
+        if (command.includes('trộn bài') || command.includes('xáo bài') || command.includes('xáo trộn') || command.includes('random') || command.includes('shuffle') || command.includes('mix')) {
             shuffleBtn.click();
             return;
         }
 
-        if (command.includes('playlist') || command.includes('danh sách') || command.includes('chuyển album') || command.includes('mở album')) {
+        if (command.includes('playlist') || command.includes('danh sách') || command.includes('sang danh sách') || command.includes('chuyển album') || command.includes('mở album') || command.includes('sang album')) {
             let found = false;
             for (let i = 0; i < playlistsData.length; i++) {
                 const plData = playlistsData[i];
