@@ -3834,6 +3834,7 @@ function initAIAssistant() {
     const btn = document.createElement('div');
     btn.id = 'ai-assistant-btn';
     btn.innerHTML = '✨';
+    btn.title = "Trợ lý giọng nói";
     document.body.appendChild(btn);
     
     const recognition = new SpeechRecognition();
@@ -3841,7 +3842,7 @@ function initAIAssistant() {
     recognition.continuous = true;
     recognition.interimResults = false;
 
-    const WAKE_WORD = [ASSISTANT_NAME + "ơi", "hey" + ASSISTANT_NAME];
+    const WAKE_WORD = ASSISTANT_NAME.toLowerCase();
     let isListening = false;
     let isAwaitingCommand = false;
     let intentionalStop = true;
@@ -3872,6 +3873,8 @@ function initAIAssistant() {
         btn.classList.remove('listening');
         btn.style.background = '';
         btn.style.borderColor = '';
+        if (intentionalStop) {
+        }
         if (!intentionalStop) {
             console.log("Dịch vụ nhận dạng giọng nói đã dừng, đang khởi động lại...");
             setTimeout(() => {
@@ -3893,7 +3896,7 @@ function initAIAssistant() {
         }
         let errorMessage = "Đã xảy ra lỗi. Vui lòng thử lại.";
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-            errorMessage = "Quyền truy cập micro đã bị từ chối. Vui lòng cho phép trang web sử dụng micro.";
+            errorMessage = "Quyền truy cập micro đã bị từ chối. Vui lòng cho phép trang web sử dụng micro để tính năng này hoạt động.";
             intentionalStop = true;
         }
         showCustomModal(errorMessage, false);
@@ -3913,12 +3916,12 @@ function initAIAssistant() {
             isAwaitingCommand = false;
             btn.style.background = '';
             btn.style.borderColor = '';
-        } else if (transcript.includes(WAKE_WORD[0]) || transcript.includes(WAKE_WORD[1])) {
+        } else if (transcript.includes(WAKE_WORD)) {
             console.log('Đã phát hiện từ khóa đánh thức!');
             isAwaitingCommand = true;
             
-            btn.style.background = '#66ff66';
-            btn.style.borderColor = '#66ff66';
+            btn.style.background = '#f7b5c6';
+            btn.style.borderColor = '#f7b5c6';
             
             setTimeout(() => {
                 if (isAwaitingCommand) {
@@ -4005,6 +4008,14 @@ function initAIAssistant() {
         }
 
         showCustomModal(`Không hiểu lệnh: "${command}"`, false);
+    }
+
+    try {
+        intentionalStop = false;
+        recognition.start();
+    } catch (e) {
+        console.warn("Không thể tự động bắt đầu nhận dạng giọng nói (cần tương tác của người dùng).", e.message);
+        intentionalStop = true;
     }
 }
 
