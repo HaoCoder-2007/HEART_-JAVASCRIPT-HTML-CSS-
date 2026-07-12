@@ -3838,21 +3838,19 @@ function initAIAssistant() {
     
     const recognition = new SpeechRecognition();
     recognition.lang = 'vi-VN';
-    recognition.continuous = true;
+    recognition.continuous = false;
     recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
 
-    const WAKE_WORD = ASSISTANT_NAME.toLowerCase() + " ơi";
     let isListening = false;
-    let isAwaitingCommand = false;
-    let intentionalStop = true;
 
     btn.addEventListener('click', () => {
         if (isListening) {
-            intentionalStop = true;
             recognition.stop();
-        } else {
+            return;
+        }
+        try {
             try {
-                intentionalStop = false;
                 recognition.start();
             } catch (e) {
                 console.error("Lỗi khi bắt đầu nhận dạng giọng nói:", e);
@@ -3868,24 +3866,7 @@ function initAIAssistant() {
 
     recognition.onend = () => {
         isListening = false;
-        isAwaitingCommand = false;
         btn.classList.remove('listening');
-        btn.style.background = '';
-        btn.style.borderColor = '';
-        if (intentionalStop) {
-        }
-        if (!intentionalStop) {
-            console.log("Dịch vụ nhận dạng giọng nói đã dừng, đang khởi động lại...");
-            setTimeout(() => {
-                if (!isListening && !intentionalStop) {
-                    try {
-                        recognition.start();
-                    } catch(e) {
-                        console.error("Không thể khởi động lại nhận dạng giọng nói:", e);
-                    }
-                }
-            }, 500);
-        }
     };
 
     recognition.onerror = (event) => {
@@ -3894,52 +3875,18 @@ function initAIAssistant() {
             return;
         }
         let errorMessage = "Đã xảy ra lỗi. Vui lòng thử lại.";
-        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-            errorMessage = "Quyền truy cập micro đã bị từ chối. Vui lòng cho phép trang web sử dụng micro để tính năng này hoạt động.";
-            intentionalStop = true;
+        if (event.error === 'no-speech') {
+            errorMessage = "Không nhận diện được giọng nói.";
+        } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+            errorMessage = "Quyền truy cập micro đã bị từ chối. Vui lòng cho phép trang web sử dụng micro.";
         }
         showCustomModal(errorMessage, false);
     };
 
     recognition.onresult = (event) => {
-        const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-        if (!event.results[event.results.length - 1].isFinal) {
-            return;
-        }
-
-        console.log('Final transcript:', transcript);
-
-        if (isAwaitingCommand) {
-            if (transcript.includes(WAKE_WORD)) {
-                return;
-            }
-            console.log('Đang xử lý lệnh (chế độ chờ):', transcript);
-            processLocalCommand(transcript);
-            isAwaitingCommand = false;
-            btn.style.background = '';
-            btn.style.borderColor = '';
-        } else if (transcript.includes(WAKE_WORD)) {
-            const commandPart = transcript.substring(transcript.indexOf(WAKE_WORD) + WAKE_WORD.length).trim();
-
-            if (commandPart.length > 2) {
-                console.log('Đã phát hiện từ khóa và lệnh:', commandPart);
-                processLocalCommand(commandPart);
-            } else {
-                console.log('Đã phát hiện từ khóa đánh thức! Đang chờ lệnh...');
-                isAwaitingCommand = true;
-                btn.style.background = '#66ff66';
-                btn.style.borderColor = '#66ff66';
-                
-                setTimeout(() => {
-                    if (isAwaitingCommand) {
-                        console.log("Hết thời gian chờ lệnh, quay về chế độ nghỉ.");
-                        isAwaitingCommand = false;
-                        btn.style.background = '';
-                        btn.style.borderColor = '';
-                    }
-                }, 5000);
-            }
-        }
+        const command = event.results[0][0].transcript.toLowerCase().trim();
+        console.log('Lệnh đã nhận:', command);
+        processLocalCommand(command);
     };
 
     function processLocalCommand(command) {
@@ -4016,14 +3963,6 @@ function initAIAssistant() {
         }
 
         showCustomModal(`Không hiểu lệnh: "${command}"`, false);
-    }
-
-    try {
-        intentionalStop = false;
-        recognition.start();
-    } catch (e) {
-        console.warn("Không thể tự động bắt đầu nhận dạng giọng nói (cần tương tác của người dùng).", e.message);
-        intentionalStop = true;
     }
 }
 
