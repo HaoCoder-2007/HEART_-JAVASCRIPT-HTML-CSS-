@@ -2997,6 +2997,7 @@ function initCamera() {
         #camera-video {
             width: 100%;
             height: 100%;
+            transform: scaleX(-1);
             object-fit: cover;
         }
         #camera-flash {
@@ -3108,6 +3109,13 @@ function initCamera() {
         try {
             stream = await navigator.mediaDevices.getUserMedia(constraints);
             video.srcObject = stream;
+
+            if (facingMode === 'user') {
+                video.style.transform = 'scaleX(-1)';
+            } else {
+                video.style.transform = 'scaleX(1)';
+            }
+
             currentFacingMode = facingMode;
 
             const devices = await navigator.mediaDevices.enumerateDevices();
@@ -3164,12 +3172,7 @@ function initCamera() {
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
 
-        if (stream && stream.getVideoTracks()[0].getSettings().facingMode === 'user') {
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
-        }
-
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height); // The video is already flipped by CSS
 
         canvas.toBlob(async (blob) => {
             try {
