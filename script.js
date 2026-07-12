@@ -3841,7 +3841,7 @@ function initAIAssistant() {
     recognition.continuous = true;
     recognition.interimResults = false;
 
-    const WAKE_WORD = ASSISTANT_NAME.toLowerCase() + "ơi";
+    const WAKE_WORD = ASSISTANT_NAME.toLowerCase() + " ơi";
     let isListening = false;
     let isAwaitingCommand = false;
     let intentionalStop = true;
