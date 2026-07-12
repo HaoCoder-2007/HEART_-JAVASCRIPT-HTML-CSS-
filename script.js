@@ -3850,12 +3850,10 @@ function initAIAssistant() {
             return;
         }
         try {
-            try {
-                recognition.start();
-            } catch (e) {
-                console.error("Lỗi khi bắt đầu nhận dạng giọng nói:", e);
-                showCustomModal("Không thể bắt đầu nhận dạng giọng nói. Có thể do lỗi trình duyệt hoặc chưa cấp quyền.", false);
-            }
+            recognition.start();
+        } catch (e) {
+            console.error("Lỗi khi bắt đầu nhận dạng giọng nói:", e);
+            showCustomModal("Không thể bắt đầu nhận dạng giọng nói. Có thể do lỗi trình duyệt hoặc chưa cấp quyền.", false);
         }
     });
 
