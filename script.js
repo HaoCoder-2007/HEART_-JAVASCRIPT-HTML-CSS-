@@ -2,7 +2,7 @@ const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
 const VERCEL_URL ="https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/"; //Vercel Blob URL
 const ALARM_VOLUME = 1.0;
-const ASSISTANT_NAME = "Lucy";
+const ASSISTANT_NAME = "Trợ lí";
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -3834,7 +3834,6 @@ function initAIAssistant() {
     const btn = document.createElement('div');
     btn.id = 'ai-assistant-btn';
     btn.innerHTML = '✨';
-    btn.title = "Trợ lý giọng nói";
     document.body.appendChild(btn);
     
     const recognition = new SpeechRecognition();
@@ -3885,7 +3884,7 @@ function initAIAssistant() {
                         console.error("Không thể khởi động lại nhận dạng giọng nói:", e);
                     }
                 }
-            }, 500);
+            }, 3000);
         }
     };
 
