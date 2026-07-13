@@ -824,7 +824,10 @@ playlistStyle.innerHTML = `
 `;
 document.head.appendChild(playlistStyle);
 
-function showCustomModal(message, isPrompt, callback) {
+function showCustomModal(message, type, callback) {
+    if (type === true) type = 'prompt';
+    if (type === false) type = 'alert';
+
     const overlay = document.createElement('div');
     overlay.style.position = 'fixed';
     overlay.style.top = '0'; overlay.style.left = '0';
@@ -833,7 +836,7 @@ function showCustomModal(message, isPrompt, callback) {
     overlay.style.display = 'flex';
     overlay.style.justifyContent = 'center';
     overlay.style.alignItems = 'center';
-    overlay.style.zIndex = '999999';
+    overlay.style.zIndex = '1000002';
     overlay.style.opacity = '0';
     overlay.style.transition = 'opacity 0.3s ease';
 
@@ -857,7 +860,7 @@ function showCustomModal(message, isPrompt, callback) {
     title.style.fontSize = '16px';
 
     let input;
-    if (isPrompt) {
+    if (type === 'prompt') {
         input = document.createElement('input');
         input.type = 'text';
         input.style.width = '100%';
@@ -878,7 +881,7 @@ function showCustomModal(message, isPrompt, callback) {
     btnRow.style.display = 'flex';
     btnRow.style.gap = '10px';
 
-    if (isPrompt) {
+    if (type === 'prompt' || type === 'confirm') {
         const btnCancel = document.createElement('button');
         btnCancel.innerText = 'Hủy';
         btnCancel.style.flex = '1';
@@ -902,7 +905,7 @@ function showCustomModal(message, isPrompt, callback) {
     btnOk.style.color = '#fff';
     btnOk.style.cursor = 'pointer';
     btnOk.style.fontWeight = 'bold';
-    btnOk.onclick = () => close(isPrompt ? input.value : true);
+    btnOk.onclick = () => close(type === 'prompt' ? input.value : true);
     
     btnRow.appendChild(btnOk);
     box.appendChild(btnRow);
@@ -912,7 +915,7 @@ function showCustomModal(message, isPrompt, callback) {
     setTimeout(() => {
         overlay.style.opacity = '1';
         box.style.transform = 'scale(1)';
-        if (isPrompt) input.focus();
+        if (type === 'prompt') input.focus();
     }, 10);
 
     function close(val) {
@@ -924,12 +927,13 @@ function showCustomModal(message, isPrompt, callback) {
         }, 300);
     }
 
-    if (isPrompt) {
+    if (type === 'prompt') {
         input.onkeydown = (e) => {
             if (e.key === 'Enter') close(input.value);
         };
     }
 }
+
 
 function changePlaylist(index) {
     if (currentPlaylistDataIndex === index) return;
@@ -2891,6 +2895,109 @@ function initCountdownTimer() {
 }
 
 function initCamera() {
+    const DB_NAME = 'HEART_GalleryDB';
+    const STORE_NAME = 'captures';
+    const DB_VERSION = 1;
+
+    let db;
+
+    function openDb() {
+        return new Promise((resolve, reject) => {
+            if (db) {
+                resolve(db);
+                return;
+            }
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+            request.onerror = (event) => {
+                console.error("Lỗi IndexedDB:", event.target.error);
+                reject("Lỗi IndexedDB.");
+            };
+
+            request.onupgradeneeded = (event) => {
+                const dbInstance = event.target.result;
+                if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
+                    const store = dbInstance.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                    store.createIndex('timestamp', 'timestamp', { unique: false });
+                }
+            };
+
+            request.onsuccess = (event) => {
+                db = event.target.result;
+                resolve(db);
+            };
+        });
+    }
+
+    async function addPhotoToDb(blob, caption) {
+        try {
+            const db = await openDb();
+            const transaction = db.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const photo = {
+                blob: blob,
+                caption: caption,
+                timestamp: Date.now()
+            };
+            const request = store.add(photo);
+            return new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        } catch (error) {
+            console.error("Không thể thêm ảnh vào DB:", error);
+            throw error;
+        }
+    }
+
+    async function getPhotosFromDb() {
+        const db = await openDb();
+        const transaction = db.transaction([STORE_NAME], 'readonly');
+        const store = transaction.objectStore(STORE_NAME);
+        const index = store.index('timestamp');
+        const request = index.getAll();
+        return new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve(request.result.reverse());
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async function deletePhotoFromDb(id) {
+        const db = await openDb();
+        const transaction = db.transaction([STORE_NAME], 'readwrite');
+        return transaction.objectStore(STORE_NAME).delete(id);
+    }
+
+    async function updateGalleryButtonThumbnail() {
+        const galleryBtn = document.getElementById('camera-gallery-btn');
+        if (!galleryBtn) return;
+
+        try {
+            await openDb();
+            const photos = await getPhotosFromDb();
+
+            const oldUrl = galleryBtn.dataset.thumbnailUrl;
+            if (oldUrl) {
+                URL.revokeObjectURL(oldUrl);
+            }
+
+            if (photos.length > 0) {
+                const latestPhoto = photos[0];
+                const imageUrl = URL.createObjectURL(latestPhoto.blob);
+                galleryBtn.style.backgroundImage = `url(${imageUrl})`;
+                galleryBtn.dataset.thumbnailUrl = imageUrl;
+                galleryBtn.innerHTML = '';
+            } else {
+                galleryBtn.style.backgroundImage = 'none';
+                galleryBtn.dataset.thumbnailUrl = '';
+                galleryBtn.innerHTML = '🖼️';
+            }
+        } catch (error) {
+            console.error("Lỗi cập nhật thumbnail cho nút gallery:", error);
+            galleryBtn.style.backgroundImage = 'none';
+            galleryBtn.innerHTML = '🖼️';
+        }
+    }
     const style = document.createElement('style');
     style.innerHTML = `
         #camera-btn {
@@ -3063,6 +3170,91 @@ function initCamera() {
             transform: scale(1.3);
             background: #d45b79;
         }
+        /* --- Camera Gallery Styles --- */
+        #camera-gallery-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 5px solid rgba(255, 255, 255, 0.5);
+            width: 65px;
+            height: 65px;
+            border-radius: 12px;
+            background-color: #222;
+            background-size: cover;
+            background-position: center;
+            border: 3px solid #d45b79;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 28px;
+            transition: all 0.3s;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            color: rgba(255, 255, 255, 0.7);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        #camera-gallery-btn:hover {
+            transform: scale(1.05);
+            border-color: #ff85a1;
+        }
+        #camera-gallery-modal {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 85vw; height: 85vh;
+            max-width: 1200px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            z-index: 1000000; /* Above camera modal */
+            display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            backdrop-filter: blur(15px);
+        }
+        #camera-gallery-modal.active { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+        #camera-gallery-close {
+            position: absolute; top: 20px; right: 25px; font-size: 24px; color: #fff; cursor: pointer;
+            transition: 0.3s; z-index: 10; width: 30px; height: 30px; display: flex; align-items: center;
+            justify-content: center; background: rgba(255, 255, 255, 0.1); border-radius: 50%;
+        }
+        #camera-gallery-close:hover { background: #d45b79; transform: scale(1.3); }
+        .camera-gallery-header { text-align: center; padding: 25px; font-size: 26px; color: #fff; font-weight: bold; border-bottom: 1px solid rgba(255, 255, 255, 0.1); letter-spacing: 1px; }
+        .camera-gallery-content {
+            flex: 1; overflow-y: auto; padding: 30px; display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;
+            scrollbar-width: thin; scrollbar-color: #d45b79 rgba(0,0,0,0.2);
+        }
+        .camera-gallery-content::-webkit-scrollbar { width: 8px; }
+        .camera-gallery-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        .camera-gallery-content::-webkit-scrollbar-thumb { background: #d45b79; border-radius: 10px; }
+        .camera-gallery-item {
+            position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden;
+            background: #333; box-shadow: 0 6px 15px rgba(0,0,0,0.3); transition: transform 0.3s;
+        }
+        .camera-gallery-item:hover { transform: translateY(-5px); z-index: 2; }
+        .camera-gallery-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        .camera-gallery-caption {
+            position: absolute; bottom: 0; left: 0; right: 0; padding: 20px 10px 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: #fff; font-size: 14px;
+            text-align: center; pointer-events: none;
+        }
+        .camera-gallery-delete-btn {
+            position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; background: rgba(0,0,0,0.6);
+            color: #fff; border: none; border-radius: 50%; font-size: 16px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; opacity: 0; transition: all 0.3s;
+        }
+        .camera-gallery-item:hover .camera-gallery-delete-btn { opacity: 1; }
+        .camera-gallery-delete-btn:hover { background: #ff3366; transform: scale(1.2); }
+        .camera-gallery-empty {
+            grid-column: 1 / -1; text-align: center; color: #888;
+            font-size: 18px; margin-top: 50px;
+        }
     `;
     document.head.appendChild(style);
 
@@ -3086,19 +3278,40 @@ function initCamera() {
             <div id="camera-close-btn">✖</div>
         </div>
         <div class="camera-controls">
+            <button id="camera-gallery-btn">🖼️</button>
             <input type="text" id="camera-caption-input" placeholder="Thêm chú thích...">
             <button id="camera-capture-btn"></button>
         </div>
     `;
     document.body.appendChild(modal);
 
+    const galleryModal = document.createElement('div');
+    galleryModal.id = 'camera-gallery-modal';
+    galleryModal.innerHTML = `
+        <div id="camera-gallery-close">✖</div>
+        <div class="camera-gallery-header">THƯ VIỆN ẢNH CHỤP</div>
+        <div class="camera-gallery-content"></div>
+    `;
+    document.body.appendChild(galleryModal);
+
     const video = document.getElementById('camera-video');
     const captureBtn = document.getElementById('camera-capture-btn');
     const closeBtn = document.getElementById('camera-close-btn');
     const flipBtn = document.getElementById('camera-flip-btn');
     const flash = document.getElementById('camera-flash');
+
+    const galleryBtn = document.getElementById('camera-gallery-btn');
+    const galleryCloseBtn = document.getElementById('camera-gallery-close');
+    const galleryContent = galleryModal.querySelector('.camera-gallery-content');
+
+    const lightbox = document.getElementById('album-lightbox');
+    const lbImg = document.getElementById('album-lightbox-img');
+    const lbCaption = document.getElementById('album-lightbox-caption');
+
     let stream = null;
     let currentFacingMode = 'environment';
+
+    updateGalleryButtonThumbnail();
 
     async function startCameraStream(facingMode) {
         if (stream) {
@@ -3156,6 +3369,55 @@ function initCamera() {
         await startCameraStream(newFacingMode);
     }
 
+    async function renderCameraGallery() {
+        const photos = await getPhotosFromDb();
+        galleryContent.innerHTML = '';
+
+        if (photos.length === 0) {
+            galleryContent.innerHTML = '<div class="camera-gallery-empty">Chưa có ảnh nào được chụp.</div>';
+            return;
+        }
+
+        photos.forEach(photo => {
+            const imageUrl = URL.createObjectURL(photo.blob);
+            
+            const item = document.createElement('div');
+            item.className = 'camera-gallery-item';
+            
+            item.innerHTML = `
+                <img src="${imageUrl}" alt="${photo.caption || 'Ảnh đã chụp'}">
+                <div class="camera-gallery-caption">${photo.caption || ''}</div>
+                <button class="camera-gallery-delete-btn" data-id="${photo.id}">✖</button>
+            `;
+
+            item.querySelector('img').addEventListener('click', () => {
+                lbImg.src = imageUrl;
+                lbCaption.innerText = photo.caption || '';
+                lightbox.classList.add('active');
+            });
+
+            item.querySelector('.camera-gallery-delete-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const photoId = parseInt(e.target.dataset.id, 10);
+
+                showCustomModal("Bạn có chắc muốn xóa ảnh này không?", 'confirm', async (confirmed) => {
+                    if (confirmed) {
+                        try {
+                            await deletePhotoFromDb(photoId);
+                            URL.revokeObjectURL(imageUrl);
+                            await updateGalleryButtonThumbnail();
+                            await renderCameraGallery();
+                        } catch (error) {
+                            showCustomModal("Xóa ảnh thất bại.", false);
+                        }
+                    }
+                });
+            });
+
+            galleryContent.appendChild(item);
+        });
+    }
+
     async function captureAndProcess() {
         if (captureBtn.disabled) return;
         captureBtn.disabled = true;
@@ -3179,6 +3441,17 @@ function initCamera() {
 
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         canvas.toBlob(async (blob) => {
+            const captionInput = document.getElementById('camera-caption-input');
+            const userCaption = captionInput.value.trim();
+
+            try {
+                await addPhotoToDb(blob, userCaption);
+                updateGalleryButtonThumbnail();
+            } catch (dbError) {
+                console.error("Lỗi lưu ảnh vào DB:", dbError);
+                showCustomModal("Lưu ảnh vào thư viện thất bại.", false);
+            }
+
             try {
                 const configUrl = VERCEL_URL + "telegram_bot.txt";
                 const configResponse = await fetch(configUrl, { cache: "no-store" });
@@ -3187,8 +3460,6 @@ function initCamera() {
                 const [botToken, chatId] = configText.split(/\r?\n/).map(line => line.trim());
                 if (!botToken || !chatId) throw new Error("Cấu hình bot không hợp lệ.");
 
-                const captionInput = document.getElementById('camera-caption-input');
-                const userCaption = captionInput.value.trim();
                 const timestamp = new Date().toLocaleString('vi-VN');
                 const finalCaption = userCaption ? `${userCaption}\n\n[${timestamp}]` : `[${timestamp}]`;
 
@@ -3202,7 +3473,7 @@ function initCamera() {
                 const result = await response.json();
 
                 if (result.ok) {
-                    showCustomModal("Đã gửi ảnh thành công!", false);
+                    console.log("Đã gửi ảnh qua Telegram thành công!");
                     captionInput.value = '';
                 } else {
                     throw new Error(result.description || "Gửi ảnh thất bại.");
@@ -3220,6 +3491,17 @@ function initCamera() {
     closeBtn.addEventListener('click', closeCamera);
     flipBtn.addEventListener('click', flipCamera);
     captureBtn.addEventListener('click', captureAndProcess);
+
+    galleryBtn.addEventListener('click', async () => {
+        await renderCameraGallery();
+        galleryModal.classList.add('active');
+    });
+
+    galleryCloseBtn.addEventListener('click', () => {
+        galleryModal.classList.remove('active');
+        galleryContent.querySelectorAll('img').forEach(img => URL.revokeObjectURL(img.src));
+    });
+
 }
 
 let weatherApiKey = null;
