@@ -2894,78 +2894,71 @@ function initCountdownTimer() {
     });
 }
 
-function initCamera() {
-    const DB_NAME = 'HEART_GalleryDB';
-    const STORE_NAME = 'captures';
-    const DB_VERSION = 1;
+async function initCamera() {
+    let supabase;
+    try {
+        const response = await fetch(VERCEL_URL + "gallery.txt", { cache: "no-store" });
+        if (!response.ok) throw new Error(`Không thể tải cấu hình từ gallery.txt (lỗi ${response.status})`);
+        const configText = await response.text();
+        const [url, key] = configText.split(/\r?\n/).map(line => line.trim());
 
-    let db;
+        if (!url || !key) throw new Error("Tệp gallery.txt không hợp lệ hoặc thiếu thông tin.");
+        supabase = window.supabase.createClient(url, key);
 
-    function openDb() {
-        return new Promise((resolve, reject) => {
-            if (db) {
-                resolve(db);
-                return;
-            }
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-            request.onerror = (event) => {
-                console.error("Lỗi IndexedDB:", event.target.error);
-                reject("Lỗi IndexedDB.");
-            };
-
-            request.onupgradeneeded = (event) => {
-                const dbInstance = event.target.result;
-                if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
-                    const store = dbInstance.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
-                    store.createIndex('timestamp', 'timestamp', { unique: false });
-                }
-            };
-
-            request.onsuccess = (event) => {
-                db = event.target.result;
-                resolve(db);
-            };
-        });
+        const { error: healthCheckError } = await supabase.storage.from('gallery').list('', { limit: 1 });
+        if (healthCheckError) {
+            throw new Error(`Kết nối thư viện thất bại: ${healthCheckError.message}`);
+        }
+    } catch (error) {
+        console.error("Lỗi khởi tạo Camera:", error.message);
+        const cameraBtn = document.getElementById('camera-btn');
+        if (cameraBtn) cameraBtn.style.display = 'none';
+        return;
     }
 
     async function addPhotoToDb(blob, caption) {
         try {
-            const db = await openDb();
-            const transaction = db.transaction([STORE_NAME], 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
-            const photo = {
-                blob: blob,
-                caption: caption,
-                timestamp: Date.now()
-            };
-            const request = store.add(photo);
-            return new Promise((resolve, reject) => {
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
+            const fileName = `capture_${Date.now()}.jpg`;
+            
+            const { error: uploadError } = await supabase.storage
+                .from('gallery')
+                .upload(fileName, blob, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+            if (uploadError) throw uploadError;
+
+            const { data: urlData } = supabase.storage
+                .from('gallery')
+                .getPublicUrl(fileName);
+
+            const { error: insertError } = await supabase
+                .from('captures')
+                .insert({ image_url: urlData.publicUrl, caption: caption });
+            if (insertError) throw insertError;
+
         } catch (error) {
-            console.error("Không thể thêm ảnh vào DB:", error);
+            console.error("Lỗi Supabase khi thêm ảnh:", error);
             throw error;
         }
     }
 
     async function getPhotosFromDb() {
-        const db = await openDb();
-        const transaction = db.transaction([STORE_NAME], 'readonly');
-        const store = transaction.objectStore(STORE_NAME);
-        const index = store.index('timestamp');
-        const request = index.getAll();
-        return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result.reverse());
-            request.onerror = () => reject(request.error);
-        });
+        const { data, error } = await supabase
+            .from('captures')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data;
     }
 
-    async function deletePhotoFromDb(id) {
-        const db = await openDb();
-        const transaction = db.transaction([STORE_NAME], 'readwrite');
-        return transaction.objectStore(STORE_NAME).delete(id);
+    async function deletePhotoFromDb(id, imageUrl) {
+        const { error: dbError } = await supabase.from('captures').delete().eq('id', id);
+        if (dbError) throw dbError;
+
+        const fileName = imageUrl.split('/').pop();
+        const { error: storageError } = await supabase.storage.from('gallery').remove([fileName]);
+        if (storageError) console.error("Lỗi xóa ảnh khỏi Storage:", storageError);
     }
 
     async function updateGalleryButtonThumbnail() {
@@ -2973,23 +2966,14 @@ function initCamera() {
         if (!galleryBtn) return;
 
         try {
-            await openDb();
             const photos = await getPhotosFromDb();
-
-            const oldUrl = galleryBtn.dataset.thumbnailUrl;
-            if (oldUrl) {
-                URL.revokeObjectURL(oldUrl);
-            }
 
             if (photos.length > 0) {
                 const latestPhoto = photos[0];
-                const imageUrl = URL.createObjectURL(latestPhoto.blob);
-                galleryBtn.style.backgroundImage = `url(${imageUrl})`;
-                galleryBtn.dataset.thumbnailUrl = imageUrl;
+                galleryBtn.style.backgroundImage = `url(${latestPhoto.image_url})`;
                 galleryBtn.innerHTML = '';
             } else {
                 galleryBtn.style.backgroundImage = 'none';
-                galleryBtn.dataset.thumbnailUrl = '';
                 galleryBtn.innerHTML = '🖼️';
             }
         } catch (error) {
@@ -3064,6 +3048,17 @@ function initCamera() {
             opacity: 1;
             pointer-events: auto;
         }
+        #camera-screen-flash-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #fff;
+            z-index: 1; /* Behind viewfinder and controls */
+            display: none;
+        }
+        #camera-screen-flash-overlay.active {
+            display: block;
+        }
         #camera-viewfinder {
             position: relative;
             width: 90vw;
@@ -3074,6 +3069,7 @@ function initCamera() {
             overflow: hidden;
             border: 3px solid #d45b79;
             box-shadow: 0 0 20px rgba(212, 91, 121, 0.7), 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 2;
             transform: scale(0.9);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -3112,7 +3108,8 @@ function initCamera() {
             top: 0; left: 0; width: 100%; height: 100%;
             background: #fff;
             opacity: 0;
-            pointer-events: none;
+            pointer-events: none; 
+            z-index: 20; /* Above video */
         }
         .camera-controls {
             margin-top: 25px;
@@ -3121,6 +3118,8 @@ function initCamera() {
             gap: 20px;
             width: 90vw;
             max-width: 800px;
+            position: relative;
+            z-index: 2;
         }
         #camera-caption-input {
             flex-grow: 1;
@@ -3170,13 +3169,26 @@ function initCamera() {
             transform: scale(1.3);
             background: #d45b79;
         }
+        #camera-flash-btn {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        #camera-flash-btn.active, #camera-flash-btn:hover { background: #d45b79; }
         /* --- Camera Gallery Styles --- */
         #camera-gallery-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            border: 5px solid rgba(255, 255, 255, 0.5);
             width: 65px;
             height: 65px;
             border-radius: 12px;
@@ -3185,14 +3197,11 @@ function initCamera() {
             background-position: center;
             border: 3px solid #d45b79;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 28px;
             transition: all 0.3s;
             font-size: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
             color: rgba(255, 255, 255, 0.7);
             flex-shrink: 0;
             overflow: hidden;
@@ -3271,10 +3280,12 @@ function initCamera() {
     const modal = document.createElement('div');
     modal.id = 'camera-modal';
     modal.innerHTML = `
+        <div id="camera-screen-flash-overlay"></div>
         <div id="camera-viewfinder">
             <video id="camera-video" autoplay playsinline></video>
             <div id="camera-flash"></div>
             <div id="camera-flip-btn">⟳</div>
+            <div id="camera-flash-btn">🗲</div>
             <div id="camera-close-btn">✖</div>
         </div>
         <div class="camera-controls">
@@ -3298,6 +3309,7 @@ function initCamera() {
     const captureBtn = document.getElementById('camera-capture-btn');
     const closeBtn = document.getElementById('camera-close-btn');
     const flipBtn = document.getElementById('camera-flip-btn');
+    const flashBtn = document.getElementById('camera-flash-btn');
     const flash = document.getElementById('camera-flash');
 
     const galleryBtn = document.getElementById('camera-gallery-btn');
@@ -3310,8 +3322,53 @@ function initCamera() {
 
     let stream = null;
     let currentFacingMode = 'environment';
+    let isFlashOn = false;
 
     updateGalleryButtonThumbnail();
+
+    async function applyFlashSettings(forceOff = false) {
+        const screenFlashOverlay = document.getElementById('camera-screen-flash-overlay');
+
+        if (forceOff) {
+            isFlashOn = false;
+        }
+
+        if (!stream) {
+            flashBtn.style.display = 'none';
+            return;
+        }
+
+        const track = stream.getVideoTracks()[0];
+        if (!track) {
+            flashBtn.style.display = 'none';
+            return;
+        }
+
+        const capabilities = track.getCapabilities();
+
+        if (currentFacingMode === 'environment') {
+            if (capabilities.torch) {
+                flashBtn.style.display = 'flex';
+                try {
+                    await track.applyConstraints({ advanced: [{ torch: isFlashOn }] });
+                } catch (err) {
+                    console.error('Không thể áp dụng chế độ flash:', err);
+                    isFlashOn = false;
+                }
+            } else {
+                flashBtn.style.display = 'none';
+                isFlashOn = false;
+            }
+            if (screenFlashOverlay) screenFlashOverlay.classList.remove('active');
+        } else {
+            flashBtn.style.display = 'flex';
+            if (screenFlashOverlay) {
+                isFlashOn ? screenFlashOverlay.classList.add('active') : screenFlashOverlay.classList.remove('active');
+            }
+        }
+
+        isFlashOn ? flashBtn.classList.add('active') : flashBtn.classList.remove('active');
+    }
 
     async function startCameraStream(facingMode) {
         if (stream) {
@@ -3334,6 +3391,8 @@ function initCamera() {
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoInputs = devices.filter(device => device.kind === 'videoinput');
             flipBtn.style.display = videoInputs.length > 1 ? 'flex' : 'none';
+
+            await applyFlashSettings();
         } catch (err) {
             console.error(`Lỗi khi mở camera ${facingMode}:`, err);
             if (facingMode === 'environment') {
@@ -3355,6 +3414,7 @@ function initCamera() {
     }
 
     function closeCamera() {
+        applyFlashSettings(true);
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
             stream = null;
@@ -3379,32 +3439,31 @@ function initCamera() {
         }
 
         photos.forEach(photo => {
-            const imageUrl = URL.createObjectURL(photo.blob);
-            
             const item = document.createElement('div');
             item.className = 'camera-gallery-item';
             
             item.innerHTML = `
-                <img src="${imageUrl}" alt="${photo.caption || 'Ảnh đã chụp'}">
+                <img src="${photo.image_url}" alt="${photo.caption || 'Ảnh đã chụp'}">
                 <div class="camera-gallery-caption">${photo.caption || ''}</div>
-                <button class="camera-gallery-delete-btn" data-id="${photo.id}">✖</button>
+                <button class="camera-gallery-delete-btn" data-id="${photo.id}" data-url="${photo.image_url}">✖</button>
             `;
 
             item.querySelector('img').addEventListener('click', () => {
-                lbImg.src = imageUrl;
+                lbImg.src = photo.image_url;
                 lbCaption.innerText = photo.caption || '';
                 lightbox.classList.add('active');
             });
 
             item.querySelector('.camera-gallery-delete-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
-                const photoId = parseInt(e.target.dataset.id, 10);
+                const button = e.currentTarget;
+                const photoId = parseInt(button.dataset.id, 10);
+                const photoUrl = button.dataset.url;
 
-                showCustomModal("Bạn có chắc muốn xóa ảnh này không?", 'confirm', async (confirmed) => {
+                showCustomModal("Bạn có chắc muốn xóa ảnh chung này không?", 'confirm', async (confirmed) => {
                     if (confirmed) {
                         try {
-                            await deletePhotoFromDb(photoId);
-                            URL.revokeObjectURL(imageUrl);
+                            await deletePhotoFromDb(photoId, photoUrl);
                             await updateGalleryButtonThumbnail();
                             await renderCameraGallery();
                         } catch (error) {
@@ -3419,16 +3478,17 @@ function initCamera() {
     }
 
     async function captureAndProcess() {
-        if (captureBtn.disabled) return;
-        captureBtn.disabled = true;
+    if (captureBtn.disabled) return;
+    captureBtn.disabled = true;
 
-        flash.style.transition = 'opacity 0.1s';
-        flash.style.opacity = 1;
-        setTimeout(() => {
-            flash.style.transition = 'opacity 0.4s';
-            flash.style.opacity = 0;
-        }, 100);
+    flash.style.transition = 'opacity 0.1s';
+    flash.style.opacity = 1;
+    setTimeout(() => {
+        flash.style.transition = 'opacity 0.4s';
+        flash.style.opacity = 0;
+    }, 100);
 
+    const captureAndProcessBlob = () => {
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -3446,10 +3506,11 @@ function initCamera() {
 
             try {
                 await addPhotoToDb(blob, userCaption);
+                showCustomModal("Đã lưu và chia sẻ ảnh!", false);
                 updateGalleryButtonThumbnail();
             } catch (dbError) {
                 console.error("Lỗi lưu ảnh vào DB:", dbError);
-                showCustomModal("Lưu ảnh vào thư viện thất bại.", false);
+                showCustomModal("Lưu ảnh chia sẻ thất bại.", false);
             }
 
             try {
@@ -3485,12 +3546,20 @@ function initCamera() {
                 captureBtn.disabled = false;
             }
         }, 'image/jpeg', 0.9);
+    };
+
+    captureAndProcessBlob();
     }
 
     btn.addEventListener('click', openCamera);
     closeBtn.addEventListener('click', closeCamera);
     flipBtn.addEventListener('click', flipCamera);
     captureBtn.addEventListener('click', captureAndProcess);
+
+    flashBtn.addEventListener('click', async () => {
+        isFlashOn = !isFlashOn;
+        await applyFlashSettings();
+    });
 
     galleryBtn.addEventListener('click', async () => {
         await renderCameraGallery();
@@ -3499,7 +3568,6 @@ function initCamera() {
 
     galleryCloseBtn.addEventListener('click', () => {
         galleryModal.classList.remove('active');
-        galleryContent.querySelectorAll('img').forEach(img => URL.revokeObjectURL(img.src));
     });
 
 }
