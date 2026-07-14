@@ -1661,21 +1661,6 @@ function initAlbum() {
             opacity: 1;
             transform: translateY(0);
         }
-        #album-lightbox-close {
-            position: absolute;
-            top: 20px; right: 25px;
-            color: #fff; font-size: 24px; cursor: pointer;
-            transition: 0.3s;
-            z-index: 110;
-            width: 30px; height: 30px;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-        }
-        #album-lightbox-close:hover {
-            background: #d45b79;
-            transform: rotate(90deg);
-        }
         /* --- Folder Styles --- */
         .timeline-folder-item {
             position: relative;
@@ -3186,7 +3171,11 @@ async function initCamera() {
             transition: all 0.3s;
             z-index: 10;
         }
-        #camera-flash-btn.active, #camera-flash-btn:hover { background: #d45b79; }
+        #camera-flash-btn.active { background: #d45b79; }
+        #camera-flash-btn:hover { 
+            background: #d45b79; 
+            transform: scale(1.3); 
+        }
         /* --- Camera Gallery Styles --- */
         #camera-gallery-btn {
             width: 65px;
@@ -3253,13 +3242,37 @@ async function initCamera() {
             background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: #fff; font-size: 14px;
             text-align: center; pointer-events: none;
         }
-        .camera-gallery-delete-btn {
-            position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; background: rgba(0,0,0,0.6);
-            color: #fff; border: none; border-radius: 50%; font-size: 16px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; opacity: 0; transition: all 0.3s;
+        .camera-gallery-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 5;
         }
-        .camera-gallery-item:hover .camera-gallery-delete-btn { opacity: 1; }
-        .camera-gallery-delete-btn:hover { background: #ff3366; transform: scale(1.2); }
+        .camera-gallery-item:hover .camera-gallery-actions {
+            opacity: 1;
+        }
+        .camera-gallery-delete-btn, .camera-gallery-download-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 19px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .camera-gallery-delete-btn:hover { background: #c70f3d; transform: scale(1.2); }
+        .camera-gallery-download-btn:hover { background: #df758f; transform: scale(1.2); }
         .camera-gallery-empty {
             grid-column: 1 / -1; text-align: center; color: #888;
             font-size: 18px; margin-top: 50px;
@@ -3285,7 +3298,7 @@ async function initCamera() {
             <video id="camera-video" autoplay playsinline></video>
             <div id="camera-flash"></div>
             <div id="camera-flip-btn">⟳</div>
-            <div id="camera-flash-btn">🗲</div>
+            <div id="camera-flash-btn">☀︎</div>
             <div id="camera-close-btn">✖</div>
         </div>
         <div class="camera-controls">
@@ -3445,7 +3458,10 @@ async function initCamera() {
             item.innerHTML = `
                 <img src="${photo.image_url}" alt="${photo.caption || 'Ảnh đã chụp'}">
                 <div class="camera-gallery-caption">${photo.caption || ''}</div>
-                <button class="camera-gallery-delete-btn" data-id="${photo.id}" data-url="${photo.image_url}">✖</button>
+                <div class="camera-gallery-actions">
+                    <button class="camera-gallery-delete-btn" >✖</button>
+                    <a href="#" class="camera-gallery-download-btn" >🡻</a>
+                </div>
             `;
 
             item.querySelector('img').addEventListener('click', () => {
@@ -3454,16 +3470,13 @@ async function initCamera() {
                 lightbox.classList.add('active');
             });
 
-            item.querySelector('.camera-gallery-delete-btn').addEventListener('click', (e) => {
+            const deleteBtn = item.querySelector('.camera-gallery-delete-btn');
+            deleteBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const button = e.currentTarget;
-                const photoId = parseInt(button.dataset.id, 10);
-                const photoUrl = button.dataset.url;
-
-                showCustomModal("Bạn có chắc muốn xóa ảnh chung này không?", 'confirm', async (confirmed) => {
+                showCustomModal("Xóa ảnh vĩnh viễn?", 'confirm', async (confirmed) => {
                     if (confirmed) {
                         try {
-                            await deletePhotoFromDb(photoId, photoUrl);
+                            await deletePhotoFromDb(photo.id, photo.image_url);
                             await updateGalleryButtonThumbnail();
                             await renderCameraGallery();
                         } catch (error) {
@@ -3471,6 +3484,13 @@ async function initCamera() {
                         }
                     }
                 });
+            });
+
+            const downloadBtn = item.querySelector('.camera-gallery-download-btn');
+            downloadBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                downloadImage(photo.image_url, `heart_capture_${photo.id}.jpg`);
             });
 
             galleryContent.appendChild(item);
@@ -3570,6 +3590,28 @@ async function initCamera() {
         galleryModal.classList.remove('active');
     });
 
+}
+
+async function downloadImage(imageUrl, fileName) {
+    try {
+        const response = await fetch(imageUrl);
+        if (!response.ok) {
+            throw new Error(`Lỗi HTTP: ${response.status}`);
+        }
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+    } catch (error) {
+        console.error('Lỗi tải ảnh:', error);
+        window.open(imageUrl, '_blank');
+    }
 }
 
 let weatherApiKey = null;
