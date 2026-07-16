@@ -70,6 +70,7 @@ const vTracks = [
     { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/VN/Aingoaianh.mp3" },
     { name: "Ấm - sweet liquor", src: "music/VN/Am.mp3" },
     { name: "Ánh sao và bầu trời - T.R.I, Cá", src: "music/VN/Anhsaovabautroi.mp3" },
+    { name: "Buồn hay vui - Vsoul, MCK, Obito, Ronboogz, Boyzed", src: "music/VN/Buonhayvui.mp3" },
     { name: "Chẳng giống giáng sinh - Lu, Willistic, datfitzx", src: "music/VN/Changgionggiangsinh.mp3" },
     { name: "Chạy khỏi thế giới này - Da LAB, Phương Ly", src: "music/VN/Chaykhoithegioinay.mp3" },
     { name: "Chạy theo em - Nhã, Mihuman", src: "music/VN/Chaytheoem.mp3" },
@@ -91,6 +92,7 @@ const vTracks = [
     { name: "Nằm bên anh - Minh Đinh, Hà An Huy", src: "music/VN/Nambenanh.mp3" },
     { name: "Nếu lúc đó - Tlinh, 2pillz", src: "music/VN/Neulucdo.mp3" },
     { name: "Ngã tư không đèn - Trang, Khoa Vũ", src: "music/VN/Ngatukhongden.mp3" },
+    { name: "Ngây ther - Kidsai, VSTRA, WHENITSASUNNIDAY", src: "music/VN/Ngayther.mp3" },
     { name: "Như hoa mùa xuân - Phùng Khánh Linh, Wren Evans", src: "music/VN/Nhuhoamuaxuan.mp3" },
     { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/VN/Nuocmatemlaubangtinhyeumoi.mp3" },
     { name: "Phong - VSTRA", src: "music/VN/Phong.mp3" },
@@ -103,6 +105,7 @@ const vTracks = [
     { name: "Thanh xuân - Da LAB", src: "music/VN/Thanhxuan.mp3" },
     { name: "Thích quá rùi nà - Tlinh, Trung Trần", src: "music/VN/Thichquaruina.mp3" },
     { name: "Tìm thấy nhau - SIVAN", src: "music/VN/Timthaynhau.mp3" },
+    { name: "Tình đắng như ly cà phê - Ngơ, Nân.", src: "music/VN/Tinhdangnhulycaphe.mp3" },
     { name: "Tình yêu chậm trễ - MONSTAR", src: "music/VN/Tinhyeuchamtre.mp3" },
     { name: "Tiny love - Thịnh Suy", src: "music/VN/Tinylove.mp3" },
     { name: "To the moon - Hooligan", src: "music/VN/Tothemoon.mp3" },
@@ -148,14 +151,19 @@ const usukTracks = [
 
 const kTracks = [
     { name: "H.S.K.T - Lee Hi", src: "music/K/H.S.K.T.mp3" },
+    { name: "Hurt - NewJeans", src: "music/K/Hurt.mp3" },
     { name: "If you - BigBang", src: "music/K/Ifyou.mp3" },
+    { name: "Only you - Yebit", src: "music/K/Onlyyou.mp3" },
     { name: "Only - Lee Hi", src: "music/K/Only.mp3" },
+    { name: "Say yes - Loco, Punch", src: "music/K/Sayyes.mp3" },
     { name: "Seven - Jung Kook", src: "music/K/Seven.mp3" },
+    { name: "Some - Junggigo, Soyou, Lil Boi", src: "music/K/Some.mp3" },
     { name: "Still with you - Jung Kook", src: "music/K/Stillwithyou.mp3" },
     //{ name: "", src: "music/K/.mp3" },
 ];
 
 const xmasTracks = [
+    { name: "All I want for Christmas is you - Mariah Carey", src: "music/SPECIAL/XMAS/Alliwantforchristmasisyou.mp3" },
     { name: "Chẳng giống giáng sinh - Lu, Willistic, datfitzx", src: "music/SPECIAL/XMAS/Changgionggiangsinh.mp3" },
     { name: "Last Christmas - Wham!", src: "music/SPECIAL/XMAS/Lastchristmas.mp3" },
     { name: "Snowman - Sia", src: "music/SPECIAL/XMAS/Snowman.mp3" },
@@ -3469,7 +3477,7 @@ async function initCamera() {
                 <div class="camera-gallery-caption">${photo.caption || ''}</div>
                 <div class="camera-gallery-actions">
                     <button class="camera-gallery-delete-btn" >✖</button>
-                    <a href="#" class="camera-gallery-download-btn" >🡻</a>
+                    <a href="#" class="camera-gallery-download-btn" >⤵︎</a>
                 </div>
             `;
 
