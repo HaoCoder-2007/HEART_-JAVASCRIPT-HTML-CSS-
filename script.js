@@ -1,8 +1,8 @@
 const F_DAY = 18, F_MONTH = 1, F_YEAR = 2025; //First day of the relationship
 const B_DAY = 29, B_MONTH = 5, B_YEAR = 2007; //Babe's birthday
-const VERCEL_URL ="https://oonydghpwdqrl4rm.public.blob.vercel-storage.com/"; //Vercel Blob URL
-const ALARM_VOLUME = 1.0;
-const ASSISTANT_NAME = "Trợ lí";
+
+let supabaseClient = null;
+const appConfig = {};
 
 //-------------------------------------------------------NOTES------------------------------------------------------------------------------------------
 const notes = [
@@ -396,18 +396,53 @@ function drawVisualizer() {
     }
 }
 
+let currentLyrics = [];
+let currentLyricIndex = -1;
+const lyricsContainer = document.getElementById('lyrics-container');
+const lyricsLinesEl = document.getElementById('lyrics-lines');
+
+function parseLRC(lrcContent) {
+    if (!lrcContent) return [];
+    const lines = lrcContent.split('\n');
+    const lyrics = [];
+    const timeRegex = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/;
+
+    for (const line of lines) {
+        const match = line.match(timeRegex);
+        if (match) {
+            const minutes = parseInt(match[1], 10);
+            const seconds = parseInt(match[2], 10);
+            const milliseconds = parseInt(match[3].padEnd(3, '0'), 10);
+            const time = minutes * 60 + seconds + milliseconds / 1000;
+            const text = line.replace(timeRegex, '').trim();
+            if (text) {
+                lyrics.push({ time, text });
+            }
+        }
+    }
+    return lyrics.sort((a, b) => a.time - b.time);
+}
+
 function loadTrack(index) {
     const track = playlist[index];
     
     if (track.src.startsWith("http")) {
         audio.src = track.src;
     } else {
-        audio.src = VERCEL_URL + track.src;
+        audio.src = encodeURI(track.src);
     }
     trackName.innerText = track.name;
     seekBar.value = 0;
     currentTimeEl.innerText = "00:00";
     if (typeof renderPlaylist === 'function') renderPlaylist();
+
+    currentLyrics = [];
+    currentLyricIndex = -1;
+    lyricsLinesEl.innerHTML = '<div class="lyric-line">Đang tải lời bài hát...</div>';
+    lyricsLinesEl.style.transform = 'translateY(0px)';
+
+    const lyricSrc = track.src.replace('music/', 'lyric/').replace(/\.mp3$/, '.lrc');
+    fetch(encodeURI(lyricSrc), { cache: "no-store" }).then(response => { if (!response.ok) throw new Error('Không tìm thấy tệp lyric'); return response.text(); }).then(lrcText => { currentLyrics = parseLRC(lrcText); if (currentLyrics.length === 0) { lyricsLinesEl.innerHTML = '<div class="lyric-line">Chưa có lời bài hát.</div>'; } else { renderLyrics(); } }).catch(error => { console.log("Không thể tải lời bài hát:", error.message); lyricsLinesEl.innerHTML = '<div class="lyric-line">Chưa có lời bài hát.</div>'; });
 }
 
 let fadeInterval;
@@ -581,12 +616,60 @@ function formatTime(seconds) {
     return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
 }
 
+function renderLyrics() {
+    if (currentLyrics.length === 0) {
+        lyricsLinesEl.style.transform = 'translateY(0px)';
+        return;
+    }
+
+    if (lyricsLinesEl.children.length !== currentLyrics.length) {
+        lyricsLinesEl.innerHTML = currentLyrics.map(line => 
+            `<div class="lyric-line">${line.text}</div>`
+        ).join('');
+    }
+
+    const lines = lyricsLinesEl.children;
+    let hasCurrent = false;
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].classList.toggle('current', i === currentLyricIndex)) {
+            hasCurrent = true;
+        }
+    }
+
+    if (hasCurrent) {
+        const currentLineEl = lines[currentLyricIndex];
+        const containerHeight = lyricsContainer.clientHeight;
+        const lineOffsetTop = currentLineEl.offsetTop;
+        const lineHeight = currentLineEl.clientHeight;
+        const scrollOffset = lineOffsetTop - (containerHeight / 2) + (lineHeight / 2);
+        lyricsLinesEl.style.transform = `translateY(-${scrollOffset}px)`;
+    } else {
+        lyricsLinesEl.style.transform = 'translateY(0px)';
+    }
+}
+
 audio.addEventListener("timeupdate", () => {
     if (!isNaN(audio.duration)) {
         seekBar.max = audio.duration;
         seekBar.value = audio.currentTime;
         currentTimeEl.innerText = formatTime(audio.currentTime);
         durationTimeEl.innerText = formatTime(audio.duration);
+    }
+
+    if (currentLyrics.length > 0) {
+        let newLyricIndex = -1;
+        for (let i = 0; i < currentLyrics.length; i++) {
+            if (audio.currentTime + 0.5 >= currentLyrics[i].time) {
+                newLyricIndex = i;
+            } else {
+                break;
+            }
+        }
+
+        if (newLyricIndex !== currentLyricIndex) {
+            currentLyricIndex = newLyricIndex;
+            renderLyrics();
+        }
     }
 });
 
@@ -701,11 +784,7 @@ function showNextPolaroid() {
     front.className = 'polaroid-front';
     
     const img = document.createElement('img');
-    if (memory.src.startsWith("http")) {
-        img.src = memory.src;
-    } else {
-        img.src = `${VERCEL_URL}${memory.src}?v=${new Date().getTime()}`;
-    }
+    img.src = memory.src.startsWith("http") ? memory.src : `${memory.src}?v=${new Date().getTime()}`;
     img.draggable = false;
     img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
     
@@ -754,19 +833,28 @@ window.addEventListener('click', function(e) {
 
 const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
-const playlistBtn = document.createElement("button");
-playlistBtn.className = "nav-btn";
-playlistBtn.id = "playlist-btn";
-playlistBtn.innerHTML = "☰";
-nextBtn.parentNode.insertBefore(playlistBtn, nextBtn.nextSibling);
-
 const shuffleBtn = document.createElement("button");
+const playlistBtn = document.createElement("button");
+const lyricsBtn = document.createElement("button");
+
 shuffleBtn.className = "nav-btn";
 shuffleBtn.id = "shuffle-btn";
 shuffleBtn.innerHTML = "⇆";
-shuffleBtn.title = "Linear";
 shuffleBtn.style.color = "white";
-nextBtn.parentNode.insertBefore(shuffleBtn, playlistBtn);
+
+playlistBtn.className = "nav-btn";
+playlistBtn.id = "playlist-btn";
+playlistBtn.innerHTML = "☰";
+
+lyricsBtn.className = "nav-btn";
+lyricsBtn.id = "lyrics-btn";
+lyricsBtn.innerHTML = "🎤︎︎";
+lyricsBtn.style.color = "white";
+
+const controlsContainer = nextBtn.parentNode;
+controlsContainer.appendChild(lyricsBtn);
+controlsContainer.appendChild(shuffleBtn);
+controlsContainer.appendChild(playlistBtn);
 
 shuffleBtn.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -782,6 +870,68 @@ shuffleBtn.addEventListener("click", (e) => {
 const playlistUI = document.createElement('div');
 playlistUI.className = 'playlist-ui';
 document.body.appendChild(playlistUI);
+
+lyricsBtn.addEventListener('click', () => {
+    lyricsContainer.classList.toggle('active');
+    if (lyricsContainer.classList.contains('active')) {
+        lyricsBtn.style.color = '#d45b79';
+        renderLyrics();
+    } else {
+        lyricsBtn.style.color = 'white';
+    }
+});
+
+const lyricsStyle = document.createElement('style');
+lyricsStyle.innerHTML = `
+    .lyrics-container {
+        position: fixed;
+        bottom: -100px;
+        left: 50%;
+        width: 650px;
+        max-width: 1000px;
+        height: 200px;
+        background: rgb(17, 15, 15);
+        border-radius: 15px;
+        z-index: 10;
+        display: block;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        text-align: center;
+        box-sizing: border-box;
+        border: 1px solid rgba(255, 51, 102, 0.2);
+        pointer-events: none;
+        opacity: 0;
+        transform: translateX(-50%) translateY(100%);
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .lyrics-container.active { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #lyrics-lines { 
+        position: relative;
+        width: 100%;
+        padding: 20px 0;
+        box-sizing: border-box;
+        transition: transform 0.4s ease-out; 
+        will-change: transform; 
+    }
+    .lyric-line {
+        color: rgba(255, 255, 255, 0.17);
+        font-size: 16px;
+        line-height: 1.6;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        padding: 4px 20px;
+        white-space: pre-wrap;
+        opacity: 0.7;
+    }
+    .lyric-line.current {
+        color: #eea8b9;
+        font-size: 16px;
+        font-weight: bold;
+        opacity: 1;
+    }
+`;
+document.head.appendChild(lyricsStyle);
 
 let playlistHideTimeout;
 
@@ -1028,10 +1178,10 @@ function renderPlaylist() {
                 showCustomModal("Anh thích gì nhất?", true, async (pass) => {
                     if (pass === null || pass === "") return;
                     try {
-                        const response = await fetch(VERCEL_URL + "password.txt", { cache: "no-store" });
-                        if (!response.ok) throw new Error("Không thể tải mật khẩu");
-                        const correctPassText = await response.text();
-                        const validPasswords = correctPassText.split(/\r?\n|,/).map(p => p.trim().toLowerCase()).filter(p => p.length > 0);
+                        const passwordConfig = appConfig.password;
+                        if (!passwordConfig) throw new Error("Không tìm thấy mật khẩu trong cấu hình.");
+
+                        const validPasswords = passwordConfig.split(' ').map(p => p.trim().toLowerCase()).filter(p => p.length > 0);
                         const userPass = pass.trim().toLowerCase();
                         
                         if (validPasswords.includes(userPass)) {
@@ -1272,9 +1422,8 @@ function initBirthdayRecorder() {
         document.body.appendChild(recorder);
 
         const voiceAudioSrc = 'music/SPECIAL/birthday_voice_message.mp3';
-        const voiceAudioUrl = voiceAudioSrc.startsWith('http') ? voiceAudioSrc : VERCEL_URL + voiceAudioSrc;
-        const voiceAudio = new Audio(voiceAudioUrl); 
-        
+        const voiceAudio = new Audio(voiceAudioSrc);
+
         voiceAudio.addEventListener('loadedmetadata', () => {
             if (!isNaN(voiceAudio.duration)) {
                 label.innerText = formatTime(voiceAudio.duration);
@@ -1831,7 +1980,7 @@ function initAlbum() {
             const photoItem = document.createElement('div');
             photoItem.className = 'timeline-photo-item';
 
-            const imageUrl = photo.src.startsWith("http") ? photo.src : `${VERCEL_URL}${photo.src}?v=${new Date().getTime()}`;
+            const imageUrl = photo.src.startsWith("http") ? photo.src : `${photo.src}?v=${new Date().getTime()}`;
             const img = document.createElement('img');
             img.src = imageUrl;
             img.draggable = false;
@@ -1902,7 +2051,7 @@ function initAlbum() {
                 const representativePhoto = item.photos[0];
                 if (!representativePhoto) return;
 
-                const imageUrl = representativePhoto.src.startsWith("http") ? representativePhoto.src : `${VERCEL_URL}${representativePhoto.src}?v=${new Date().getTime()}`;
+                const imageUrl = representativePhoto.src.startsWith("http") ? representativePhoto.src : `${representativePhoto.src}?v=${new Date().getTime()}`;
                 const img = document.createElement('img');
                 img.src = imageUrl;
                 img.draggable = false;
@@ -1924,7 +2073,7 @@ function initAlbum() {
                 const photoItem = document.createElement('div');
                 photoItem.className = 'timeline-photo-item';
 
-                const imageUrl = item.src.startsWith("http") ? item.src : `${VERCEL_URL}${item.src}?v=${new Date().getTime()}`;
+                const imageUrl = item.src.startsWith("http") ? item.src : `${item.src}?v=${new Date().getTime()}`;
                 const img = document.createElement('img');
                 img.src = imageUrl;
                 img.draggable = false;
@@ -2203,7 +2352,7 @@ function initResume() {
         card.className = 'profile-card';
 
         card.innerHTML = `
-            <img class="profile-avatar" src="${data.avatar.startsWith('http') ? data.avatar : `${VERCEL_URL}${data.avatar}?v=${new Date().getTime()}`}" 
+            <img class="profile-avatar" src="${data.avatar.startsWith('http') ? data.avatar : `${data.avatar}?v=${new Date().getTime()}`}" 
                  draggable="false" onerror="this.src='https://via.placeholder.com/150/ffe4e1/ff69b4?text=Avatar'">
             <div class="profile-title">${data.title}</div>
             <div class="profile-details">
@@ -2845,8 +2994,8 @@ function initCountdownTimer() {
         
         if (timerStopHint) timerStopHint.classList.add('active');
         const alarmSrc = 'music/SPECIAL/Alarm.mp3';
-        timerAlarmAudio.src = alarmSrc.startsWith('http') ? alarmSrc : VERCEL_URL + alarmSrc;
-        timerAlarmAudio.volume = ALARM_VOLUME;
+        timerAlarmAudio.src = alarmSrc;
+        timerAlarmAudio.volume = 1.0;
         timerAlarmAudio.play().catch(err => console.log("Lỗi phát báo thức:", err));
     }
 
@@ -2897,17 +3046,15 @@ function initCountdownTimer() {
 }
 
 async function initCamera() {
-    let supabase;
+    if (!supabaseClient) {
+        console.error("Supabase chưa được khởi tạo. Chức năng Camera sẽ không hoạt động.");
+        const cameraBtn = document.getElementById('camera-btn');
+        if (cameraBtn) cameraBtn.style.display = 'none';
+        return;
+    }
+
     try {
-        const response = await fetch(VERCEL_URL + "gallery.txt", { cache: "no-store" });
-        if (!response.ok) throw new Error(`Không thể tải cấu hình từ gallery.txt (lỗi ${response.status})`);
-        const configText = await response.text();
-        const [url, key] = configText.split(/\r?\n/).map(line => line.trim());
-
-        if (!url || !key) throw new Error("Tệp gallery.txt không hợp lệ hoặc thiếu thông tin.");
-        supabase = window.supabase.createClient(url, key);
-
-        const { error: healthCheckError } = await supabase.storage.from('gallery').list('', { limit: 1 });
+        const { error: healthCheckError } = await supabaseClient.storage.from('gallery').list('', { limit: 1 });
         if (healthCheckError) {
             throw new Error(`Kết nối thư viện thất bại: ${healthCheckError.message}`);
         }
@@ -2922,7 +3069,7 @@ async function initCamera() {
         try {
             const fileName = `capture_${Date.now()}.jpg`;
             
-            const { error: uploadError } = await supabase.storage
+            const { error: uploadError } = await supabaseClient.storage
                 .from('gallery')
                 .upload(fileName, blob, {
                     cacheControl: '3600',
@@ -2930,11 +3077,11 @@ async function initCamera() {
                 });
             if (uploadError) throw uploadError;
 
-            const { data: urlData } = supabase.storage
+            const { data: urlData } = supabaseClient.storage
                 .from('gallery')
                 .getPublicUrl(fileName);
 
-            const { error: insertError } = await supabase
+            const { error: insertError } = await supabaseClient
                 .from('captures')
                 .insert({ image_url: urlData.publicUrl, caption: caption });
             if (insertError) throw insertError;
@@ -2946,7 +3093,7 @@ async function initCamera() {
     }
 
     async function getPhotosFromDb() {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
             .from('captures')
             .select('*')
             .order('created_at', { ascending: false });
@@ -2955,11 +3102,11 @@ async function initCamera() {
     }
 
     async function deletePhotoFromDb(id, imageUrl) {
-        const { error: dbError } = await supabase.from('captures').delete().eq('id', id);
+        const { error: dbError } = await supabaseClient.from('captures').delete().eq('id', id);
         if (dbError) throw dbError;
 
         const fileName = imageUrl.split('/').pop();
-        const { error: storageError } = await supabase.storage.from('gallery').remove([fileName]);
+        const { error: storageError } = await supabaseClient.storage.from('gallery').remove([fileName]);
         if (storageError) console.error("Lỗi xóa ảnh khỏi Storage:", storageError);
     }
 
@@ -3250,7 +3397,7 @@ async function initCamera() {
         .camera-gallery-content::-webkit-scrollbar-thumb { background: #d45b79; border-radius: 10px; }
         .camera-gallery-item {
             position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden;
-            background: #333; box-shadow: 0 6px 15px rgba(0,0,0,0.3); transition: transform 0.3s;
+            background: #eca4b6; box-shadow: 0 6px 15px rgba(0,0,0,0.3); transition: transform 0.3s;
         }
         .camera-gallery-item:hover { transform: translateY(-5px); z-index: 2; }
         .camera-gallery-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
@@ -3472,7 +3619,23 @@ async function initCamera() {
             const item = document.createElement('div');
             item.className = 'camera-gallery-item';
             
+            let timestamp = '';
+            if (photo.created_at) {
+                try {
+                    const d = new Date(photo.created_at);
+                    const day = String(d.getDate()).padStart(2, '0');
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const year = d.getFullYear();
+                    const hours = String(d.getHours()).padStart(2, '0');
+                    const minutes = String(d.getMinutes()).padStart(2, '0');
+                    timestamp = `${day}/${month}/${year} ${hours}:${minutes}`;
+                } catch (e) {
+                    console.error("Invalid date format for photo:", photo);
+                }
+            }
+
             item.innerHTML = `
+                ${timestamp ? `<div class="camera-gallery-timestamp" style="text-align: center;">${timestamp}</div>` : ''}
                 <img src="${photo.image_url}" alt="${photo.caption || 'Ảnh đã chụp'}">
                 <div class="camera-gallery-caption">${photo.caption || ''}</div>
                 <div class="camera-gallery-actions">
@@ -3551,12 +3714,10 @@ async function initCamera() {
             }
 
             try {
-                const configUrl = VERCEL_URL + "telegram_bot.txt";
-                const configResponse = await fetch(configUrl, { cache: "no-store" });
-                if (!configResponse.ok) throw new Error("Không thể tải cấu hình bot.");
-                const configText = await configResponse.text();
-                const [botToken, chatId] = configText.split(/\r?\n/).map(line => line.trim());
-                if (!botToken || !chatId) throw new Error("Cấu hình bot không hợp lệ.");
+                const botConfig = appConfig.telegram_bot;
+                if (!botConfig || !botConfig.token || !botConfig.chat_id) throw new Error("Cấu hình bot Telegram không hợp lệ.");
+                const botToken = botConfig.token;
+                const chatId = botConfig.chat_id;
 
                 const timestamp = new Date().toLocaleString('vi-VN');
                 const finalCaption = userCaption ? `${userCaption}\n\n[${timestamp}]` : `[${timestamp}]`;
@@ -3635,17 +3796,12 @@ let weatherApiKey = null;
 
 async function getApiKey() {
     if (weatherApiKey) return weatherApiKey;
-    try {
-        const response = await fetch(VERCEL_URL + "weather.txt", { cache: "no-store" });
-        if (!response.ok) throw new Error("Không thể tải khóa API thời tiết");
-        const key = await response.text();
-        weatherApiKey = key.trim();
-        if (!weatherApiKey) throw new Error("Khóa API thời tiết trống");
-        return weatherApiKey;
-    } catch (error) {
-        console.error(error);
+    weatherApiKey = appConfig.weather_api_key;
+    if (!weatherApiKey) {
+        console.error("Không tìm thấy 'weather_api_key' trong cấu hình.");
         return null;
     }
+    return weatherApiKey;
 }
 
 function initWeather() {
@@ -4132,15 +4288,15 @@ async function getSimplifiedDeviceInfo() {
 }
 
 async function sendVisitNotification() {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') return;
+
     let botToken, chatId;
     try {
-        const configUrl = VERCEL_URL + "telegram_bot.txt";
-        const configResponse = await fetch(configUrl, { cache: "no-store" });
-        if (!configResponse.ok) throw new Error("Không thể tải tệp cấu hình bot Telegram.");
+        const botConfig = appConfig.telegram_bot;
+        if (!botConfig || !botConfig.token || !botConfig.chat_id) throw new Error("Cấu hình bot Telegram không hợp lệ.");
+        botToken = botConfig.token;
+        chatId = botConfig.chat_id;
         
-        const configText = await configResponse.text();
-        [botToken, chatId] = configText.split(/\r?\n/).map(line => line.trim());
-
         if (!botToken || !chatId) throw new Error("Tệp cấu hình bot không hợp lệ.");
 
         let visitorDetails = [];
@@ -4380,7 +4536,45 @@ function initAIAssistant() {
     }
 }
 
+async function initializeApp() {
+    try {
+        const CONFIG_URL = "https://cdn.jsdelivr.net/gh/HaoCoder-2007/Heart_config@main/config.json";
+
+        const response = await fetch(CONFIG_URL, { cache: "no-store" });
+        if (!response.ok) {
+            throw new Error(`Không thể tải tệp cấu hình từ GitHub (lỗi ${response.status})`);
+        }
+        const configData = await response.json();
+
+        Object.assign(appConfig, configData);
+
+        console.log("Đã tải cấu hình ứng dụng từ GitHub thành công.");
+
+        if (appConfig.supabase && appConfig.supabase.url && appConfig.supabase.key) {
+            supabaseClient = window.supabase.createClient(appConfig.supabase.url, appConfig.supabase.key);
+            console.log("Đã kết nối Supabase thành công (cho tính năng Camera).");
+        } else {
+            console.warn("Thiếu cấu hình Supabase, tính năng Camera có thể không hoạt động.");
+        }
+
+        initBirthdayRecorder();
+        initAlbum();
+        initResume();
+        initDistanceMap();
+        initCamera();
+        initWeather();
+        initCountdownTimer();
+        sendVisitNotification();
+        initAIAssistant();
+
+    } catch (error) {
+        console.error("Lỗi khởi tạo ứng dụng:", error.message);
+        showCustomModal(`Lỗi khởi tạo: ${error.message}`, false);
+    }
+}
+
 //-------------------------------------------------------BASE-------------------------------------------------------------------------------------------
+initializeApp();
 updateCounter();
 changeNote();
 showPlayer();
@@ -4390,15 +4584,4 @@ setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
 initDragSelectionPrevention();
 scheduleMidnightUpdate();
-//-------------------------------------------------------APP--------------------------------------------------------------------------------------------
-initBirthdayRecorder();
-initAlbum();
-initResume();
-initDistanceMap();
-initCamera();
-initWeather();
-initCountdownTimer();
-//-------------------------------------------------------BOT&AI-----------------------------------------------------------------------------------------
-sendVisitNotification();
-initAIAssistant();
 //======================================================================================================================================================

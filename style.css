@@ -349,6 +349,13 @@ input[type="range"] {
     font-size: 20px;
 }
 
+#lyrics-btn {
+    position: absolute;
+    right: 65px;
+    color: #d45b79;
+    font-size: 14px;
+}
+
 #playlist-btn:hover,
 #shuffle-btn:hover { color: #c54c6a; }
 
