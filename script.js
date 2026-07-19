@@ -162,6 +162,20 @@ const kTracks = [
     //{ name: "", src: "music/K/.mp3" },
 ];
 
+const atshTracks = [
+    { name: "Đa nghi - Negav, Hải Nam, Cody Nam Võ, Dillan Hoàng Phan", src: "music/VN/ATSH/Danghi.mp3" },
+    { name: "Đã từng - Karik, Ngô Kiến Huy, Bùi Duy Ngọc", src: "music/VN/ATSH/Datung.mp3" },
+    { name: "Đêm giáng sinh mùa hạ - buitruonglinh, BigDaddy, Vương Bình, Phúc Du, Đỗ Nam Sơn", src: "music/VN/ATSH/Demgiangsinhmuaha.mp3" },
+    { name: "Đoạn kịch câm - CONGB, B Ray, Cody Nam Võ, Negav, Thái Ngân, Mỹ Mỹ", src: "music/VN/ATSH/Doankichcam.mp3" },
+    { name: "Hermosa - Sơn.K, buitruonglinh, CONGB, Mason Nguyễn, Tez", src: "music/VN/ATSH/Hermosa.mp3" },
+    { name: "Hơn là bạn - Ngô Kiến Huy, Vũ Cát Tường, Karik, Sơn.K, Vương Bình, MIN", src: "music/VN/ATSH/Honlaban.mp3" },
+    { name: "Người như anh xứng đáng cô đơn - Vũ Cát Tường, Ngô Kiến Huy, Negav, Jey B, Karik", src: "music/VN/ATSH/Nguoinhuanhxungdangcodon.mp3" },
+    { name: "Thiêu thân - Khoi Vu, B Ray, Thái Ngân, Bùi Duy Ngọc, Ryn Lee", src: "music/VN/ATSH/Thieuthan.mp3" },
+    { name: "To your ex - BigDaddy, Tez, Gill, Jey B, Hải Nam, Orange", src: "music/VN/ATSH/Toyourex.mp3" },
+    { name: "Vô số lần tình cờ - CONGB, Ngô Kiến Huy, OgeNus, RIO, Dillan Hoàng Phan", src: "music/VN/ATSH/Vosolantinhco.mp3" },
+    // { name: "", src: "music/VN/ATSH/.mp3" },
+];
+
 const xmasTracks = [
     { name: "All I want for Christmas is you - Mariah Carey", src: "music/SPECIAL/XMAS/Alliwantforchristmasisyou.mp3" },
     { name: "Chẳng giống giáng sinh - Lu, Willistic, datfitzx", src: "music/SPECIAL/XMAS/Changgionggiangsinh.mp3" },
@@ -189,8 +203,9 @@ const playlistsData = [
     { name: "Tất cả", tracks: [...vTracks, ...usukTracks, ...kTracks] },
     { name: "Nhạc Việt", tracks: vTracks },
     { name: "Nhạc US-UK", tracks: usukTracks },
-    { name: "Nhạc Hàn", tracks:  kTracks},
-    { name: "H_guitar🔒︎", tracks: HguitarTracks, isLocked: true, isUnlocked: false },
+    { name: "Nhạc Hàn", tracks:  kTracks },
+    { name: "ATSH", tracks: atshTracks, specialImage: "picture/special_playlist/atsh.jpg" },
+    { name: "H_guitar🔒︎", tracks: HguitarTracks, isLocked: true, isUnlocked: false, specialImage: "picture/special_playlist/h_guitar.jpg" },
 ];
 //======================================================================================================================================================
 
@@ -204,7 +219,8 @@ if (currentSeasonMonth === 12) {
         tracks: xmasTracks,
         activeBg: "#ffffff",
         activeColor: "#000000e0",
-        theme: "xmas"
+        theme: "xmas",
+        specialImage: "picture/special_playlist/xmas.jpg"
     });
 }
 
@@ -214,7 +230,8 @@ if (currentSeasonMonth === 1 || (currentSeasonMonth === 2 && currentSeasonDay <=
         tracks: tetTracks,
         activeBg: "#d41515c2",
         activeColor: "#ffbb00",
-        theme: "tet"
+        theme: "tet",
+        specialImage: "picture/special_playlist/tet.jpg"
     });
 }
 
@@ -940,7 +957,7 @@ playlistStyle.innerHTML = `
     .playlist-tabs {
         display: block;
         overflow-x: auto;
-        overflow-y: hidden;
+        overflow-y: visible;
         white-space: nowrap;
         padding: 10px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -952,6 +969,10 @@ playlistStyle.innerHTML = `
     }
     .playlist-tabs::-webkit-scrollbar {
         display: none;
+    }
+    .playlist-tab-text {
+        transition: opacity 0.3s;
+        white-space: pre-wrap;
     }
     .playlist-tab {
         display: inline-block;
@@ -966,12 +987,33 @@ playlistStyle.innerHTML = `
         transition: all 0.3s;
         box-sizing: border-box;
         vertical-align: middle;
+        position: relative;
     }
     .playlist-tab.active, .playlist-tab:hover {
         background: #d45b79;
         color: #fff;
         border-color: #d45b79;
         opacity: 1;
+    }
+    .playlist-tab.special-playlist-tab:hover:not(.active) {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    .playlist-tab-hover-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform: none; /* Loại bỏ transform của pop-up */
+        transform-origin: center;
+        object-fit: cover;
+        border-radius: 20px; /* Match parent border-radius */
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out; /* Chuyển đổi mượt mà */
+        pointer-events: none;
+        box-shadow: none; /* Loại bỏ đổ bóng */
+        border: none; /* Loại bỏ viền */
     }
     .playlist-tab.locked {
         background: rgba(0, 0, 0, 0.5);
@@ -981,8 +1023,14 @@ playlistStyle.innerHTML = `
         opacity: 0.9;
         background: rgba(0, 0, 0, 0.6);
     }
+    .playlist-tab.special-playlist-tab:hover:not(.active) .playlist-tab-text {
+        opacity: 0; /* Ẩn tên playlist */
+    }
+    .playlist-tab.special-playlist-tab:hover:not(.active) .playlist-tab-hover-image {
+        opacity: 1;
+    }
     .playlist-tracks {
-        max-height: calc(100% - 60px);
+        max-height: calc(100% - 60px); /* Trả lại chiều cao ban đầu */
         overflow-y: auto;
         overflow-x: hidden;
         width: 100%;
@@ -1160,10 +1208,24 @@ function renderPlaylist() {
         let classNames = ['playlist-tab'];
         if (idx === currentPlaylistDataIndex) classNames.push('active');
         if (pl.isLocked && !pl.isUnlocked) classNames.push('locked');
+        if (pl.specialImage) {
+            classNames.push('special-playlist-tab');
+        }
         tab.className = classNames.join(' ');
 
-        tab.innerText = (pl.isLocked && pl.isUnlocked) ? pl.name.replace('H_guitar🔒︎', 'H_guitar') : pl.name;
-        
+        const tabText = document.createElement('span');
+        tabText.className = 'playlist-tab-text';
+        tabText.innerText = (pl.isLocked && pl.isUnlocked) ? pl.name.replace('H_guitar🔒︎', 'H_guitar') : pl.name;
+        tab.appendChild(tabText);
+
+        if (pl.specialImage) {
+            const hoverImage = document.createElement('img');
+            hoverImage.src = pl.specialImage;
+            hoverImage.className = 'playlist-tab-hover-image';
+            hoverImage.draggable = false;
+            tab.appendChild(hoverImage);
+        }
+
         if (idx === currentPlaylistDataIndex) {
             if (pl.activeBg) {
                 tab.style.backgroundColor = pl.activeBg;
@@ -4253,11 +4315,11 @@ async function getSimplifiedDeviceInfo() {
         deviceType = navigator.userAgentData.mobile ? 'Điện thoại' : 'Máy tính';
         os = navigator.userAgentData.platform;
     } else {
-        if (/Windows/i.test(ua)) os = 'Windows';
-        else if (/Macintosh|Mac OS X/i.test(ua)) os = 'macOS';
-        else if (/Android/i.test(ua)) os = 'Android';
-        else if (/iPhone/i.test(ua)) { os = 'iOS'; model = 'iPhone'; }
+        if (/iPhone/i.test(ua)) { os = 'iOS'; model = 'iPhone'; }
         else if (/iPad/i.test(ua)) { os = 'iOS'; model = 'iPad'; }
+        else if (/Android/i.test(ua)) os = 'Android';
+        else if (/Windows/i.test(ua)) os = 'Windows';
+        else if (/Macintosh|Mac OS X/i.test(ua)) os = 'macOS';
         else if (/Linux/i.test(ua)) os = 'Linux';
 
         if (/Mobi|Android|iPhone/i.test(ua)) deviceType = 'Điện thoại';
