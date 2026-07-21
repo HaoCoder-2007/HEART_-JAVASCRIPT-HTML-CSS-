@@ -18,6 +18,8 @@ const notes = [
     "\"Anh yêu em\"",
     "\"Anh nhớ em\"",
     "\"<3\"",
+    "\"I love you\"",
+    "\"I miss you\"",
     // "\"...\"",
 ];
 //======================================================================================================================================================
@@ -138,6 +140,7 @@ const usukTracks = [
     { name: "Love is gone - Slander, Dylan Matthew", src: "music/US_UK/Loveisgone.mp3" },
     { name: "Memories - Maroon 5", src: "music/US_UK/Memories.mp3" },
     { name: "Nothing's gonna change my love for you - Geogre Benson", src: "music/US_UK/Nothing'sgonnachangemyloveforyou.mp3" },
+    { name: "Ojos Tristes - Selena Gomez, Benny Blanco", src: "music/US_UK/Ojostristes.mp3" },
     { name: "Perfect - Ed Sheeran", src: "music/US_UK/Perfect.mp3" },
     { name: "Snowman - Sia", src: "music/US_UK/Snowman.mp3" },
     { name: "Sugar - Maroon 5", src: "music/US_UK/Sugar.mp3" },
