@@ -27,7 +27,8 @@ const notes = [
 //-------------------------------------------------------IMAGES-----------------------------------------------------------------------------------------
 const memories = [
     { src: "picture/memory/dalat2025.jpg", text: "Đà Lạt (19/01/2025)" },
-    { src: "picture/memory/firstdate.jpg", text: "First date (25/02/2026)" },
+    { src: "picture/memory/firstdate.jpg", text: "CGV lần 1 (25/02/2026)" },
+    { src: "picture/memory/seconddate.jpg", text: "CGV lần 2 (22/07/2026)" },
     // { src: "picture/memory/.jpg", text: "" },
 ];
 
