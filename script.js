@@ -224,7 +224,7 @@ const HguitarTracks = [
 ];
 
 const playlistsData = [
-    { name: "Tất cả", tracks: [...vTracks, ...usukTracks, ...kTracks] },
+    { name: "Tất cả", tracks: [...vTracks, ...usukTracks, ...kTracks, ...cTracks] },
     { name: "Nhạc Việt", tracks: vTracks },
     { name: "Nhạc US-UK", tracks: usukTracks },
     { name: "Nhạc Hàn", tracks:  kTracks },
