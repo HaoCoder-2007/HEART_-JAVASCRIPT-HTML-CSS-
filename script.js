@@ -70,55 +70,55 @@ const albumPhotos = [
 
 //-------------------------------------------------------TRACKS-----------------------------------------------------------------------------------------
 const vTracks = [
-    { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/VN/Aingoaianh.mp3" },
-    { name: "Ấm - sweet liquor", src: "music/VN/Am.mp3" },
-    { name: "Ánh sao và bầu trời - T.R.I, Cá", src: "music/VN/Anhsaovabautroi.mp3" },
-    { name: "Buồn hay vui - Vsoul, MCK, Obito, Ronboogz, Boyzed", src: "music/VN/Buonhayvui.mp3" },
-    { name: "Chẳng giống giáng sinh - Lu, Willistic, datfitzx", src: "music/VN/Changgionggiangsinh.mp3" },
-    { name: "Chạy khỏi thế giới này - Da LAB, Phương Ly", src: "music/VN/Chaykhoithegioinay.mp3" },
-    { name: "Chạy theo em - Nhã, Mihuman", src: "music/VN/Chaytheoem.mp3" },
-    { name: "Chết trong em - Thịnh Suy", src: "music/VN/Chettrongem.mp3" },
-    { name: "Chuyện đôi ta - Da LAB, Muộii", src: "music/VN/Chuyendoita.mp3" },
-    { name: "Có hay từ bao giờ - Niee, Hast, KEI", src: "music/VN/Cohaytubaogio.mp3" },
-    { name: "Cứ chill thôi - Chillies, SUNI, Rhymastic", src: "music/VN/Cuchillthoi.mp3" },
-    { name: "Đóa hoa - TeuYungBoy, BIG WIND, DONAL", src: "music/VN/Doahoa.mp3" },
-    { name: "Đôi mắt kẻ tình si - GREY D", src: "music/VN/Doimatketinhsi.mp3" },
-    { name: "Đưa em về nhà - GREY D, Chillies", src: "music/VN/Duaemvenha.mp3" },
-    { name: "Dự báo thời tiết hôm nay mưa - GREY D", src: "music/VN/Dubaothoitiethomnaymua.mp3" },
-    { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/VN/Ghetemdilamon.mp3" },
-    { name: "Haydeanhduoccungemdau - SIVAN, Kai Đinh", src: "music/VN/Haydeanhduoccungemdau.mp3" },
-    { name: "Hông về tình yêu - Khoi Vu", src: "music/VN/Hongvetinhyeu.mp3" },
-    { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/VN/Honvaodaydi.mp3" },
-    { name: "Không buông - Hngle, Ari", src: "music/VN/Khongbuong.mp3" },
-    { name: "Lỡ một mai tôi quên tên người - Khiem", src: "music/VN/Lomotmaitoiquentennguoi.mp3" },
-    { name: "Love my friend - Shayda", src: "music/VN/Lovemyfriend.mp3" },
-    { name: "Nằm bên anh - Minh Đinh, Hà An Huy", src: "music/VN/Nambenanh.mp3" },
-    { name: "Nếu lúc đó - Tlinh, 2pillz", src: "music/VN/Neulucdo.mp3" },
-    { name: "Ngã tư không đèn - Trang, Khoa Vũ", src: "music/VN/Ngatukhongden.mp3" },
-    { name: "Ngây ther - Kidsai, VSTRA, WHENITSASUNNIDAY", src: "music/VN/Ngayther.mp3" },
-    { name: "Như hoa mùa xuân - Phùng Khánh Linh, Wren Evans", src: "music/VN/Nhuhoamuaxuan.mp3" },
-    { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/VN/Nuocmatemlaubangtinhyeumoi.mp3" },
-    { name: "Phong - VSTRA", src: "music/VN/Phong.mp3" },
-    { name: "Sinh ra đã là thứ đối lập nhau - Da LAB, Badbies", src: "music/VN/Sinhradalathudoilapnhau.mp3" },
-    { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/VN/Songchohetdoithanhxuan3.mp3" },
-    { name: "Tâm trí lang thang - Ánh Sáng AZA, Negav", src: "music/VN/Tamtrilangthang.mp3" },
-    { name: "Tên trộm - Lope Dope", src: "music/VN/Tentrom.mp3" },
-    { name: "Thắc mắc (MĐX) - Thịnh Suy", src: "music/VN/Thacmac(MĐX).mp3" },
-    { name: "Thằng điên - JustaTee, Phương Ly", src: "music/VN/Thangdien.mp3" },
-    { name: "Thanh xuân - Da LAB", src: "music/VN/Thanhxuan.mp3" },
-    { name: "Thích quá rùi nà - Tlinh, Trung Trần", src: "music/VN/Thichquaruina.mp3" },
-    { name: "Tìm thấy nhau - SIVAN", src: "music/VN/Timthaynhau.mp3" },
-    { name: "Tình đắng như ly cà phê - Ngơ, Nân.", src: "music/VN/Tinhdangnhulycaphe.mp3" },
-    { name: "Tình yêu chậm trễ - MONSTAR", src: "music/VN/Tinhyeuchamtre.mp3" },
-    { name: "Tiny love - Thịnh Suy", src: "music/VN/Tinylove.mp3" },
-    { name: "To the moon - Hooligan", src: "music/VN/Tothemoon.mp3" },
-    { name: "Trafalgar D.Law -  Don Raemo, Bewata", src: "music/VN/Trafalgardlaw.mp3" },
-    { name: "Từng là - Vũ Cát Tường", src: "music/VN/Tungla.mp3" },
-    { name: "Vaicaunoicokhiennguoithaydoi - GREY D, Tlinh", src: "music/VN/Vaicaunoicokhiennguoithaydoi.mp3" },
-    { name: "Vạn vật như muốn ta bên nhau - RIO", src: "music/VN/Vanvatnhumuontabennhau.mp3" },
-    { name: "Và thế giới đã mất đi một người cô đơn - Marzuz, Changg", src: "music/VN/Vathegioidamatdimotnguoicodon.mp3" },
-    { name: "Wrong times - Dangrangto, Puppy", src: "music/VN/Wrongtimes.mp3" },
-    //{ name: "", src: "music/VN/.mp3" },
+    { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/VIE/Aingoaianh.mp3" },
+    { name: "Ấm - sweet liquor", src: "music/VIE/Am.mp3" },
+    { name: "Ánh sao và bầu trời - T.R.I, Cá", src: "music/VIE/Anhsaovabautroi.mp3" },
+    { name: "Buồn hay vui - Vsoul, MCK, Obito, Ronboogz, Boyzed", src: "music/VIE/Buonhayvui.mp3" },
+    { name: "Chẳng giống giáng sinh - Lu, Willistic, datfitzx", src: "music/VIE/Changgionggiangsinh.mp3" },
+    { name: "Chạy khỏi thế giới này - Da LAB, Phương Ly", src: "music/VIE/Chaykhoithegioinay.mp3" },
+    { name: "Chạy theo em - Nhã, Mihuman", src: "music/VIE/Chaytheoem.mp3" },
+    { name: "Chết trong em - Thịnh Suy", src: "music/VIE/Chettrongem.mp3" },
+    { name: "Chuyện đôi ta - Da LAB, Muộii", src: "music/VIE/Chuyendoita.mp3" },
+    { name: "Có hay từ bao giờ - Niee, Hast, KEI", src: "music/VIE/Cohaytubaogio.mp3" },
+    { name: "Cứ chill thôi - Chillies, SUNI, Rhymastic", src: "music/VIE/Cuchillthoi.mp3" },
+    { name: "Đóa hoa - TeuYungBoy, BIG WIND, DONAL", src: "music/VIE/Doahoa.mp3" },
+    { name: "Đôi mắt kẻ tình si - GREY D", src: "music/VIE/Doimatketinhsi.mp3" },
+    { name: "Đưa em về nhà - GREY D, Chillies", src: "music/VIE/Duaemvenha.mp3" },
+    { name: "Dự báo thời tiết hôm nay mưa - GREY D", src: "music/VIE/Dubaothoitiethomnaymua.mp3" },
+    { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/VIE/Ghetemdilamon.mp3" },
+    { name: "Haydeanhduoccungemdau - SIVAN, Kai Đinh", src: "music/VIE/Haydeanhduoccungemdau.mp3" },
+    { name: "Hông về tình yêu - Khoi Vu", src: "music/VIE/Hongvetinhyeu.mp3" },
+    { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/VIE/Honvaodaydi.mp3" },
+    { name: "Không buông - Hngle, Ari", src: "music/VIE/Khongbuong.mp3" },
+    { name: "Lỡ một mai tôi quên tên người - Khiem", src: "music/VIE/Lomotmaitoiquentennguoi.mp3" },
+    { name: "Love my friend - Shayda", src: "music/VIE/Lovemyfriend.mp3" },
+    { name: "Nằm bên anh - Minh Đinh, Hà An Huy", src: "music/VIE/Nambenanh.mp3" },
+    { name: "Nếu lúc đó - Tlinh, 2pillz", src: "music/VIE/Neulucdo.mp3" },
+    { name: "Ngã tư không đèn - Trang, Khoa Vũ", src: "music/VIE/Ngatukhongden.mp3" },
+    { name: "Ngây ther - Kidsai, VSTRA, WHENITSASUNNIDAY", src: "music/VIE/Ngayther.mp3" },
+    { name: "Như hoa mùa xuân - Phùng Khánh Linh, Wren Evans", src: "music/VIE/Nhuhoamuaxuan.mp3" },
+    { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/VIE/Nuocmatemlaubangtinhyeumoi.mp3" },
+    { name: "Phong - VSTRA", src: "music/VIE/Phong.mp3" },
+    { name: "Sinh ra đã là thứ đối lập nhau - Da LAB, Badbies", src: "music/VIE/Sinhradalathudoilapnhau.mp3" },
+    { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/VIE/Songchohetdoithanhxuan3.mp3" },
+    { name: "Tâm trí lang thang - Ánh Sáng AZA, Negav", src: "music/VIE/Tamtrilangthang.mp3" },
+    { name: "Tên trộm - Lope Dope", src: "music/VIE/Tentrom.mp3" },
+    { name: "Thắc mắc (MĐX) - Thịnh Suy", src: "music/VIE/Thacmac(MĐX).mp3" },
+    { name: "Thằng điên - JustaTee, Phương Ly", src: "music/VIE/Thangdien.mp3" },
+    { name: "Thanh xuân - Da LAB", src: "music/VIE/Thanhxuan.mp3" },
+    { name: "Thích quá rùi nà - Tlinh, Trung Trần", src: "music/VIE/Thichquaruina.mp3" },
+    { name: "Tìm thấy nhau - SIVAN", src: "music/VIE/Timthaynhau.mp3" },
+    { name: "Tình đắng như ly cà phê - Ngơ, Nân.", src: "music/VIE/Tinhdangnhulycaphe.mp3" },
+    { name: "Tình yêu chậm trễ - MONSTAR", src: "music/VIE/Tinhyeuchamtre.mp3" },
+    { name: "Tiny love - Thịnh Suy", src: "music/VIE/Tinylove.mp3" },
+    { name: "To the moon - Hooligan", src: "music/VIE/Tothemoon.mp3" },
+    { name: "Trafalgar D.Law -  Don Raemo, Bewata", src: "music/VIE/Trafalgardlaw.mp3" },
+    { name: "Từng là - Vũ Cát Tường", src: "music/VIE/Tungla.mp3" },
+    { name: "Vaicaunoicokhiennguoithaydoi - GREY D, Tlinh", src: "music/VIE/Vaicaunoicokhiennguoithaydoi.mp3" },
+    { name: "Vạn vật như muốn ta bên nhau - RIO", src: "music/VIE/Vanvatnhumuontabennhau.mp3" },
+    { name: "Và thế giới đã mất đi một người cô đơn - Marzuz, Changg", src: "music/VIE/Vathegioidamatdimotnguoicodon.mp3" },
+    { name: "Wrong times - Dangrangto, Puppy", src: "music/VIE/Wrongtimes.mp3" },
+    //{ name: "", src: "music/VIE/.mp3" },
 ];
 
 const usukTracks = [
@@ -155,30 +155,49 @@ const usukTracks = [
 ];
 
 const kTracks = [
-    { name: "H.S.K.T - Lee Hi", src: "music/K/H.S.K.T.mp3" },
-    { name: "Hurt - NewJeans", src: "music/K/Hurt.mp3" },
-    { name: "If you - BigBang", src: "music/K/Ifyou.mp3" },
-    { name: "Only - Lee Hi", src: "music/K/Only.mp3" },
-    { name: "Only you - Yebit", src: "music/K/Onlyyou.mp3" },
-    { name: "Say yes - Loco, Punch", src: "music/K/Sayyes.mp3" },
-    { name: "Seven - Jung Kook", src: "music/K/Seven.mp3" },
-    { name: "Some - Junggigo, Soyou, Lil Boi", src: "music/K/Some.mp3" },
-    { name: "Still with you - Jung Kook", src: "music/K/Stillwithyou.mp3" },
-    //{ name: "", src: "music/K/.mp3" },
+    { name: "H.S.K.T - Lee Hi", src: "music/KOR/H.S.K.T.mp3" },
+    { name: "Hurt - NewJeans", src: "music/KOR/Hurt.mp3" },
+    { name: "If you - BigBang", src: "music/KOR/Ifyou.mp3" },
+    { name: "Only - Lee Hi", src: "music/KOR/Only.mp3" },
+    { name: "Only you - Yebit", src: "music/KOR/Onlyyou.mp3" },
+    { name: "Say yes - Loco, Punch", src: "music/KOR/Sayyes.mp3" },
+    { name: "Seven - Jung Kook", src: "music/KOR/Seven.mp3" },
+    { name: "Some - Junggigo, Soyou, Lil Boi", src: "music/KOR/Some.mp3" },
+    { name: "Still with you - Jung Kook", src: "music/KOR/Stillwithyou.mp3" },
+    //{ name: "", src: "music/KOR/.mp3" },
+];
+
+const cTracks = [
+    { name: "Âm thanh của nỗi nhớ anh - Ngạo Thất Gia", src: "music/CHN/Amthanhcuanoinhoanh.mp3" },
+    { name: "Có thể hay không - Trương Tử Hào", src: "music/CHN/Cothehaykhong.mp3" },
+    { name: "Dạo bước HongKong 1999 - Bố Lữ Tích", src: "music/CHN/Daobuochongkong1999.mp3" },
+    { name: "Dòng thác thời gian - Trình Hưởng", src: "music/CHN/Dongthacthoigian.mp3" },
+    { name: "Dự báo thời tiết - Cindy Đại Bàn Đào Tử", src: "music/CHN/Dubaothoitiet.mp3" },
+    { name: "For ya - Tưởng Tiểu Ni", src: "music/CHN/Forya.mp3" },
+    { name: "Giày cao gót màu đỏ - Thái Kiện Nhã", src: "music/CHN/Giaycaogotmaudo.mp3" },
+    { name: "Gói gọn hồi ức trao cho anh - Vương Nhị Lãng", src: "music/CHN/Goigonhoiuctraochoanh.mp3" },
+    { name: "Nơi đâu cũng thấy em - Young Captain", src: "music/CHN/Noidaucungthayem.mp3" },
+    { name: "No reason - Ryan.B", src: "music/CHN/Noreason.mp3" },
+    { name: "Sau khi anh đi - En", src: "music/CHN/Saukhianhdi.mp3" },
+    { name: "Sa vào nguy hiểm - Cát Đông Kỳ", src: "music/CHN/Savaonguyhiem.mp3" },
+    { name: "Người yêu bỏ lỡ - Accusefive", src: "music/CHN/Somewhereintime.mp3" },
+    { name: "Tháp rơi tự do - LBI Lợi Bỉ", src: "music/CHN/Thaproitudo.mp3" },
+    { name: "Vây giữ - Vương Tĩnh Văn Không Mập", src: "music/CHN/Vaygiu.mp3" },
+    //{ name: "", src: "music/CHN/.mp3" },
 ];
 
 const atshTracks = [
-    { name: "Đa nghi - Negav, Hải Nam, Cody Nam Võ, Dillan Hoàng Phan", src: "music/VN/ATSH/Danghi.mp3" },
-    { name: "Đã từng - Karik, Ngô Kiến Huy, Bùi Duy Ngọc", src: "music/VN/ATSH/Datung.mp3" },
-    { name: "Đêm giáng sinh mùa hạ - buitruonglinh, BigDaddy, Vương Bình, Phúc Du, Đỗ Nam Sơn", src: "music/VN/ATSH/Demgiangsinhmuaha.mp3" },
-    { name: "Đoạn kịch câm - CONGB, B Ray, Cody Nam Võ, Negav, Thái Ngân, Mỹ Mỹ", src: "music/VN/ATSH/Doankichcam.mp3" },
-    { name: "Hermosa - Sơn.K, buitruonglinh, CONGB, Mason Nguyễn, Tez", src: "music/VN/ATSH/Hermosa.mp3" },
-    { name: "Hơn là bạn - Ngô Kiến Huy, Vũ Cát Tường, Karik, Sơn.K, Vương Bình, MIN", src: "music/VN/ATSH/Honlaban.mp3" },
-    { name: "Người như anh xứng đáng cô đơn - Vũ Cát Tường, Ngô Kiến Huy, Negav, Jey B, Karik", src: "music/VN/ATSH/Nguoinhuanhxungdangcodon.mp3" },
-    { name: "Thiêu thân - Khoi Vu, B Ray, Thái Ngân, Bùi Duy Ngọc, Ryn Lee", src: "music/VN/ATSH/Thieuthan.mp3" },
-    { name: "To your ex - BigDaddy, Tez, Gill, Jey B, Hải Nam, Orange", src: "music/VN/ATSH/Toyourex.mp3" },
-    { name: "Vô số lần tình cờ - CONGB, Ngô Kiến Huy, OgeNus, RIO, Dillan Hoàng Phan", src: "music/VN/ATSH/Vosolantinhco.mp3" },
-    // { name: "", src: "music/VN/ATSH/.mp3" },
+    { name: "Đa nghi - Negav, Hải Nam, Cody Nam Võ, Dillan Hoàng Phan", src: "music/VIE/ATSH/Danghi.mp3" },
+    { name: "Đã từng - Karik, Ngô Kiến Huy, Bùi Duy Ngọc", src: "music/VIE/ATSH/Datung.mp3" },
+    { name: "Đêm giáng sinh mùa hạ - buitruonglinh, BigDaddy, Vương Bình, Phúc Du, Đỗ Nam Sơn", src: "music/VIE/ATSH/Demgiangsinhmuaha.mp3" },
+    { name: "Đoạn kịch câm - CONGB, B Ray, Cody Nam Võ, Negav, Thái Ngân, Mỹ Mỹ", src: "music/VIE/ATSH/Doankichcam.mp3" },
+    { name: "Hermosa - Sơn.K, buitruonglinh, CONGB, Mason Nguyễn, Tez", src: "music/VIE/ATSH/Hermosa.mp3" },
+    { name: "Hơn là bạn - Ngô Kiến Huy, Vũ Cát Tường, Karik, Sơn.K, Vương Bình, MIN", src: "music/VIE/ATSH/Honlaban.mp3" },
+    { name: "Người như anh xứng đáng cô đơn - Vũ Cát Tường, Ngô Kiến Huy, Negav, Jey B, Karik", src: "music/VIE/ATSH/Nguoinhuanhxungdangcodon.mp3" },
+    { name: "Thiêu thân - Khoi Vu, B Ray, Thái Ngân, Bùi Duy Ngọc, Ryn Lee", src: "music/VIE/ATSH/Thieuthan.mp3" },
+    { name: "To your ex - BigDaddy, Tez, Gill, Jey B, Hải Nam, Orange", src: "music/VIE/ATSH/Toyourex.mp3" },
+    { name: "Vô số lần tình cờ - CONGB, Ngô Kiến Huy, OgeNus, RIO, Dillan Hoàng Phan", src: "music/VIE/ATSH/Vosolantinhco.mp3" },
+    // { name: "", src: "music/VIE/ATSH/.mp3" },
 ];
 
 const xmasTracks = [
@@ -209,8 +228,11 @@ const playlistsData = [
     { name: "Nhạc Việt", tracks: vTracks },
     { name: "Nhạc US-UK", tracks: usukTracks },
     { name: "Nhạc Hàn", tracks:  kTracks },
-    { name: "ATSH", tracks: atshTracks, specialImage: "picture/special_playlist/atsh.jpg" },
-    { name: "H_guitar🔒︎", tracks: HguitarTracks, isLocked: true, isUnlocked: false, specialImage: "picture/special_playlist/h_guitar.jpg" },
+    { name: "Nhạc Trung", tracks:  cTracks },
+
+    { name: "ATSH", tracks: atshTracks, specialImage: "picture/special_playlist/atsh.jpg", isOptional: true },
+    { name: "H_guitar🔒︎", tracks: HguitarTracks, isLocked: true, isUnlocked: false, specialImage: "picture/special_playlist/h_guitar.jpg", isOptional: true },
+    // { name: "", tracks: , isLocked: , isUnlocked: , specialImage: "picture/special_playlist/.jpg", isOptional:  },
 ];
 //======================================================================================================================================================
 
@@ -1010,15 +1032,15 @@ playlistStyle.innerHTML = `
         left: 0;
         width: 100%;
         height: 100%;
-        transform: none; /* Loại bỏ transform của pop-up */
+        transform: none;
         transform-origin: center;
         object-fit: cover;
-        border-radius: 20px; /* Match parent border-radius */
+        border-radius: 20px;
         opacity: 0;
-        transition: opacity 0.3s ease-in-out; /* Chuyển đổi mượt mà */
+        transition: opacity 0.3s ease-in-out;
         pointer-events: none;
-        box-shadow: none; /* Loại bỏ đổ bóng */
-        border: none; /* Loại bỏ viền */
+        box-shadow: none;
+        border: none;
     }
     .playlist-tab.locked {
         background: rgba(0, 0, 0, 0.5);
@@ -1029,17 +1051,68 @@ playlistStyle.innerHTML = `
         background: rgba(0, 0, 0, 0.6);
     }
     .playlist-tab.special-playlist-tab:hover:not(.active) .playlist-tab-text {
-        opacity: 0; /* Ẩn tên playlist */
+        opacity: 0;
     }
     .playlist-tab.special-playlist-tab:hover:not(.active) .playlist-tab-hover-image {
         opacity: 1;
     }
     .playlist-tracks {
-        max-height: calc(100% - 60px); /* Trả lại chiều cao ban đầu */
+        max-height: calc(100% - 60px);
         overflow-y: auto;
         overflow-x: hidden;
         width: 100%;
         box-sizing: border-box;
+    }
+    .optional-container {
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+    .optional-container::after {
+        content: '';
+        position: absolute;
+        left: 100%;
+        top: 0;
+        width: 10px;
+        height: 100%;
+    }
+    .optional-plus-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.3);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .optional-plus-btn:hover {
+        background: #d45b79;
+        border-color: #d45b79;
+    }
+    .optional-menu {
+        position: absolute;
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%) translateX(-10px);
+        margin-left: 10px;
+        display: inline-block;
+        z-index: 10;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s, transform 0.3s;
+        transform-origin: left center;
+        white-space: nowrap;
+    }
+    .optional-container:hover .optional-menu {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(-50%) translateX(0);
     }
 `;
 document.head.appendChild(playlistStyle);
@@ -1194,6 +1267,73 @@ function changePlaylist(index) {
     renderPlaylist();
 }
 
+function createPlaylistTab(pl, idx) {
+    const tab = document.createElement('button');
+    
+    let classNames = ['playlist-tab'];
+    if (idx === currentPlaylistDataIndex) classNames.push('active');
+    if (pl.isLocked && !pl.isUnlocked) classNames.push('locked');
+    if (pl.specialImage) {
+        classNames.push('special-playlist-tab');
+    }
+    tab.className = classNames.join(' ');
+
+    const tabText = document.createElement('span');
+    tabText.className = 'playlist-tab-text';
+    tabText.innerText = (pl.isLocked && pl.isUnlocked) ? pl.name.replace('H_guitar🔒︎', 'H_guitar') : pl.name;
+    tab.appendChild(tabText);
+
+    if (pl.specialImage) {
+        const hoverImage = document.createElement('img');
+        hoverImage.src = pl.specialImage;
+        hoverImage.className = 'playlist-tab-hover-image';
+        hoverImage.draggable = false;
+        tab.appendChild(hoverImage);
+    }
+
+    if (idx === currentPlaylistDataIndex) {
+        if (pl.activeBg) {
+            tab.style.backgroundColor = pl.activeBg;
+            tab.style.borderColor = pl.activeBg;
+        }
+        if (pl.activeColor) tab.style.color = pl.activeColor;
+    }
+
+    tab.onclick = (e) => {
+        e.stopPropagation();
+        if (pl.isLocked && !pl.isUnlocked) {
+            showCustomModal("Anh thích gì nhất?", true, async (pass) => {
+                if (pass === null || pass === "") return;
+                try {
+                    const passwordConfig = appConfig.password;
+                    if (!passwordConfig) throw new Error("Không tìm thấy mật khẩu trong cấu hình.");
+
+                    const validPasswords = passwordConfig.split(' ').map(p => p.trim().toLowerCase()).filter(p => p.length > 0);
+                    const userPass = pass.trim().toLowerCase();
+                    
+                    if (validPasswords.includes(userPass)) {
+                        showCustomModal("Mở khóa thành công!", false, () => {
+                            pl.isUnlocked = true;
+                            changePlaylist(idx);
+                            showPlaylistUI();
+                        });
+                    } else {
+                        showCustomModal("Chưa chính xác!", false);
+                    }
+                } catch (error) {
+                    console.error(error);
+                    showCustomModal("Lỗi kiểm tra mật khẩu.", false);
+                }
+            });
+        } else {
+            changePlaylist(idx);
+            showPlaylistUI();
+        }
+    };
+    return tab;
+}
+
+
 function renderPlaylist() {
     playlistUI.innerHTML = '';
     
@@ -1208,70 +1348,34 @@ function renderPlaylist() {
     }, { passive: false });
     
     playlistsData.forEach((pl, idx) => {
-        const tab = document.createElement('button');
-        
-        let classNames = ['playlist-tab'];
-        if (idx === currentPlaylistDataIndex) classNames.push('active');
-        if (pl.isLocked && !pl.isUnlocked) classNames.push('locked');
-        if (pl.specialImage) {
-            classNames.push('special-playlist-tab');
-        }
-        tab.className = classNames.join(' ');
-
-        const tabText = document.createElement('span');
-        tabText.className = 'playlist-tab-text';
-        tabText.innerText = (pl.isLocked && pl.isUnlocked) ? pl.name.replace('H_guitar🔒︎', 'H_guitar') : pl.name;
-        tab.appendChild(tabText);
-
-        if (pl.specialImage) {
-            const hoverImage = document.createElement('img');
-            hoverImage.src = pl.specialImage;
-            hoverImage.className = 'playlist-tab-hover-image';
-            hoverImage.draggable = false;
-            tab.appendChild(hoverImage);
-        }
-
-        if (idx === currentPlaylistDataIndex) {
-            if (pl.activeBg) {
-                tab.style.backgroundColor = pl.activeBg;
-                tab.style.borderColor = pl.activeBg;
-            }
-            if (pl.activeColor) tab.style.color = pl.activeColor;
-        }
-
-        tab.onclick = (e) => {
-            e.stopPropagation();
-            if (pl.isLocked && !pl.isUnlocked) {
-                showCustomModal("Anh thích gì nhất?", true, async (pass) => {
-                    if (pass === null || pass === "") return;
-                    try {
-                        const passwordConfig = appConfig.password;
-                        if (!passwordConfig) throw new Error("Không tìm thấy mật khẩu trong cấu hình.");
-
-                        const validPasswords = passwordConfig.split(' ').map(p => p.trim().toLowerCase()).filter(p => p.length > 0);
-                        const userPass = pass.trim().toLowerCase();
-                        
-                        if (validPasswords.includes(userPass)) {
-                            showCustomModal("Mở khóa thành công!", false, () => {
-                                pl.isUnlocked = true;
-                                changePlaylist(idx);
-                                showPlaylistUI();
-                            });
-                        } else {
-                            showCustomModal("Chưa chính xác!", false);
-                        }
-                    } catch (error) {
-                        console.error(error);
-                        showCustomModal("Lỗi kiểm tra mật khẩu.", false);
-                    }
-                });
-            } else {
-                changePlaylist(idx);
-                showPlaylistUI();
-            }
-        };
+        if (pl.isOptional) return;
+        const tab = createPlaylistTab(pl, idx);
         header.appendChild(tab);
     });
+
+    const optionalPlaylists = playlistsData.filter(pl => pl.isOptional);
+    if (optionalPlaylists.length > 0) {
+        const optionalContainer = document.createElement('div');
+        optionalContainer.className = 'optional-container';
+
+        const plusBtn = document.createElement('div');
+        plusBtn.className = 'optional-plus-btn';
+        plusBtn.innerHTML = '+';
+
+        const optionalMenu = document.createElement('div');
+        optionalMenu.className = 'optional-menu';
+
+        optionalPlaylists.forEach(pl => {
+            const idx = playlistsData.indexOf(pl);
+            const tab = createPlaylistTab(pl, idx);
+            optionalMenu.appendChild(tab);
+        });
+
+        optionalContainer.appendChild(plusBtn);
+        optionalContainer.appendChild(optionalMenu);
+        header.appendChild(optionalContainer);
+    }
+
     playlistUI.appendChild(header);
 
     const trackList = document.createElement('div');
