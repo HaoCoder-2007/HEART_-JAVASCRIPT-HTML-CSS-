@@ -99,6 +99,7 @@ const vTracks = [
     { name: "Như hoa mùa xuân - Phùng Khánh Linh, Wren Evans", src: "music/VIE/Nhuhoamuaxuan.mp3" },
     { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/VIE/Nuocmatemlaubangtinhyeumoi.mp3" },
     { name: "Phong - VSTRA", src: "music/VIE/Phong.mp3" },
+    { name: "Simp gái 808 - LowG", src: "music/VIE/Simpgai808.mp3" },
     { name: "Sinh ra đã là thứ đối lập nhau - Da LAB, Badbies", src: "music/VIE/Sinhradalathudoilapnhau.mp3" },
     { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/VIE/Songchohetdoithanhxuan3.mp3" },
     { name: "Tâm trí lang thang - Ánh Sáng AZA, Negav", src: "music/VIE/Tamtrilangthang.mp3" },
@@ -169,6 +170,7 @@ const kTracks = [
 
 const cTracks = [
     { name: "Âm thanh của nỗi nhớ anh - Ngạo Thất Gia", src: "music/CHN/Amthanhcuanoinhoanh.mp3" },
+    { name: "Biển, đảo và em - Mã Dã", src: "music/CHN/Bien,daovaem.mp3" },
     { name: "Có thể hay không - Trương Tử Hào", src: "music/CHN/Cothehaykhong.mp3" },
     { name: "Dạo bước HongKong 1999 - Bố Lữ Tích", src: "music/CHN/Daobuochongkong1999.mp3" },
     { name: "Dòng thác thời gian - Trình Hưởng", src: "music/CHN/Dongthacthoigian.mp3" },
