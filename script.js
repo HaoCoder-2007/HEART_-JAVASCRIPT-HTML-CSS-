@@ -3514,68 +3514,6 @@ async function initCamera() {
             transform: scale(1.3); 
         }
         /* --- Camera Gallery Styles --- */
-        #camera-zoom-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 15;
-            display: none; /* Hidden by default */
-            flex-direction: column-reverse; /* Options on top */
-            align-items: center;
-            gap: 10px;
-        }
-        #camera-zoom-btn {
-            width: 45px;
-            height: 45px;
-            background: rgba(0,0,0,0.6);
-            color: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            border: 2px solid white;
-            transition: all 0.2s;
-        }
-        #camera-zoom-options {
-            display: flex;
-            gap: 10px;
-            background: rgba(0,0,0,0.6);
-            padding: 8px;
-            border-radius: 20px;
-            opacity: 0;
-            transform: translateY(10px);
-            pointer-events: none;
-            transition: all 0.2s;
-        }
-        #camera-zoom-options.active {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-        .camera-zoom-option {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.2);
-            color: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .camera-zoom-option:hover {
-            background: rgba(255,255,255,0.4);
-        }
-        .camera-zoom-option.active {
-            background: #d45b79;
-            font-weight: bold;
-        }
         #camera-gallery-btn {
             width: 65px;
             height: 65px;
@@ -3696,10 +3634,6 @@ async function initCamera() {
         <div id="camera-viewfinder">
             <video id="camera-video" autoplay playsinline></video>
             <div id="camera-flash"></div>
-            <div id="camera-zoom-controls">
-                <div id="camera-zoom-btn">1x</div>
-                <div id="camera-zoom-options"></div>
-            </div>
             <div id="camera-flip-btn">⟳</div>
             <div id="camera-flash-btn">☀︎</div>
             <div id="camera-close-btn">✖</div>
@@ -3803,20 +3737,6 @@ async function initCamera() {
             }
 
             currentFacingMode = facingMode;
-
-            const track = stream.getVideoTracks()[0];
-            const capabilities = track.getCapabilities();
-            const zoomControls = document.getElementById('camera-zoom-controls');
-
-            if (capabilities.zoom) {
-                zoomCapabilities = capabilities.zoom;
-                currentZoom = Math.max(1.0, zoomCapabilities.min);
-                setupZoomControls();
-                if (zoomControls) zoomControls.style.display = 'flex';
-            } else {
-                zoomCapabilities = null;
-                if (zoomControls) zoomControls.style.display = 'none';
-            }
 
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoInputs = devices.filter(device => device.kind === 'videoinput');
