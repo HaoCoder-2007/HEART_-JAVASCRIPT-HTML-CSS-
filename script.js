@@ -3514,6 +3514,22 @@ async function initCamera() {
             transform: scale(1.3); 
         }
         /* --- Camera Gallery Styles --- */
+        #camera-zoom-display {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 15;
+        }
         #camera-gallery-btn {
             width: 65px;
             height: 65px;
@@ -3634,6 +3650,7 @@ async function initCamera() {
         <div id="camera-viewfinder">
             <video id="camera-video" autoplay playsinline></video>
             <div id="camera-flash"></div>
+            <div id="camera-zoom-display"></div>
             <div id="camera-flip-btn">⟳</div>
             <div id="camera-flash-btn">☀︎</div>
             <div id="camera-close-btn">✖</div>
@@ -3655,6 +3672,7 @@ async function initCamera() {
     `;
     document.body.appendChild(galleryModal);
 
+    const viewfinder = document.getElementById('camera-viewfinder');
     const video = document.getElementById('camera-video');
     const captureBtn = document.getElementById('camera-capture-btn');
     const closeBtn = document.getElementById('camera-close-btn');
@@ -3737,6 +3755,15 @@ async function initCamera() {
             }
 
             currentFacingMode = facingMode;
+
+            const track = stream.getVideoTracks()[0];
+            const capabilities = track.getCapabilities();
+            if (capabilities.zoom) {
+                zoomCapabilities = capabilities.zoom;
+                currentZoom = zoomCapabilities.min;
+            } else {
+                zoomCapabilities = null;
+            }
 
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoInputs = devices.filter(device => device.kind === 'videoinput');
