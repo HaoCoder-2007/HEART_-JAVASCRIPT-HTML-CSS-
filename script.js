@@ -66,6 +66,12 @@ const albumPhotos = [
     //     ]
     // },
 ];
+
+const tourMapData = [
+    { src: "picture/map/bunnuocleocosau.jpg", name: "Bún nước lèo Cô Sáu", location: "Hẻm 49 Lý Thường Kiệt, Long Đức, Vĩnh Long" },
+    { src: "picture/map/taphoathayminh.jpg", name: "Tạp hóa Thầy Minh", location: "Chợ Huyền Hội, Tân An, Vĩnh Long" },
+    // { src: "picture/map/.jpg", name: "", location: "" },
+];
 //======================================================================================================================================================
 
 //-------------------------------------------------------TRACKS-----------------------------------------------------------------------------------------
@@ -1736,6 +1742,7 @@ function closeAllModals(exceptSelector = null) {
             '#album-folder-modal',
         '#resume-modal', 
         '#map-modal', 
+            '#tour-map-modal',
         '#camera-modal', 
         '#weather-modal', 
         '#timer-modal',
@@ -2711,7 +2718,7 @@ function initDistanceMap() {
         .map-header {
             text-align: center; padding: 20px; font-size: 22px; color: #fff; font-weight: bold;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1); letter-spacing: 1px; flex-shrink: 0;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.3); position: relative; display: flex; align-items: center; justify-content: center;
         }
         .map-content { 
             flex: 1; width: 100%; position: relative; background: #222; 
@@ -2746,6 +2753,67 @@ function initDistanceMap() {
         @media (max-width: 480px) {
             .map-controls-row { flex-direction: column; }
         }
+        #map-header-tour-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 6px 16px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        #map-header-tour-btn:hover {
+            background: #d45b79;
+            border-color: #d45b79;
+        }
+        #tour-map-modal {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 70vw; height: 70vh; max-width: 900px;
+            background: rgba(30, 30, 30, 0.97);
+            border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 15px;
+            z-index: 1000000;
+            display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+        }
+        #tour-map-modal.active { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+        #tour-map-close {
+            position: absolute; top: 15px; right: 20px; font-size: 22px; color: #fff; cursor: pointer;
+            transition: 0.3s; z-index: 10; width: 28px; height: 28px; display: flex;
+            align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.1); border-radius: 50%;
+        }
+        #tour-map-close:hover { background: #d45b79; transform: scale(1.2); }
+        .tour-map-header { text-align: center; padding: 20px; font-size: 22px; color: #fff; font-weight: bold; border-bottom: 1px solid rgba(255, 255, 255, 0.1); letter-spacing: 1px; flex-shrink: 0; }
+        .tour-map-content {
+            flex: 1; overflow-y: auto; padding: 25px; display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;
+            scrollbar-width: thin; scrollbar-color: #d45b79 rgba(0,0,0,0.2);
+        }
+        .tour-map-content::-webkit-scrollbar { width: 8px; }
+        .tour-map-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        .tour-map-content::-webkit-scrollbar-thumb { background: #d45b79; border-radius: 10px; }
+        .tour-map-item {
+            position: relative; aspect-ratio: 4/3; border-radius: 8px; overflow: hidden;
+            cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;
+            background: #333; box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+        .tour-map-item:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 12px 25px rgba(0,0,0,0.4); z-index: 2; }
+        .tour-map-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .tour-map-item:hover img { transform: scale(1.1); }
+        .tour-map-caption {
+            position: absolute; bottom: 0; left: 0; right: 0; padding: 15px 10px 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: #fff; font-size: 14px;
+            text-align: center; opacity: 0; transition: opacity 0.3s; font-weight: bold;
+        }
+        .tour-map-item:hover .tour-map-caption { opacity: 1; }
     `;
     document.head.appendChild(style);
 
@@ -2768,7 +2836,10 @@ function initDistanceMap() {
 
     const header = document.createElement('div');
     header.className = 'map-header';
-    header.innerText = 'BẢN ĐỒ';
+    header.innerHTML = `
+        <button id="map-header-tour-btn">ĐIỂM ĐẾN ĐÃ LƯU</button>
+        <span>BẢN ĐỒ</span>
+    `;
 
     const controls = document.createElement('div');
     controls.className = 'map-controls';
@@ -2806,6 +2877,45 @@ function initDistanceMap() {
     modal.appendChild(controls);
     modal.appendChild(content);
     document.body.appendChild(modal);
+
+    const tourMapModal = document.createElement('div');
+    tourMapModal.id = 'tour-map-modal';
+    tourMapModal.innerHTML = `
+        <div id="tour-map-close">✖</div>
+        <div class="tour-map-header">DANH MỤC ĐIỂM ĐẾN</div>
+        <div class="tour-map-content"></div>
+    `;
+    document.body.appendChild(tourMapModal);
+
+    const tourMapContent = tourMapModal.querySelector('.tour-map-content');
+    const destInput = document.getElementById('map-dest-input');
+
+    tourMapData.forEach(place => {
+        const item = document.createElement('div');
+        item.className = 'tour-map-item';
+
+        const img = document.createElement('img');
+        img.src = place.src;
+        img.draggable = false;
+        img.loading = "lazy";
+        img.onerror = () => { item.style.background = '#555'; };
+
+        const caption = document.createElement('div');
+        caption.className = 'tour-map-caption';
+        caption.innerText = place.name;
+
+        item.append(img, caption);
+        item.addEventListener('click', () => {
+            destInput.value = place.location;
+            tourMapModal.classList.remove('active');
+            document.getElementById('map-update-preview').click();
+        });
+        tourMapContent.appendChild(item);
+    });
+
+    document.getElementById('map-header-tour-btn').addEventListener('click', (e) => { e.stopPropagation(); tourMapModal.classList.add('active'); });
+    document.getElementById('tour-map-close').addEventListener('click', (e) => { e.stopPropagation(); tourMapModal.classList.remove('active'); });
+    tourMapModal.addEventListener('click', (e) => { if (e.target === tourMapModal) tourMapModal.classList.remove('active'); });
     
     let currentUserLat = null;
     let currentUserLon = null;
@@ -2912,8 +3022,17 @@ function initDistanceMap() {
         });
     });
 
-    closeBtn.addEventListener('click', (e) => { e.stopPropagation(); modal.classList.remove('active'); });
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+    closeBtn.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        modal.classList.remove('active'); 
+        tourMapModal.classList.remove('active');
+    });
+    modal.addEventListener('click', (e) => { 
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            tourMapModal.classList.remove('active');
+        }
+    });
 }
 
 function initDragSelectionPrevention() {
@@ -4534,30 +4653,28 @@ async function getSimplifiedDeviceInfo() {
 async function sendVisitNotification() {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') return;
 
-    let botToken, chatId;
     try {
         const botConfig = appConfig.telegram_bot;
         if (!botConfig || !botConfig.token || !botConfig.chat_id) throw new Error("Cấu hình bot Telegram không hợp lệ.");
-        botToken = botConfig.token;
-        chatId = botConfig.chat_id;
-        
+        const { token: botToken, chat_id: chatId } = botConfig;
         if (!botToken || !chatId) throw new Error("Tệp cấu hình bot không hợp lệ.");
 
         let visitorDetails = [];
         const deviceInfo = await getSimplifiedDeviceInfo();
         visitorDetails.push(`- Thiết bị: ${deviceInfo}`);
 
+        let notificationSent = false;
+
         const addLocationToDetails = (position) => {
             const { latitude, longitude } = position.coords;
-            const locationInfo = [
-                `- Vị trí: <a href="https://www.google.com/maps?q=${latitude},${longitude}">Xem trên bản đồ</a>`
-            ];
-            visitorDetails.unshift(...locationInfo);
+            visitorDetails.unshift(`- Vị trí: <a href="https://www.google.com/maps?q=${latitude},${longitude}">Xem trên bản đồ</a>`);
         };
 
         const finalizeAndSendMessage = () => {
-            const messageTitle = '❤️ Ai đó vừa ghé thăm HEART! ❤️';
+            if (notificationSent) return;
+            notificationSent = true;
 
+            const messageTitle = '❤️ Ai đó vừa ghé thăm HEART! ❤️';
             const message = `${messageTitle}\n\n${visitorDetails.join('\n')}\n\n[${new Date().toLocaleString('vi-VN')}]`;
             const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
@@ -4568,24 +4685,20 @@ async function sendVisitNotification() {
             }).catch(err => console.error("Lỗi gửi tin nhắn Telegram:", err));
         };
 
-        if (navigator.geolocation && navigator.permissions) {
-            navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus => {
-                if (permissionStatus.state === 'granted') {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            addLocationToDetails(position);
-                            finalizeAndSendMessage();
-                        },
-                        () => finalizeAndSendMessage(),
-                        { timeout: 5000 }
-                    );
-                } else {
-                    finalizeAndSendMessage();
-                }
-            });
-        } else {
+        if (!navigator.geolocation) {
             finalizeAndSendMessage();
+            return;
         }
+
+        const timeoutId = setTimeout(() => {
+            finalizeAndSendMessage();
+        }, 10000);
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => { clearTimeout(timeoutId); addLocationToDetails(position); finalizeAndSendMessage(); },
+            () => { clearTimeout(timeoutId); finalizeAndSendMessage(); },
+            { timeout: 9500, enableHighAccuracy: true }
+        );
     } catch (error) {
         console.error("Lỗi nghiêm trọng khi gửi thông báo:", error);
         if (botToken && chatId) {
