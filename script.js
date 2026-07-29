@@ -92,6 +92,7 @@ const vTracks = [
     { name: "Đưa em về nhà - GREY D, Chillies", src: "music/VIE/Duaemvenha.mp3" },
     { name: "Dự báo thời tiết hôm nay mưa - GREY D", src: "music/VIE/Dubaothoitiethomnaymua.mp3" },
     { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/VIE/Ghetemdilamon.mp3" },
+    { name: "Gió vẫn hát - Long Phạm", src: "music/VIE/Giovanhat.mp3" },
     { name: "Haydeanhduoccungemdau - SIVAN, Kai Đinh", src: "music/VIE/Haydeanhduoccungemdau.mp3" },
     { name: "Hông về tình yêu - Khoi Vu", src: "music/VIE/Hongvetinhyeu.mp3" },
     { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/VIE/Honvaodaydi.mp3" },
