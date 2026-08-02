@@ -154,6 +154,7 @@ const usukTracks = [
     { name: "Perfect - Ed Sheeran", src: "music/US_UK/Perfect.mp3" },
     { name: "Snowman - Sia", src: "music/US_UK/Snowman.mp3" },
     { name: "Sugar - Maroon 5", src: "music/US_UK/Sugar.mp3" },
+    { name: "Take you dancing - Jason Derulo", src: "music/US_UK/Takeyoudancing.mp3" },
     { name: "Tip toe - HYBS", src: "music/US_UK/Tiptoe.mp3" },
     { name: "Until I found you - Stephen Sanchez", src: "music/US_UK/Untilifoundyou.mp3" },
     { name: "Until you - Shayne Ward", src: "music/US_UK/Untilyou.mp3" },
