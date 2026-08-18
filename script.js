@@ -563,6 +563,9 @@ function playMusic() {
 }
 
 function pauseMusic() {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = "paused";
+    }
     if (visualizerCanvas) visualizerCanvas.style.opacity = '0';
     clearInterval(fadeInterval);
     const targetVolume = volumeBar.value / 100;
@@ -570,9 +573,6 @@ function pauseMusic() {
     
     if (currentVol <= 0) {
         audio.pause();
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.playbackState = "paused";
-        }
         return;
     }
 
@@ -583,9 +583,6 @@ function pauseMusic() {
         if (currentVol <= 0) {
             audio.volume = 0;
             audio.pause();
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.playbackState = "paused";
-            }
             audio.volume = targetVolume;
             clearInterval(fadeInterval);
         } else {
@@ -645,16 +642,19 @@ window.addEventListener("keydown", (e) => {
     }
 });
 
-document.getElementById("nextBtn").addEventListener("click", () => {
+function playNextTrack() {
     if (playlist.length === 0) return;
     if (!isShuffle) {
         currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
     } else {
         if (unplayedTracks.length === 0) {
-            unplayedTracks = Array.from({length: playlist.length}, (_, i) => i);
+            unplayedTracks = Array.from({ length: playlist.length }, (_, i) => i);
             if (playlist.length > 1) {
                 unplayedTracks = unplayedTracks.filter(i => i !== currentTrackIndex);
             }
+        }
+        if (unplayedTracks.length === 0 && playlist.length > 0) {
+            unplayedTracks = Array.from({ length: playlist.length }, (_, i) => i);
         }
         const randomIndex = Math.floor(Math.random() * unplayedTracks.length);
         currentTrackIndex = unplayedTracks[randomIndex];
@@ -662,41 +662,62 @@ document.getElementById("nextBtn").addEventListener("click", () => {
         trackHistory.push(currentTrackIndex);
     }
     loadTrack(currentTrackIndex);
-    initVisualizer();
-    if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-    playMusic();
-    playPauseBtn.innerText = "❚❚";
-});
 
-document.getElementById("prevBtn").addEventListener("click", () => {
+    const playAction = () => {
+        playMusic();
+        playPauseBtn.innerText = "❚❚";
+    };
+
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().then(playAction).catch(e => console.error("Audio context resume failed", e));
+    } else {
+        playAction();
+    }
+}
+
+function playPreviousTrack() {
     if (playlist.length === 0) return;
     if (!isShuffle) {
         currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
     } else {
         if (trackHistory.length > 1) {
-            let removedTrack = trackHistory.pop();
+            const removedTrack = trackHistory.pop();
             if (!unplayedTracks.includes(removedTrack)) {
                 unplayedTracks.push(removedTrack);
             }
             currentTrackIndex = trackHistory[trackHistory.length - 1];
         } else {
             audio.currentTime = 0;
+            playMusic();
             return;
         }
     }
     loadTrack(currentTrackIndex);
-    initVisualizer();
+
+    const playAction = () => {
+        playMusic();
+        playPauseBtn.innerText = "❚❚";
+    };
+
     if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
+        audioCtx.resume().then(playAction).catch(e => console.error("Audio context resume failed", e));
+    } else {
+        playAction();
     }
-    playMusic();
-    playPauseBtn.innerText = "❚❚";
+}
+
+document.getElementById("nextBtn").addEventListener("click", () => {
+    initVisualizer();
+    playNextTrack();
+});
+
+document.getElementById("prevBtn").addEventListener("click", () => {
+    initVisualizer();
+    playPreviousTrack();
 });
 
 audio.onended = () => {
-    if (playlist.length > 0) document.getElementById("nextBtn").click();
+    if (playlist.length > 0) playNextTrack();
 };
 
 function formatTime(seconds) {
@@ -4951,13 +4972,9 @@ function initMediaSession() {
         playPauseBtn.innerText = "▶︎";
     });
 
-    navigator.mediaSession.setActionHandler('nexttrack', () => {
-        document.getElementById("nextBtn").click();
-    });
+    navigator.mediaSession.setActionHandler('nexttrack', playNextTrack);
 
-    navigator.mediaSession.setActionHandler('previoustrack', () => {
-        document.getElementById("prevBtn").click();
-    });
+    navigator.mediaSession.setActionHandler('previoustrack', playPreviousTrack);
 
     try {
         navigator.mediaSession.setActionHandler('seekforward', (details) => {
