@@ -92,6 +92,7 @@ const vTracks = [
     { name: "Đôi mắt kẻ tình si - GREY D", src: "music/VIE/Doimatketinhsi.mp3" },
     { name: "Đưa em về nhà - GREY D, Chillies", src: "music/VIE/Duaemvenha.mp3" },
     { name: "Dự báo thời tiết hôm nay mưa - GREY D", src: "music/VIE/Dubaothoitiethomnaymua.mp3" },
+    { name: "Em làm gì mùa dịch - QNT, Kris D", src: "music/VIE/Emlamgimuadich.mp3" },
     { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/VIE/Ghetemdilamon.mp3" },
     { name: "Gió vẫn hát - Long Phạm", src: "music/VIE/Giovanhat.mp3" },
     { name: "Haydeanhduoccungemdau - SIVAN, Kai Đinh", src: "music/VIE/Haydeanhduoccungemdau.mp3" },
@@ -501,6 +502,27 @@ function loadTrack(index) {
 
     const lyricSrc = track.src.replace('music/', 'lyric/').replace(/\.mp3$/, '.lrc');
     fetch(encodeURI(lyricSrc), { cache: "no-store" }).then(response => { if (!response.ok) throw new Error('Không tìm thấy tệp lyric'); return response.text(); }).then(lrcText => { currentLyrics = parseLRC(lrcText); if (currentLyrics.length === 0) { lyricsLinesEl.innerHTML = '<div class="lyric-line">Chưa có lời bài hát.</div>'; } else { renderLyrics(); } }).catch(error => { console.log("Không thể tải lời bài hát:", error.message); lyricsLinesEl.innerHTML = '<div class="lyric-line">Chưa có lời bài hát.</div>'; });
+
+    if ('mediaSession' in navigator) {
+        let [title, artist] = track.name.split(' - ');
+        if (!artist) {
+            title = track.name;
+            artist = "Nghệ sĩ không xác định";
+        }
+
+        const playlistData = playlistsData[currentPlaylistDataIndex];
+        const albumName = playlistData.name.replace(/─────.─────\n|[\n\t❄️🎄🏵️🧧🔒︎]/g, ' ').replace(/\s\s+/g, ' ').trim();
+
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: title.trim(),
+            artist: artist.trim(),
+            album: albumName,
+            artwork: [
+                { src: 'picture/favicon/heart.png', sizes: '192x192', type: 'image/png' },
+                { src: 'picture/favicon/heart.png', sizes: '512x512', type: 'image/png' },
+            ]
+        });
+    }
 }
 
 let fadeInterval;
@@ -510,6 +532,9 @@ function playMusic() {
     if (visualizerCanvas) visualizerCanvas.style.opacity = '1';
     clearInterval(fadeInterval);
     const targetVolume = volumeBar.value / 100;
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = "playing";
+    }
     
     if (targetVolume === 0) {
         audio.volume = 0;
@@ -545,6 +570,9 @@ function pauseMusic() {
     
     if (currentVol <= 0) {
         audio.pause();
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = "paused";
+        }
         return;
     }
 
@@ -555,6 +583,9 @@ function pauseMusic() {
         if (currentVol <= 0) {
             audio.volume = 0;
             audio.pause();
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.playbackState = "paused";
+            }
             audio.volume = targetVolume;
             clearInterval(fadeInterval);
         } else {
@@ -4899,6 +4930,49 @@ function initAIAssistant() {
     }
 }
 
+function initMediaSession() {
+    if (!('mediaSession' in navigator)) {
+        console.log("Media Session API không được hỗ trợ trên trình duyệt này.");
+        return;
+    }
+
+    console.log("Khởi tạo Media Session API.");
+
+    navigator.mediaSession.setActionHandler('play', () => {
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        playMusic();
+        playPauseBtn.innerText = "❚❚";
+    });
+
+    navigator.mediaSession.setActionHandler('pause', () => {
+        pauseMusic();
+        playPauseBtn.innerText = "▶︎";
+    });
+
+    navigator.mediaSession.setActionHandler('nexttrack', () => {
+        document.getElementById("nextBtn").click();
+    });
+
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+        document.getElementById("prevBtn").click();
+    });
+
+    try {
+        navigator.mediaSession.setActionHandler('seekforward', (details) => {
+            const skipTime = details.seekOffset || 5;
+            if (!isNaN(audio.duration)) { audio.currentTime = Math.min(audio.currentTime + skipTime, audio.duration); }
+        });
+        navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+            const skipTime = details.seekOffset || 5;
+            audio.currentTime = Math.max(audio.currentTime - skipTime, 0);
+        });
+    } catch (error) {
+        console.log("Cảnh báo: Trình duyệt không hỗ trợ seekforward/seekbackward.");
+    }
+}
+
 async function initializeApp() {
     try {
         const CONFIG_URL = "https://cdn.jsdelivr.net/gh/HaoCoder-2007/Heart_config@main/config.json";
@@ -4942,6 +5016,7 @@ updateCounter();
 changeNote();
 showPlayer();
 showNextPolaroid();
+initMediaSession();
 setInterval(createLeaf, 500);
 setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
