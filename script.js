@@ -98,6 +98,7 @@ const vTracks = [
     { name: "Haydeanhduoccungemdau - SIVAN, Kai Đinh", src: "music/VIE/Haydeanhduoccungemdau.mp3" },
     { name: "Hông về tình yêu - Khoi Vu", src: "music/VIE/Hongvetinhyeu.mp3" },
     { name: "Hôn vào đây đi - VSTRA, Tyronee, hairan, antransax", src: "music/VIE/Honvaodaydi.mp3" },
+    { name: "Hướng dương - Changg", src: "music/VIE/Huongduong.mp3" },
     { name: "Không buông - Hngle, Ari", src: "music/VIE/Khongbuong.mp3" },
     { name: "La bàn - Hoàng Dũng", src: "music/VIE/Laban.mp3" },
     { name: "Lỡ một mai tôi quên tên người - Khiem", src: "music/VIE/Lomotmaitoiquentennguoi.mp3" },
@@ -135,6 +136,7 @@ const vTracks = [
 ];
 
 const usukTracks = [
+    { name: "ABC - Polyphia, Sophia Black", src: "music/US_UK/ABC.mp3" },
     { name: "A thousand years - Christina Perri", src: "music/US_UK/Athousandyears.mp3" },
     { name: "At my worst - Pink Sweet$", src: "music/US_UK/Atmyworst.mp3" },
     { name: "Attention - Charlie Puth", src: "music/US_UK/Attention.mp3" },
@@ -157,6 +159,7 @@ const usukTracks = [
     { name: "Nothing's gonna change my love for you - Geogre Benson", src: "music/US_UK/Nothing'sgonnachangemyloveforyou.mp3" },
     { name: "Ojos Tristes - Selena Gomez, Benny Blanco", src: "music/US_UK/Ojostristes.mp3" },
     { name: "Perfect - Ed Sheeran", src: "music/US_UK/Perfect.mp3" },
+    { name: "Say so - Doja Cat", src: "music/US_UK/Sayso.mp3" },
     { name: "Snowman - Sia", src: "music/US_UK/Snowman.mp3" },
     { name: "Sugar - Maroon 5", src: "music/US_UK/Sugar.mp3" },
     { name: "Take you dancing - Jason Derulo", src: "music/US_UK/Takeyoudancing.mp3" },
