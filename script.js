@@ -76,6 +76,7 @@ const tourMapData = [
 
 //-------------------------------------------------------TRACKS-----------------------------------------------------------------------------------------
 const vTracks = [
+    { name: "Ai đưa em về - TIA, Lê Thiện Hiếu", src: "music/VIE/Aiduaemve.mp3" },
     { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/VIE/Aingoaianh.mp3" },
     { name: "Ấm - sweet liquor", src: "music/VIE/Am.mp3" },
     { name: "Ánh sao và bầu trời - T.R.I, Cá", src: "music/VIE/Anhsaovabautroi.mp3" },
@@ -178,6 +179,7 @@ const usukTracks = [
 ];
 
 const kTracks = [
+    { name: "Cupid - FIFTY FIFTY", src: "music/KOR/Cupid.mp3" },
     { name: "H.S.K.T - Lee Hi", src: "music/KOR/H.S.K.T.mp3" },
     { name: "Hurt - NewJeans", src: "music/KOR/Hurt.mp3" },
     { name: "If you - BigBang", src: "music/KOR/Ifyou.mp3" },
