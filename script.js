@@ -99,6 +99,7 @@ const vTracks = [
     { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/VIE/Ghetemdilamon.mp3" },
     { name: "Giấc mơ của loài người - Dấu Vân Tay", src: "music/VIE/Giacmocualoainguoi.mp3" },
     { name: "Gió vẫn hát - Long Phạm", src: "music/VIE/Giovanhat.mp3" },
+    { name: "Giữ lấy làm gì - Monstar", src: "music/VIE/Giulaylamgi.mp3" },
     { name: "Hạnh phúc ngọt ngào - Dấu Vân Tay", src: "music/VIE/Hanhphucngotngao.mp3" },
     { name: "Haydeanhduoccungemdau - SIVAN, Kai Đinh", src: "music/VIE/Haydeanhduoccungemdau.mp3" },
     { name: "Hông về tình yêu - Khoi Vu", src: "music/VIE/Hongvetinhyeu.mp3" },
