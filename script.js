@@ -87,6 +87,7 @@ const vTracks = [
     { name: "Chạy theo em - Nhã, Mihuman", src: "music/VIE/Chaytheoem.mp3" },
     { name: "Chết trong em - Thịnh Suy", src: "music/VIE/Chettrongem.mp3" },
     { name: "Chuyện đôi ta - Da LAB, Muộii", src: "music/VIE/Chuyendoita.mp3" },
+    { name: "Có em - Madihu, LowG", src: "music/VIE/Coem.mp3" },
     { name: "Có hay từ bao giờ - Niee, Hast, KEI", src: "music/VIE/Cohaytubaogio.mp3" },
     { name: "Cứ chill thôi - Chillies, SUNI, Rhymastic", src: "music/VIE/Cuchillthoi.mp3" },
     { name: "Đã lỡ yêu em nhiều - JustaTee", src: "music/VIE/Daloyeuemnhieu.mp3" },
@@ -163,6 +164,7 @@ const usukTracks = [
     { name: "Kiss me more - Doja Cat", src: "music/US_UK/Kissmemore.mp3" },
     { name: "Love is gone - Slander, Dylan Matthew", src: "music/US_UK/Loveisgone.mp3" },
     { name: "Memories - Maroon 5", src: "music/US_UK/Memories.mp3" },
+    { name: "My love mine all mine - Mitski", src: "music/US_UK/Mylovemineallmine.mp3" },
     { name: "Nothing's gonna change my love for you - Geogre Benson", src: "music/US_UK/Nothing'sgonnachangemyloveforyou.mp3" },
     { name: "Ojos Tristes - Selena Gomez, Benny Blanco", src: "music/US_UK/Ojostristes.mp3" },
     { name: "Perfect - Ed Sheeran", src: "music/US_UK/Perfect.mp3" },
@@ -213,6 +215,11 @@ const cTracks = [
     //{ name: "", src: "music/CHN/.mp3" },
 ];
 
+const jTracks = [
+    { name: "Stay with me - Miki Matsubara", src: "music/JPN/Staywithme.mp3" },
+    //{ name: "", src: "music/JPN/.mp3"},
+];
+
 const atshTracks = [
     { name: "Đa nghi - Negav, Hải Nam, Cody Nam Võ, Dillan Hoàng Phan", src: "music/VIE/ATSH/Danghi.mp3" },
     { name: "Đã từng - Karik, GDucky, Ngô Kiến Huy, Bùi Duy Ngọc", src: "music/VIE/ATSH/Datung.mp3" },
@@ -251,11 +258,12 @@ const HguitarTracks = [
 ];
 
 const playlistsData = [
-    { name: "Tất cả", tracks: [...vTracks, ...usukTracks, ...kTracks, ...cTracks] },
+    { name: "Tất cả", tracks: [...vTracks, ...usukTracks, ...kTracks, ...cTracks, ...jTracks] },
     { name: "Nhạc Việt", tracks: vTracks },
     { name: "Nhạc US-UK", tracks: usukTracks },
     { name: "Nhạc Hàn", tracks:  kTracks },
     { name: "Nhạc Trung", tracks:  cTracks },
+    { name: "Nhạc Nhật", tracks:  jTracks },
 
     { name: "ATSH", tracks: atshTracks, specialImage: "picture/special_playlist/atsh.jpg", isOptional: true },
     { name: "H_guitar🔒︎", tracks: HguitarTracks, isLocked: true, isUnlocked: false, specialImage: "picture/special_playlist/h_guitar.jpg", isOptional: true },
