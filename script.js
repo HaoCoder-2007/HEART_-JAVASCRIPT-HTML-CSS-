@@ -81,6 +81,7 @@ const vTracks = [
     { name: "Ấm - sweet liquor", src: "music/VIE/Am.mp3" },
     { name: "Ánh sao và bầu trời - T.R.I, Cá", src: "music/VIE/Anhsaovabautroi.mp3" },
     { name: "Bạn đời - Karik, GDucky", src: "music/VIE/Bandoi.mp3" },
+    { name: "Berlin - Khoi Vu", src: "music/VIE/Berlin.mp3" },
     { name: "Buồn hay vui - Vsoul, MCK, Obito, Ronboogz, Boyzed", src: "music/VIE/Buonhayvui.mp3" },
     { name: "Chẳng giống giáng sinh - Lu, Willistic, datfitzx", src: "music/VIE/Changgionggiangsinh.mp3" },
     { name: "Chạy khỏi thế giới này - Da LAB, Phương Ly", src: "music/VIE/Chaykhoithegioinay.mp3" },
@@ -234,6 +235,21 @@ const atshTracks = [
     // { name: "", src: "music/VIE/ATSH/.mp3" },
 ];
 
+const ngotTracks = [
+    { name: "Bạn thỏ tivi nhỏ - Ngọt", src: "music/VIE/Ngot/Banthotivinho.mp3"},
+    { name: "Chuyển kênh - Ngọt", src: "music/VIE/Ngot/Chuyenkenh.mp3"},
+    { name: "Đá tan - Ngọt", src: "music/VIE/Ngot/Datan.mp3"},
+    { name: "Em dạo này - Ngọt", src: "music/VIE/Ngot/Emdaonay.mp3"},
+    { name: "Em trang trí - Ngọt", src: "music/VIE/Ngot/Emtrangtri.mp3"},
+    { name: "Hết thời - Ngọt", src: "music/VIE/Ngot/Hetthoi.mp3"},
+    { name: "Lần cuối - Ngọt", src: "music/VIE/Ngot/Lancuoi.mp3"},
+    { name: "Mất tích - Ngọt", src: "music/VIE/Ngot/Mattich.mp3"},
+    { name: "Nứt - Ngọt", src: "music/VIE/Ngot/Nut.mp3"},
+    { name: "Thấy chưa - Ngọt", src: "music/VIE/Ngot/Thaychua.mp3"},
+    { name: "Xanh - Ngọt", src: "music/VIE/Ngot/Xanh.mp3"},
+    // { name: " - Ngọt", src: "music/VIE/Ngot/.mp3"},
+]
+
 const xmasTracks = [
     { name: "All I want for Christmas is you - Mariah Carey", src: "music/SPECIAL/XMAS/Alliwantforchristmasisyou.mp3" },
     { name: "Chẳng giống giáng sinh - Lu, Willistic, datfitzx", src: "music/SPECIAL/XMAS/Changgionggiangsinh.mp3" },
@@ -265,6 +281,7 @@ const playlistsData = [
     { name: "Nhạc Trung", tracks:  cTracks },
     { name: "Nhạc Nhật", tracks:  jTracks },
 
+    { name: "Ngọt", tracks: ngotTracks, specialImage: "picture/special_playlist/.jpg", isOptional: true },
     { name: "ATSH", tracks: atshTracks, specialImage: "picture/special_playlist/atsh.jpg", isOptional: true },
     { name: "H_guitar🔒︎", tracks: HguitarTracks, isLocked: true, isUnlocked: false, specialImage: "picture/special_playlist/h_guitar.jpg", isOptional: true },
     // { name: "", tracks: , isLocked: , isUnlocked: , specialImage: "picture/special_playlist/.jpg", isOptional:  },
