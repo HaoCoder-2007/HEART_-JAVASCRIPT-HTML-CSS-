@@ -281,7 +281,7 @@ const playlistsData = [
     { name: "Nhạc Trung", tracks:  cTracks },
     { name: "Nhạc Nhật", tracks:  jTracks },
 
-    { name: "Ngọt", tracks: ngotTracks, specialImage: "picture/special_playlist/.jpg", isOptional: true },
+    { name: "Ngọt", tracks: ngotTracks, specialImage: "picture/special_playlist/ngot.jpg", isOptional: true },
     { name: "ATSH", tracks: atshTracks, specialImage: "picture/special_playlist/atsh.jpg", isOptional: true },
     { name: "H_guitar🔒︎", tracks: HguitarTracks, isLocked: true, isUnlocked: false, specialImage: "picture/special_playlist/h_guitar.jpg", isOptional: true },
     // { name: "", tracks: , isLocked: , isUnlocked: , specialImage: "picture/special_playlist/.jpg", isOptional:  },
