@@ -933,7 +933,7 @@ function showNextPolaroid() {
     const img = document.createElement('img');
     img.src = memory.src.startsWith("http") ? memory.src : `${memory.src}?v=${new Date().getTime()}`;
     img.draggable = false;
-    img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
+    img.onerror = () => { img.src = 'picture/error_picture.png'; };
     
     const pin = document.createElement('div');
     pin.className = 'polaroid-pin';
@@ -2260,7 +2260,7 @@ function initAlbum() {
             img.src = imageUrl;
             img.draggable = false;
             img.loading = "lazy";
-            img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
+            img.onerror = () => { img.src = 'picture/error_picture.png'; };
 
             const caption = document.createElement('div');
             caption.className = 'timeline-photo-caption';
@@ -2331,7 +2331,7 @@ function initAlbum() {
                 img.src = imageUrl;
                 img.draggable = false;
                 img.loading = "lazy";
-                img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
+                img.onerror = () => { img.src = 'picture/error_picture.png'; };
 
                 const caption = document.createElement('div');
                 caption.className = 'timeline-folder-caption';
@@ -2353,7 +2353,7 @@ function initAlbum() {
                 img.src = imageUrl;
                 img.draggable = false;
                 img.loading = "lazy";
-                img.onerror = () => { img.src = 'https://via.placeholder.com/200x200/ffe4e1/ff69b4?text=Kỷ+niệm+❤️'; };
+                img.onerror = () => { img.src = 'picture/error_picture.png'; };
 
                 const caption = document.createElement('div');
                 caption.className = 'timeline-photo-caption';
@@ -2628,7 +2628,7 @@ function initResume() {
 
         card.innerHTML = `
             <img class="profile-avatar" src="${data.avatar.startsWith('http') ? data.avatar : `${data.avatar}?v=${new Date().getTime()}`}" 
-                 draggable="false" onerror="this.src='https://via.placeholder.com/150/ffe4e1/ff69b4?text=Avatar'">
+                 draggable="false" onerror="this.src='picture/error_profile_picture.jpg'">
             <div class="profile-title">${data.title}</div>
             <div class="profile-details">
                 ${data.details.map(item => `
