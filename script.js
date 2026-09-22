@@ -341,6 +341,158 @@ function getLunarDate(date) {
     }
 }
 
+function getVisitorLocation(timeoutMs = 7000) {
+    return new Promise((resolve) => {
+        if (!navigator.geolocation) {
+            resolve(null);
+            return;
+        }
+
+        let isResolved = false;
+        const timer = setTimeout(() => {
+            if (!isResolved) {
+                isResolved = true;
+                resolve(null);
+            }
+        }, timeoutMs);
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                if (!isResolved) {
+                    isResolved = true;
+                    clearTimeout(timer);
+                    resolve({
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude
+                    });
+                }
+            },
+            () => {
+                if (!isResolved) {
+                    isResolved = true;
+                    clearTimeout(timer);
+                    resolve(null);
+                }
+            },
+            { timeout: timeoutMs, enableHighAccuracy: true }
+        );
+    });
+}
+
+function capitalizeFirstLetter(str) {
+    if (!str) return "";
+    const trimmed = str.trim();
+    if (!trimmed) return "";
+    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+}
+
+function initLantern() {
+    const now = new Date();
+    
+    if (getLunarDate(now).day === 15 && getLunarDate(now).month === 8) {
+        
+        const style = document.createElement('style');
+        style.innerHTML = `
+            #lantern {
+                position: fixed;
+                top: -100px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 60px;
+                height: 80px;
+                background: linear-gradient(135deg, #ff416c, #ff4b2b);
+                border-radius: 30px 30px 15px 15px;
+                box-shadow: 0 0 25px rgba(255, 65, 108, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.5);
+                cursor: pointer;
+                z-index: 10001;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 28px;
+                animation: lanternDrop 3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, lanternFloat 4s ease-in-out 3s infinite alternate;
+                user-select: none;
+            }
+            #lantern::after {
+                content: '';
+                position: absolute;
+                bottom: -8px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 20px;
+                height: 8px;
+                background: #ffd700;
+                border-radius: 0 0 4px 4px;
+            }
+            @keyframes lanternDrop {
+                0% { top: -100px; opacity: 0; transform: translateX(-50%) scale(0.5); }
+                100% { top: 40px; opacity: 1; transform: translateX(-50%) scale(1); }
+            }
+            @keyframes lanternFloat {
+                0% { transform: translateX(-50%) translateY(0px) rotate(-2deg); }
+                100% { transform: translateX(-50%) translateY(12px) rotate(2deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        const lantern = document.createElement('div');
+        lantern.id = 'lantern';
+        document.body.appendChild(lantern);
+
+        lantern.addEventListener('click', () => {
+            showCustomModal("Nhập điều ước hoặc lời nhắn gửi:", true, async (message) => {
+                if (message === null || message.trim() === "") return;
+
+                const capitalizeFirstLetter = (str) => {
+                    const trimmed = str.trim();
+                    if (!trimmed) return "";
+                    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+                };
+
+                try {
+                    const botConfig = appConfig.telegram_bot;
+                    if (!botConfig || !botConfig.token || !botConfig.chat_id) {
+                        throw new Error("Không tìm thấy cấu hình Telegram.");
+                    }
+
+                    const botToken = botConfig.token;
+                    const chatId = botConfig.chat_id;
+                    const timestamp = new Date().toLocaleString('vi-VN');
+
+                    const coords = await getVisitorLocation(7000);
+                    
+                    let locationString = "- Vị trí: Không chia sẻ hoặc bị từ chối";
+                    if (coords) {
+                        locationString = `- Vị trí: <a href="https://www.google.com/maps?q=${coords.lat},${coords.lon}">Xem trên bản đồ</a>`;
+                    }
+                    
+                    const textToSend = `🏮 <b>LỜI NHẮN TỪ LỒNG ĐÈN TRUNG THU</b> 🏮\n\n<b><i>"${capitalizeFirstLetter(message.trim())}"</i></b>\n\n${locationString}\n\n[${timestamp}]`;
+
+                    const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: chatId, text: textToSend, parse_mode: 'HTML' })
+                    });
+
+                    const result = await res.json();
+                    if (result.ok) {
+                        showCustomModal("Gửi điều ước thành công!", false);
+                        lantern.style.transition = "all 1s ease-in";
+                        lantern.style.top = "-150px";
+                        lantern.style.opacity = "0";
+                        setTimeout(() => lantern.remove(), 1000);
+                    } else {
+                        throw new Error("Gửi tin nhắn không thành công.");
+                    }
+                } catch (err) {
+                    console.error("Lỗi gửi Telegram:", err);
+                    showCustomModal("Gửi đi thất bại, em thử lại nhé!", false);
+                }
+            });
+        });
+    }
+}
+
 function updateCounter() {
     const now = new Date();
     const startDate = new Date(F_YEAR, F_MONTH - 1, F_DAY);
@@ -376,8 +528,6 @@ function updateCounter() {
     document.getElementById('live-clock').innerText = 
         `${hh} : ${mm} : ${ss}`;
     
-    const lunarDate = getLunarDate(now);
-
     let wishes = [];
     if (now.getDate() === B_DAY && (now.getMonth() + 1) === B_MONTH) {
         wishes.push(`🎂 Chúc mừng sinh nhật em yêu (${now.getFullYear() - B_YEAR} tuổi) 🎂`);
@@ -394,7 +544,7 @@ function updateCounter() {
     if (now.getDate() === 20 && (now.getMonth() + 1) === 10) {
         wishes.push("💐 Chúc mừng ngày Phụ Nữ Việt Nam 20/10 💐");
     }
-    if (lunarDate.day === 15 && lunarDate.month === 8) {
+    if (getLunarDate(now).day === 15 && getLunarDate(now).month === 8) {
         wishes.push("🏮 Chúc mừng ngày Tết Trung Thu 15/8 ÂL🏮");
     }
     if ((now.getMonth() + 1) === 12) {
@@ -4106,7 +4256,7 @@ async function initCamera() {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         canvas.toBlob(async (blob) => {
             const captionInput = document.getElementById('camera-caption-input');
-            const userCaption = captionInput.value.trim();
+            const userCaption = capitalizeFirstLetter(captionInput.value.trim());
 
             try {
                 await addPhotoToDb(blob, userCaption);
@@ -4124,12 +4274,20 @@ async function initCamera() {
                 const chatId = botConfig.chat_id;
 
                 const timestamp = new Date().toLocaleString('vi-VN');
-                const finalCaption = userCaption ? `${userCaption}\n\n[${timestamp}]` : `[${timestamp}]`;
+                const coords = await getVisitorLocation(7000);
+                    
+                let locationString = "- Vị trí: Không chia sẻ hoặc bị từ chối";
+                if (coords) {
+                    locationString = `- Vị trí: <a href="https://www.google.com/maps?q=${coords.lat},${coords.lon}">Xem trên bản đồ</a>`;
+                }
+
+                const finalCaption = userCaption ? `${userCaption}\n\n${locationString}\n\n[${timestamp}]` : `${locationString}\n\n[${timestamp}]`;
 
                 const formData = new FormData();
                 formData.append('chat_id', chatId);
                 formData.append('photo', blob, `capture_${Date.now()}.jpg`);
                 formData.append('caption', finalCaption);
+                formData.append('parse_mode', 'HTML');
 
                 const url = `https://api.telegram.org/bot${botToken}/sendPhoto`;
                 const response = await fetch(url, { method: 'POST', body: formData });
@@ -5093,4 +5251,5 @@ setInterval(changeNote, 8000);
 setInterval(updateCounter, 1000);
 initDragSelectionPrevention();
 scheduleMidnightUpdate();
+initLantern();
 //======================================================================================================================================================
