@@ -102,6 +102,7 @@ const vTracks = [
     { name: "Em là - Mono", src: "music/VIE/Emla.mp3", dateAdded: "2026-09-20" },
     { name: "Em làm gì mùa dịch - QNT, Kris D", src: "music/VIE/Emlamgimuadich.mp3", dateAdded: "2026-08-17" },
     { name: "Ghét em đi làm ơn - VSTRA, Tyronee", src: "music/VIE/Ghetemdilamon.mp3", dateAdded: "2026-05-07" },
+    { name: "Giấc mơ - MiQ", src: "music/VIE/Giacmo.mp3", dateAdded: "2026-09-22" },
     { name: "Giấc mơ của loài người - Dấu Vân Tay", src: "music/VIE/Giacmocualoainguoi.mp3", dateAdded: "2026-08-31" },
     { name: "Giayphut - Kidsai, Niz", src: "music/VIE/Giayphut.mp3", dateAdded: "2026-09-15" },
     { name: "Gió vẫn hát - Long Phạm", src: "music/VIE/Giovanhat.mp3", dateAdded: "2026-07-29" },
