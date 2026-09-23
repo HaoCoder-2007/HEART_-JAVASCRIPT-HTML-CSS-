@@ -2000,6 +2000,11 @@ function initBirthdayRecorder() {
 }
 
 function closeAllModals(exceptSelector = null) {
+    const globalOverlay = document.getElementById('global-modal-overlay');
+    if (globalOverlay) {
+        globalOverlay.classList.remove('active');
+    }
+
     const modalSelectors = [
         '#album-modal', 
             '#album-folder-modal',
@@ -2009,6 +2014,7 @@ function closeAllModals(exceptSelector = null) {
         '#camera-modal', 
         '#weather-modal', 
         '#timer-modal',
+        '#copyright-modal',
     ];
 
     modalSelectors.forEach(selector => {
@@ -4996,7 +5002,7 @@ function initAIAssistant() {
     style.innerHTML = `
         #ai-assistant-btn {
             position: fixed;
-            bottom: 170px;
+            top: 700px;
             left: 30px;
             width: 50px;
             height: 50px;
@@ -5203,6 +5209,152 @@ function initMediaSession() {
     }
 }
 
+function initCopyright() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #copyright-badge {
+            position: fixed;
+            bottom: 15px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            font-family: inherit;
+            cursor: pointer;
+            z-index: 1000;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+            user-select: none;
+            letter-spacing: 0.5px;
+        }
+        #copyright-badge:hover {
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+        }
+        #copyright-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        z-index: 1000002;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        }
+        #copyright-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #copyright-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 360px;
+            max-width: 90vw;
+            max-height: 70vh;
+            overflow-y: auto;
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            z-index: 1000003;
+            padding: 25px 20px;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            color: #fff;
+        }
+        #copyright-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .copyright-modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d45b79;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+        .copyright-modal-text {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+            .copyright-contact-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 16px;
+            background: #d45b79;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(212, 91, 121, 0.4);
+        }
+        .copyright-contact-link:hover {
+            background: #c54c6a;
+            transform: scale(1.08);
+        }
+    `;
+    document.head.appendChild(style);
+
+    const badge = document.createElement('div');
+    badge.id = 'copyright-badge';
+    badge.innerText = '© HaoCoder2007';
+    document.body.appendChild(badge);
+
+    const overlay = document.createElement('div');
+    overlay.id = 'copyright-overlay';
+    document.body.appendChild(overlay);
+
+    const modal = document.createElement('div');
+    modal.id = 'copyright-modal';
+
+    const contactUrl = "https://www.facebook.com/giahao.tran.9883";
+
+    modal.innerHTML = `
+        <div class="copyright-modal-title">THÔNG TIN BẢN QUYỀN</div>
+        <div class="copyright-modal-text">Trang được tạo bởi <b>HaoCoder2007</b></div>
+        <div class="copyright-modal-text" style="color: rgba(255, 255, 255, 0.7); font-size: 15px; text-align: left;">-Trang được xây với mục đích phục vụ việc học tập và nghiên cứu, không nhằm mục đích thương mại.</div>
+        <div class="copyright-modal-text" style="color: rgba(255, 255, 255, 0.7); font-size: 15px; text-align: left;">-Tôi <b>không</b> sở hữu bản quyền của những bài nhạc. Mọi quyền thuộc về chủ sở hữu hợp pháp.</div>
+        <div class="copyright-modal-text" style="color: rgba(255, 255, 255, 0.7); font-size: 15px; text-align: left;">-Một số hình ảnh thuộc cá nhân tôi, vui lòng <b>không</b> sử dụng khi chưa được sự đồng ý.</div>
+        <a href="${contactUrl}" target="_blank" class="copyright-contact-link">Thông tin liên hệ</a>
+    `;
+    document.body.appendChild(modal);
+
+    badge.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllModals('#copyright-modal');
+        overlay.classList.add('active');
+        modal.classList.add('active');
+    });
+
+    modal.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    overlay.addEventListener('click', () => {
+        overlay.classList.remove('active');
+        modal.classList.remove('active');
+    });
+
+    window.addEventListener('click', () => {
+        if (modal.classList.contains('active')) {
+            modal.classList.remove('active');
+        }
+    });
+}
+
 async function initializeApp() {
     try {
         const CONFIG_URL = "https://cdn.jsdelivr.net/gh/HaoCoder-2007/Heart_config@main/config.json";
@@ -5231,8 +5383,9 @@ async function initializeApp() {
         initCamera();
         initWeather();
         initCountdownTimer();
-        sendVisitNotification();
         initAIAssistant();
+        initCopyright();
+        sendVisitNotification();
 
     } catch (error) {
         console.error("Lỗi khởi tạo ứng dụng:", error.message);
