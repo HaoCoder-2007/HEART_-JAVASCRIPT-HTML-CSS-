@@ -5325,7 +5325,7 @@ function initCopyright() {
     modal.innerHTML = `
         <div class="copyright-modal-title">THÔNG TIN BẢN QUYỀN</div>
         <div class="copyright-modal-text">Trang được tạo bởi <b>HaoCoder2007</b></div>
-        <div class="copyright-modal-text" style="color: rgba(255, 255, 255, 0.7); font-size: 15px; text-align: left;">-Trang được xây với mục đích phục vụ việc học tập và nghiên cứu, không nhằm mục đích thương mại.</div>
+        <div class="copyright-modal-text" style="color: rgba(255, 255, 255, 0.7); font-size: 15px; text-align: left;">-Trang được tạo nhằm phục vụ mục đích cá nhân, không hoạt động thương mại.</div>
         <div class="copyright-modal-text" style="color: rgba(255, 255, 255, 0.7); font-size: 15px; text-align: left;">-Tôi <b>không</b> sở hữu bản quyền của những bài nhạc. Mọi quyền thuộc về chủ sở hữu hợp pháp.</div>
         <div class="copyright-modal-text" style="color: rgba(255, 255, 255, 0.7); font-size: 15px; text-align: left;">-Một số hình ảnh thuộc cá nhân tôi, vui lòng <b>không</b> sử dụng khi chưa được sự đồng ý.</div>
         <a href="${contactUrl}" target="_blank" class="copyright-contact-link">Thông tin liên hệ</a>
