@@ -4940,6 +4940,13 @@ async function sendVisitNotification() {
         const { token: botToken, chat_id: chatId } = botConfig;
         if (!botToken || !chatId) throw new Error("Tệp cấu hình bot không hợp lệ.");
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const isOwner = urlParams.get('admin') === 'haocoder';
+
+        let messageTitle = isOwner 
+            ? '❤️ <b><i>HaoCoder</i> vừa ghé thăm HEART!</b> ❤️' 
+            : '❤️ <b>Ai đó vừa ghé thăm HEART!</b> ❤️';
+
         let visitorDetails = [];
         const deviceInfo = await getSimplifiedDeviceInfo();
         visitorDetails.push(`- Thiết bị: ${deviceInfo}`);
@@ -4955,7 +4962,6 @@ async function sendVisitNotification() {
             if (notificationSent) return;
             notificationSent = true;
 
-            const messageTitle = '❤️ Ai đó vừa ghé thăm HEART! ❤️';
             const message = `${messageTitle}\n\n${visitorDetails.join('\n')}\n\n[${new Date().toLocaleString('vi-VN')}]`;
             const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
@@ -4982,14 +4988,6 @@ async function sendVisitNotification() {
         );
     } catch (error) {
         console.error("Lỗi nghiêm trọng khi gửi thông báo:", error);
-        if (botToken && chatId) {
-            const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
-            await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId, text: `⚠️ Lỗi gửi thông báo: ${error.message}`, parse_mode: 'HTML' }),
-            });
-        }
     }
 }
 
