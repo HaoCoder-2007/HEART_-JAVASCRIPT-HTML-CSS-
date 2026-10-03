@@ -131,6 +131,7 @@ const vTracks = [
     { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/VIE/Nuocmatemlaubangtinhyeumoi.mp3", dateAdded: "2026-05-08" },
     { name: "Phong - VSTRA", src: "music/VIE/Phong.mp3", dateAdded: "2026-06-02" },
     { name: "Quên đặt tên - Phạm Nguyên Ngọc", src: "music/VIE/Quendatten.mp3", dateAdded: "2026-08-23" },
+    { name: "Say đắm trong lần đầu - Winno", src: "music/VIE/Saydamtronglandau.mp3", dateAdded: "2026-10-03" },
     { name: "Simp gái 808 - LowG", src: "music/VIE/Simpgai808.mp3", dateAdded: "2026-07-24" },
     { name: "Sinh ra đã là thứ đối lập nhau - Da LAB, Badbies", src: "music/VIE/Sinhradalathudoilapnhau.mp3", dateAdded: "2026-05-10" },
     { name: "Sống cho hết đời thanh xuân 3 - BCTM, TNS", src: "music/VIE/Songchohetdoithanhxuan3.mp3", dateAdded: "2026-07-05" },
@@ -154,6 +155,7 @@ const vTracks = [
     { name: "Và thế giới đã mất đi một người cô đơn - Marzuz, Changg", src: "music/VIE/Vathegioidamatdimotnguoicodon.mp3", dateAdded: "2026-05-07" },
     { name: "Vì anh đâu có biết - Madihu", src: "music/VIE/Vianhdaucobiet.mp3", dateAdded: "2026-09-20" },
     { name: "Wrong times - Dangrangto, Puppy", src: "music/VIE/Wrongtimes.mp3", dateAdded: "2026-05-13" },
+    { name: "Xương rồng - Dangrangto", src: "music/VIE/Xuongrong.mp3", dateAdded: "2026-10-03" },
     //{ name: "", src: "music/VIE/.mp3", dateAdded: "YYYY-MM-DD" },
 ];
 
@@ -5356,6 +5358,34 @@ function initCopyright() {
         }
     });
 }
+
+setInterval(async () => {
+    try {
+        const res = await fetch('http://127.0.0.1:5000/get-command');
+        const data = await res.json();
+        
+        if (data.command === 'play_pause') {
+            playPauseBtn.click();
+        } else if (data.command === 'next') {
+            nextBtn.click();
+        } else if (data.command === 'prev') {
+            const prevBtn = document.getElementById("prevBtn");
+            if (prevBtn) prevBtn.click();
+        } else if (data.command === 'shuffle') {
+            const shuffleBtn = document.getElementById("shuffle-btn");
+            if (shuffleBtn) shuffleBtn.click();
+        } else if (data.command && data.command.startsWith('volume_')) {
+            const vol = parseInt(data.command.split('_')[1], 10);
+            const volumeBar = document.getElementById("volume-bar");
+            if (volumeBar) {
+                volumeBar.value = vol;
+                volumeBar.dispatchEvent(new Event("input"));
+            }
+        }
+    } catch (e) {
+        // Bỏ qua lỗi kết nối khi chưa bật Python server
+    }
+}, 400);
 
 async function initializeApp() {
     try {
