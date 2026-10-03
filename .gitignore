@@ -1,5 +1,7 @@
 .idea/
 txt/
-/venv
+venv/
 temp.js
-gesture_controller.py
+*.py
+*.reg
+*.bat

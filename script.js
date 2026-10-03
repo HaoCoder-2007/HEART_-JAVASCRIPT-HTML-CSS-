@@ -5174,6 +5174,109 @@ function initAIAssistant() {
     }
 }
 
+function initGestureAssistant() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #gesture-assistant-btn {
+            position: fixed;
+            top: 765px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-decoration: none;
+        }
+        #gesture-assistant-btn:hover {
+            background: #d45b79;
+            border-color: #d45b79;
+            transform: scale(1.1);
+        }
+        #gesture-assistant-btn.active {
+            animation: pulse-gesture 1.5s infinite;
+            background: #d45b79;
+            border-color: #d45b79;
+        }
+        @keyframes pulse-gesture {
+            0% { box-shadow: 0 0 0 0 rgba(212, 91, 121, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    const btn = document.createElement('a');
+    btn.id = 'gesture-assistant-btn';
+    btn.href = 'gesturectrl://';
+    btn.innerHTML = '✋';
+    document.body.appendChild(btn);
+
+    let isGestureActive = false;
+
+    btn.addEventListener('click', (e) => {
+        isGestureActive = !isGestureActive;
+        if (isGestureActive) {
+            btn.classList.add('active');
+            console.log("Đã bật chế độ điều khiển bằng cử chỉ tay.");
+        } else {
+            btn.classList.remove('active');
+            console.log("Đã tắt chế độ điều khiển bằng cử chỉ tay.");
+        }
+    });
+
+    setInterval(async () => {
+        if (!isGestureActive) return;
+
+        try {
+            await fetch('http://127.0.0.1:5000/update-status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isPlaying: !audio.paused })
+            });
+
+            const res = await fetch('http://127.0.0.1:5000/get-command');
+            const data = await res.json();
+            
+            if (!data || data.command === 'none') return;
+
+            if (data.command === 'play' || data.command === 'pause') {
+                playPauseBtn.click();
+            } else if (data.command === 'play/pause') {
+                playPauseBtn.click();
+            } else if (data.command === 'next') {
+                nextBtn.click();
+            } else if (data.command === 'prev') {
+                const prevBtn = document.getElementById("prevBtn");
+                if (prevBtn) prevBtn.click();
+            } else if (data.command === 'shuffle') {
+                const shuffleBtn = document.getElementById("shuffle-btn");
+                if (shuffleBtn) shuffleBtn.click();
+            } else if (data.command === 'vol_up') {
+                if (volumeBar) {
+                    volumeBar.value = Math.min(parseInt(volumeBar.value, 10) + 5, 100);
+                    volumeBar.dispatchEvent(new Event("input"));
+                }
+            } else if (data.command === 'vol_down') {
+                if (volumeBar) {
+                    volumeBar.value = Math.max(parseInt(volumeBar.value, 10) - 5, 0);
+                    volumeBar.dispatchEvent(new Event("input"));
+                }
+            }
+        } catch (e) {
+        }
+    }, 400);
+}
+
 function initMediaSession() {
     if (!('mediaSession' in navigator)) {
         console.log("Media Session API không được hỗ trợ trên trình duyệt này.");
@@ -5359,34 +5462,6 @@ function initCopyright() {
     });
 }
 
-setInterval(async () => {
-    try {
-        const res = await fetch('http://127.0.0.1:5000/get-command');
-        const data = await res.json();
-        
-        if (data.command === 'play_pause') {
-            playPauseBtn.click();
-        } else if (data.command === 'next') {
-            nextBtn.click();
-        } else if (data.command === 'prev') {
-            const prevBtn = document.getElementById("prevBtn");
-            if (prevBtn) prevBtn.click();
-        } else if (data.command === 'shuffle') {
-            const shuffleBtn = document.getElementById("shuffle-btn");
-            if (shuffleBtn) shuffleBtn.click();
-        } else if (data.command && data.command.startsWith('volume_')) {
-            const vol = parseInt(data.command.split('_')[1], 10);
-            const volumeBar = document.getElementById("volume-bar");
-            if (volumeBar) {
-                volumeBar.value = vol;
-                volumeBar.dispatchEvent(new Event("input"));
-            }
-        }
-    } catch (e) {
-        // Bỏ qua lỗi kết nối khi chưa bật Python server
-    }
-}, 400);
-
 async function initializeApp() {
     try {
         const CONFIG_URL = "https://cdn.jsdelivr.net/gh/HaoCoder-2007/Heart_config@main/config.json";
@@ -5416,6 +5491,7 @@ async function initializeApp() {
         initWeather();
         initCountdownTimer();
         initAIAssistant();
+        initGestureAssistant();
         initCopyright();
         sendVisitNotification();
 
