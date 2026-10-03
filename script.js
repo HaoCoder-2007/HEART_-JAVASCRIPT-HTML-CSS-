@@ -5223,7 +5223,7 @@ function initGestureAssistant() {
 
     let isGestureActive = false;
 
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
         isGestureActive = !isGestureActive;
         if (isGestureActive) {
             btn.classList.add('active');
@@ -5231,6 +5231,12 @@ function initGestureAssistant() {
         } else {
             btn.classList.remove('active');
             console.log("Đã tắt chế độ điều khiển bằng cử chỉ tay.");
+            
+            try {
+                await fetch('http://127.0.0.1:5000/stop');
+            } catch (err) {
+                console.log("Python đã được tắt từ trước.");
+            }
         }
     });
 
