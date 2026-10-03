@@ -5225,17 +5225,19 @@ function initGestureAssistant() {
 
     btn.addEventListener('click', async (e) => {
         isGestureActive = !isGestureActive;
+        
         if (isGestureActive) {
+            btn.href = 'gesturectrl://start';
             btn.classList.add('active');
-            console.log("Đã bật chế độ điều khiển bằng cử chỉ tay.");
+            console.log("Gửi lệnh BẬT cử chỉ tới máy tính.");
         } else {
+            btn.href = 'gesturectrl://stop';
             btn.classList.remove('active');
-            console.log("Đã tắt chế độ điều khiển bằng cử chỉ tay.");
+            console.log("Gửi lệnh TẮT cử chỉ tới máy tính.");
             
             try {
                 await fetch('http://127.0.0.1:5000/stop');
             } catch (err) {
-                console.log("Python đã được tắt từ trước.");
             }
         }
     });
