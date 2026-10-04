@@ -86,6 +86,7 @@ const vTracks = [
     { name: "Bạn đời - Karik, GDucky", src: "music/VIE/Bandoi.mp3", dateAdded: "2026-08-24" },
     { name: "Berlin - Khoi Vu", src: "music/VIE/Berlin.mp3", dateAdded: "2026-09-13" },
     { name: "Buồn hay vui - Vsoul, MCK, Obito, Ronboogz, Boyzed", src: "music/VIE/Buonhayvui.mp3", dateAdded: "2026-07-16" },
+    { name: "Chấm hết - Dangrangto, ZEXZEX", src: "music/VIE/Chamhet.mp3", dateAdded: "2026-10-04" },
     { name: "Chẳng giống giáng sinh - Lu, Willistic, Datfitzx", src: "music/VIE/Changgionggiangsinh.mp3", dateAdded: "2026-05-20" },
     { name: "Chạy khỏi thế giới này - Da LAB, Phương Ly", src: "music/VIE/Chaykhoithegioinay.mp3", dateAdded: "2026-05-10" },
     { name: "Chạy theo em - Nhã, Mihuman", src: "music/VIE/Chaytheoem.mp3", dateAdded: "2026-05-07" },
