@@ -83,6 +83,7 @@ const vTracks = [
     { name: "Ai ngoài anh - VSTRA, Tyronee", src: "music/VIE/Aingoaianh.mp3", dateAdded: "2026-05-07" },
     { name: "Ấm - Sweet Liquor", src: "music/VIE/Am.mp3", dateAdded: "2026-05-13" },
     { name: "Ánh sao và bầu trời - T.R.I, Cá", src: "music/VIE/Anhsaovabautroi.mp3", dateAdded: "2026-06-19" },
+    { name: "An thần - Thắng, LowG", src: "music/VIE/Anthan.mp3", dateAdded: "2026-10-21" },
     { name: "Bạn đời - Karik, GDucky", src: "music/VIE/Bandoi.mp3", dateAdded: "2026-08-24" },
     { name: "Bé ơi từ từ - Wren Evans", src: "music/VIE/Beoitutu.mp3", dateAdded: "2026-10-14" },
     { name: "Berlin - Khoi Vu", src: "music/VIE/Berlin.mp3", dateAdded: "2026-09-13" },
@@ -273,6 +274,7 @@ const ngotTracks = [
 const xmasTracks = [
     { name: "All I want for Christmas is you - Mariah Carey", src: "music/SPECIAL/XMAS/Alliwantforchristmasisyou.mp3", dateAdded: "2026-07-16" },
     { name: "Chẳng giống giáng sinh - Lu, Willistic, datfitzx", src: "music/SPECIAL/XMAS/Changgionggiangsinh.mp3", dateAdded: "2026-05-20" },
+    { name: "Em trang trí - Ngọt", src: "music/SPECIAL/XMAS/Emtrangtri.mp3", dateAdded: "2026-10-21" },
     { name: "Last Christmas - Wham!", src: "music/SPECIAL/XMAS/Lastchristmas.mp3", dateAdded: "2026-05-20" },
     { name: "Snowman - Sia", src: "music/SPECIAL/XMAS/Snowman.mp3", dateAdded: "2026-05-20" },
     //{ name: "", src: "music/SPECIAL/XMAS/.mp3", dateAdded: "YYYY-MM-DD" },
