@@ -195,11 +195,13 @@ const usukTracks = [
     { name: "Sugar - Maroon 5", src: "music/US_UK/Sugar.mp3", dateAdded: "2026-07-14" },
     { name: "Take you dancing - Jason Derulo", src: "music/US_UK/Takeyoudancing.mp3", dateAdded: "2026-08-02" },
     { name: "Telepatía - Kali Uchis", src: "music/US_UK/Telepatia.mp3", dateAdded: "2026-08-23" },
+    { name: "The perfect pair - Beabadoobee", src: "music/US_UK/Theperfectpair.mp3", dateAdded: "2026-10-28" },
     { name: "Tip toe - HYBS", src: "music/US_UK/Tiptoe.mp3", dateAdded: "2026-05-18" },
     { name: "Until I found you - Stephen Sanchez", src: "music/US_UK/Untilifoundyou.mp3", dateAdded: "2026-05-18" },
     { name: "Until you - Shayne Ward", src: "music/US_UK/Untilyou.mp3", dateAdded: "2026-05-18" },
     { name: "We don't talk anymore - Charlie Puth", src: "music/US_UK/Wedon'ttalkanymore.mp3", dateAdded: "2026-05-18" },
     { name: "Without me - Halsey", src: "music/US_UK/Withoutme.mp3", dateAdded: "2026-07-14" },
+    { name: "Wyw my sweetie - Nissi, 25Hzz", src: "music/US_UK/Wywmysweetie.mp3", dateAdded: "2026-10-28" },
     //{ name: "", src: "music/US_UK/.mp3", dateAdded: "YYYY-MM-DD" },
 ];
 
