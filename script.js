@@ -134,6 +134,7 @@ const vTracks = [
     { name: "Ngã tư không đèn - Trang, Khoa Vũ", src: "music/VIE/Ngatukhongden.mp3", dateAdded: "2026-05-07" },
     { name: "Ngây ther - Kidsai, VSTRA, WHENITSASUNNIDAY", src: "music/VIE/Ngayther.mp3", dateAdded: "2026-07-16" },
     { name: "Nghe như tình yêu - HIEUTHUHAI", src: "music/VIE/Nghenhutinhyeu.mp3", dateAdded: "2026-09-20" },
+    { name: "Nhẹ buông - Hằng Sii", src: "music/VIE/Nhebuong.mp3", dateAdded: "2026-11-19" },
     { name: "Như hoa mùa xuân - Phùng Khánh Linh, Wren Evans", src: "music/VIE/Nhuhoamuaxuan.mp3", dateAdded: "2026-05-22" },
     { name: "Nơi pháo hoa rực rỡ - Orange, Hoàng Dũng, Cẩm Vân, Hứa Kim Tuyền", src: "music/VIE/Noiphaohoarucro.mp3", dateAdded: "2026-11-12" },
     { name: "Nước mắt em lau bằng tình yêu mới - Da LAB, Tóc Tiên", src: "music/VIE/Nuocmatemlaubangtinhyeumoi.mp3", dateAdded: "2026-05-08" },
@@ -2922,6 +2923,34 @@ function scheduleMidnightUpdate() {
     }, msUntilMidnight);
 }
 
+let silentAudioCtx = null;
+let silentInterval = null;
+
+function keepBackgroundAlive() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!silentAudioCtx) {
+            silentAudioCtx = new AudioContext();
+        }
+        
+        if (silentAudioCtx.state === 'suspended') {
+            silentAudioCtx.resume();
+        }
+
+        const oscillator = silentAudioCtx.createOscillator();
+        const gainNode = silentAudioCtx.createGain();
+        gainNode.gain.value = 0.0001;
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(silentAudioCtx.destination);
+        
+        oscillator.start();
+        console.log("Đã kích hoạt cơ chế chạy ngầm thành công.");
+    } catch (e) {
+        console.log("Lỗi khởi tạo background audio:", e);
+    }
+}
+
 let wakeLock = null;
 
 async function requestWakeLock() {
@@ -2936,6 +2965,14 @@ async function requestWakeLock() {
         console.error(`Lỗi Wake Lock: ${err.name}, ${err.message}`);
     }
 }
+
+document.addEventListener('visibilitychange', async () => {
+    if (wakeLock !== null && document.visibilityState === 'visible') {
+        await requestWakeLock();
+    }
+});
+
+document.addEventListener('click', keepBackgroundAlive(), { once: true });
 
 function initWakeLock() {
     requestWakeLock();
@@ -5458,7 +5495,7 @@ function initCopyright() {
     modal.innerHTML = `
         <div class="copyright-modal-title">THÔNG TIN BẢN QUYỀN</div>
         <div class="copyright-modal-text">Trang được tạo bởi <b>HaoCoder2007</b></div>
-        <div class="copyright-modal-text" style="color: rgba(255, 255, 255, 0.7); font-size: 15px; text-align: left;">-Trang được tạo nhằm phục vụ mục đích cá nhân, không hoạt động thương mại.</div>
+        <div class="copyright-modal-text" style="color: rgba(255, 255, 255, 0.7); font-size: 15px; text-align: left;">-Trang được tạo nhằm phục vụ mục đích cá nhân, <b>không</b> hoạt động thương mại.</div>
         <div class="copyright-modal-text" style="color: rgba(255, 255, 255, 0.7); font-size: 15px; text-align: left;">-Tôi <b>không</b> sở hữu bản quyền của những bài nhạc. Mọi quyền thuộc về chủ sở hữu hợp pháp.</div>
         <div class="copyright-modal-text" style="color: rgba(255, 255, 255, 0.7); font-size: 15px; text-align: left;">-Một số hình ảnh thuộc cá nhân tôi, vui lòng <b>không</b> sử dụng khi chưa được sự đồng ý.</div>
         <a href="${contactUrl}" target="_blank" class="copyright-contact-link">Thông tin liên hệ</a>
